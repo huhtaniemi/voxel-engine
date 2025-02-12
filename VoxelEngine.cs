@@ -5,11 +5,28 @@ using OpenTK.Mathematics;
 using System.Diagnostics;
 using ModernGL;
 
+public class MovingAverage
+{
+    private Queue<double> _values;
+    private int _maxCount = 10;
+    private double _valuesSum = 0;
+
+    public MovingAverage() => _values = new Queue<double>();
+
+    public double Add(double value)
+    {
+        if (_values.Count >= _maxCount)
+            _valuesSum -= _values.Dequeue();
+        _values.Enqueue(value);
+        _valuesSum += value;
+        return _valuesSum / _values.Count;
+    }
+}
 public class VoxelEngine : GameWindow
 {
     public glContext ctx;
 
-    public Stopwatch clock;
+    MovingAverage deltaTimeAvg = new();
     public double deltaTime;
     public double time_init;
     public double time;
@@ -32,8 +49,6 @@ public class VoxelEngine : GameWindow
 
         this.ctx = moderngl.create_context();
 
-        clock = Stopwatch.StartNew();
-
         //textures = new Textures(this);
         //player = new Player(this, Settings.PLAYER_POS);
         shader_program = new ShaderProgram(this, ctx);
@@ -43,8 +58,6 @@ public class VoxelEngine : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-
-        clock.Start();
         time_init = DateTime.Now.Ticks;
 
         is_running = true;
@@ -74,10 +87,10 @@ public class VoxelEngine : GameWindow
         shader_program.Update();
         scene.Update();
 
-        deltaTime = clock.ElapsedMilliseconds;
-        clock.Restart();
         time = (DateTime.Now.Ticks - time_init) * 0.001;
-        Title = $"{1000.0 / (deltaTime):F0} FPS";
+        deltaTime = args.Time / 1000;
+
+        Title = $"{1.0 / deltaTimeAvg.Add(args.Time):F0} FPS";
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
