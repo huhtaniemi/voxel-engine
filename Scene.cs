@@ -1,28 +1,25 @@
+using System;
 using OpenTK.Graphics.OpenGL4;
 
 public class Scene
 {
-    private VoxelEngine app;
-    //public World world;
+    //private World world;
     //private VoxelMarker voxelMarker;
-    private Water water;
+    //private Water water;
     //private Clouds clouds;
 
-    /// <summary>
-    ///  Initializes the Scene class, creating instances of World, VoxelMarker, Water, and Clouds.
-    /// </summary>
+    private QuadMesh quad;
+
     public Scene(VoxelEngine app)
     {
-        this.app = app;
         //this.world = new World(this.app);
         //this.voxelMarker = new VoxelMarker(this.world.voxelHandler);
-        this.water = new Water(app);
+        //this.water = new Water(app);
         //this.clouds = new Clouds(app);
+
+        this.quad = new QuadMesh(app);
     }
 
-    /// <summary>
-    /// Updates the world, voxel marker, and clouds.
-    /// </summary>
     public void Update()
     {
         //this.world.Update();
@@ -30,9 +27,6 @@ public class Scene
         //this.clouds.Update();
     }
 
-    /// <summary>
-    /// Renders the world, clouds, water, and voxel marker, disabling and enabling cull face as needed.
-    /// </summary>
     public void Render()
     {
         // Chunks rendering
@@ -41,10 +35,12 @@ public class Scene
         // Rendering without cull face
         GL.Disable(EnableCap.CullFace);
         //this.clouds.Render();
-        this.water.Render();
+        //this.water.Render();
         GL.Enable(EnableCap.CullFace);
 
         // Voxel selection
         //this.voxelMarker.Render();
+
+        this.quad.Render();
     }
 }

@@ -3,18 +3,20 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Diagnostics;
-using System.Collections.Generic;
+using ModernGL;
 
 public class VoxelEngine : GameWindow
 {
+    public glContext ctx;
+
     public Stopwatch clock;
     public double deltaTime;
     public double time_init;
     public double time;
     public static bool is_running = false;
 
-    public Textures textures;
-    public Player player;
+    //public Textures textures;
+    //public Player player;
     public ShaderProgram shader_program;
     public Scene scene;
 
@@ -28,11 +30,13 @@ public class VoxelEngine : GameWindow
 
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+        this.ctx = moderngl.create_context();
+
         clock = Stopwatch.StartNew();
 
         //textures = new Textures(this);
         //player = new Player(this, Settings.PLAYER_POS);
-        shader_program = new ShaderProgram(this);
+        shader_program = new ShaderProgram(this, ctx);
         scene = new Scene(this);
     }
 

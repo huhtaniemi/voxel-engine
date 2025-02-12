@@ -1,42 +1,32 @@
-using OpenTK.Graphics.OpenGL4;
-using System.Linq;
+using System;
+using ModernGL;
 
 public class QuadMesh : BaseMesh
 {
-    private VoxelEngine app;
-
-    public QuadMesh(VoxelEngine app) : base()
+    public QuadMesh(VoxelEngine app)
+        : base(ref app.ctx, ref app.shader_program.quad, "3f 3f", ["in_position", "in_color"])
     {
-        this.app = app;
-        this.program = app.shader_program.waterProgram;
-
-        this.vboFormat = "2u1 3u1";
-        this.attrs = ["in_tex_coord", "in_position"];
         this.vao = this.GetVAO();
     }
 
-    /// <summary>
-    /// two triangles with counterclockwise vertex traversal,
-    /// joined into one array with float32 type.
-    /// </summary>
-    protected override float[] GetVertexData()
+    protected override object GetVertexData()
     {
-        var vertices = new[] // uint8
+        var vertices = new (double, double, double)[]
         {
-            (0f, 0f, 0f), (1f, 0f, 1f), (1f, 0f, 0f),
-            (0f, 0f, 0f), (0f, 0f, 1f), (1f, 0f, 1f)
+            (0.5, 0.5, 0.0), (-0.5, 0.5, 0.0), (-0.5, -0.5, 0.0),
+            (0.5, 0.5, 0.0), (-0.5, -0.5, 0.0), (0.5, -0.5, 0.0)
         };
 
-        var tex_coords = new[]  // uint8
+        var colors = new (double, double, double)[]
         {
-            (0f, 0f), (1f, 1f), (1f, 0f),
-            (0f, 0f), (0f, 1f), (1f, 1f)
+            (0, 1, 0), (1, 0, 0), (1, 1, 0),
+            (0, 1, 0), (1, 1, 0), (0, 0, 1)
         };
-        
+
         var vertex_data = // np.hstack([tex_coords, vertices])
-            tex_coords
-            .SelectMany(tc => new[] { tc.Item1, tc.Item2 })
-            .Concat(vertices.SelectMany(v => new[] { v.Item1, v.Item2, v.Item3 }))
+            vertices.Zip(colors, (v, c) => new float[] {
+                (float)v.Item1, (float)v.Item2, (float)v.Item3, (float)c.Item1, (float)c.Item2, (float)c.Item3 })
+            .SelectMany(x => x)
             .ToArray();
 
         return vertex_data;
