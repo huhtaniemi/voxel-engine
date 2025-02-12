@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="_later\**" />
-    <EmbeddedResource Remove="_later\**" />
-    <None Remove="_later\**" />
+    <Compile Remove="_unprocessed\**" />
+    <EmbeddedResource Remove="_unprocessed\**" />
+    <None Remove="_unprocessed\**" />
   </ItemGroup>
 
   <ItemGroup>
