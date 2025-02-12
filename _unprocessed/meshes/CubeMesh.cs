@@ -63,6 +63,32 @@ public class CubeMesh : BaseMesh
         return combinedData;
     }
 
+    /// <summary>
+    ///  Creates and initializes the VBO and VAO, sets up the vertex attributes, and returns the VAO.
+    /// </summary>
+    private int GetVAO()
+    {
+        float[] vertexData = GetVertexData();
+        int vbo = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, vertexData.Length * sizeof(float), vertexData, BufferUsageHint.StaticDraw);
 
+        int vao = GL.GenVertexArray();
+        GL.BindVertexArray(vao);
+
+        int stride = CalculateStride(vboFormat);
+        int offset = 0;
+
+        for (int i = 0; i < attrs.Length; i++)
+        {
+            int location = GL.GetAttribLocation(program, attrs[i]);
+            GL.EnableVertexAttribArray(location);
+            GL.VertexAttribPointer(location, GetAttributeSize(vboFormat, i), VertexAttribPointerType.Float, false, stride, offset);
+            offset += GetAttributeSize(vboFormat, i) * sizeof(float);
+        }
+
+        GL.BindVertexArray(0);
+        return vao;
+    }
 }
 

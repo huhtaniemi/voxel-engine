@@ -17,7 +17,7 @@ public class CloudMesh : BaseMesh
         this.program = app.shader_program.cloudsProgram;
         this.vboFormat = "3u2";
         this.attrs = new[] { "in_position" };
-        this.vao = GetVAO();
+        this.vao = app.GetVAO();
     }
 
     /// <summary>
