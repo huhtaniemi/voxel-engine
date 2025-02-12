@@ -30,7 +30,6 @@ public class VoxelEngine : GameWindow
     public double deltaTime;
     public double time_init;
     public double time;
-    public static bool is_running = false;
 
     //public Textures textures;
     //public Player player;
@@ -59,8 +58,6 @@ public class VoxelEngine : GameWindow
     {
         base.OnLoad();
         time_init = DateTime.Now.Ticks;
-
-        is_running = true;
     }
 
 
@@ -69,7 +66,6 @@ public class VoxelEngine : GameWindow
         // event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE)
         if (KeyboardState.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape))
         {
-            is_running = false;
             Close();
         }
 
