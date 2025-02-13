@@ -93,23 +93,21 @@ namespace ModernGL
                     int location = GL.GetUniformLocation(id, key);
                     GL.UseProgram(id);
 
-                    if (value is int)
+                    if (value is int ival)
                     {
-                        GL.Uniform1(location, (int)value);
+                        GL.Uniform1(location, ival);
                     }
-                    else if (value is float)
+                    else if (value is float fval)
                     {
-                        GL.Uniform1(location, (float)value);
+                        GL.Uniform1(location, fval);
                     }
-                    else if (value is Vector3)
+                    else if (value is Vector3 v3val)
                     {
-                        var v = (Vector3)value;
-                        GL.Uniform3(location, ref v);
+                        GL.Uniform3(location, v3val);
                     }
-                    else if (value is Matrix4)
+                    else if (value is Matrix4 m4val)
                     {
-                        var v = (Matrix4)value;
-                        GL.UniformMatrix4(location, false, ref v);
+                        GL.UniformMatrix4(location, false, ref m4val);
                     }
                     else
                     {
@@ -347,6 +345,9 @@ namespace ModernGL
 
             public void Dispose()
             {
+                // Attachments to unbound container objects, such as deletion of a buffer attached to
+                // a vertex array object which is not bound to the context, are not affected and continue to
+                // act as references on the deleted object, as described in the following section.
                 GL.DeleteBuffer(id);
             }
         }
@@ -404,14 +405,15 @@ namespace ModernGL
 
             public void render(PrimitiveType mode = PrimitiveType.Triangles, int vertices = -1, int first = 0, int instances = -1)
             {
-                GL.BindVertexArray(id);
                 GL.UseProgram(program.id);
+                GL.BindVertexArray(id);
                 if (instances == -1)
                     // Specifies the number of indices to be rendered. (6 in water example)
                     GL.DrawArrays(mode, first, vertices == -1 ? this.vertices : vertices);
                 else
                     GL.DrawArraysInstanced(mode, first, vertices == -1 ? this.vertices : vertices, instances);
                 GL.BindVertexArray(0);
+                //GL.UseProgram(0);
             }
         }
 

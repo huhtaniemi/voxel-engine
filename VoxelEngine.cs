@@ -32,7 +32,7 @@ public class VoxelEngine : GameWindow
     public double time;
 
     //public Textures textures;
-    //public Player player;
+    public Player player;
     public ShaderProgram shader_program;
     public Scene scene;
 
@@ -49,7 +49,7 @@ public class VoxelEngine : GameWindow
         this.ctx = moderngl.create_context();
 
         //textures = new Textures(this);
-        //player = new Player(this, Settings.PLAYER_POS);
+        player = new Player(this, Settings.PLAYER_POS);
         shader_program = new ShaderProgram(this, ctx);
         scene = new Scene(this);
     }
@@ -79,12 +79,12 @@ public class VoxelEngine : GameWindow
 
         HandleEvents();
 
-        //player.Update();
+        player.Update();
         shader_program.Update();
         scene.Update();
 
         time = (DateTime.Now.Ticks - time_init) * 0.001;
-        deltaTime = args.Time / 1000;
+        deltaTime = args.Time * 1000;
 
         Title = $"{1.0 / deltaTimeAvg.Add(args.Time):F0} FPS";
     }
@@ -93,6 +93,8 @@ public class VoxelEngine : GameWindow
     {
         base.OnRenderFrame(args);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+        Thread.Sleep(100); // Sleep for 100 milliseconds
 
         scene.Render();
 
@@ -116,7 +118,7 @@ public class VoxelEngine : GameWindow
             APIVersion = new Version(3, 3),
             Profile = ContextProfile.Core,
             Flags = ContextFlags.ForwardCompatible,
-            DepthBits = 24
+            DepthBits = Settings.DEPTH_SIZE
         };
 
         using (var window = new VoxelEngine(GameWindowSettings.Default, nativeWindowSettings))

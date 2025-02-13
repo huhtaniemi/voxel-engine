@@ -15,9 +15,6 @@ public class ShaderProgram
 
     public glContext.Program quad;
 
-    /// <summary>
-    ///  Initializes the ShaderProgram class, loads the shaders, and sets the uniforms.
-    /// </summary>
     public ShaderProgram(VoxelEngine app, glContext ctx)
     {
         this.app = app;
@@ -70,6 +67,9 @@ public class ShaderProgram
         this.clouds["bg_color"] = Settings.BG_COLOR;
         this.clouds["cloud_scale"] = Settings.CLOUD_SCALE;
         */
+
+        this.quad["m_proj"] = app.player.m_proj;
+        this.quad["m_model"] = Matrix4.Identity;
     }
 
     /// <summary>
@@ -83,6 +83,7 @@ public class ShaderProgram
         this.water["m_view"] = app.player.MView;
         this.clouds["m_view"] = app.player.MView;
         */
+        this.quad["m_view"] = app.player.m_view;
     }
 
     /// <summary>

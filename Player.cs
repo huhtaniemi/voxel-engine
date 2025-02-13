@@ -9,18 +9,12 @@ public class Player : Camera
 {
     private VoxelEngine app;
 
-    /// <summary>
-    /// Initializes the Player class, inheriting from Camera.
-    /// </summary>
     public Player(VoxelEngine app, Vector3 position, float yaw = -90, float pitch = 0)
         : base(position, yaw, pitch)
     {
         this.app = app;
     }
 
-    /// <summary>
-    /// Calls KeyboardControl and MouseControl methods, then updates the base class.
-    /// </summary>
     public override void Update()
     {
         KeyboardControl();
@@ -28,10 +22,7 @@ public class Player : Camera
         base.Update();
     }
 
-    /// <summary>
-    /// Handles mouse button events to add or remove voxels.
-    /// </summary>
-    /// <param name="e"></param>
+    /*
     public void HandleEvent(MouseState e)
     {
         // Adding and removing voxels with clicks
@@ -49,10 +40,8 @@ public class Player : Camera
             }
         }
     }
+    */
 
-    /// <summary>
-    /// Handles mouse movement to rotate the camera.
-    /// </summary>
     private void MouseControl()
     {
         var (mouse_dx, mouse_dy) = app.MouseState.Delta;
@@ -66,13 +55,10 @@ public class Player : Camera
         }
     }
 
-    /// <summary>
-    ///  Handles keyboard input to move the player.
-    /// </summary>
     private void KeyboardControl()
     {
         var keyState = app.KeyboardState;
-        float velocity = Settings.PLAYER_SPEED * (float)app.deltaTime;
+        var velocity = Settings.PLAYER_SPEED * (float)app.deltaTime;
         if (keyState.IsKeyDown(Keys.W))
         {
             MoveForward(velocity);

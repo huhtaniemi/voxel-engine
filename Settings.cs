@@ -48,11 +48,12 @@ public static class Settings
     // Player
     public const float PLAYER_SPEED = 0.005f;
     public const float PLAYER_ROT_SPEED = 0.003f;
-    public static readonly Vector3 PLAYER_POS = new Vector3(CENTER_XZ, CHUNK_SIZE, CENTER_XZ);
+    //public static readonly Vector3 PLAYER_POS = new(CENTER_XZ, CHUNK_SIZE, CENTER_XZ);
+    public static readonly Vector3 PLAYER_POS = new(0, 0, 1);
     public const float MOUSE_SENSITIVITY = 0.002f;
 
     // Colors
-    public static readonly Vector3 BG_COLOR = new Vector3(0.58f, 0.83f, 0.99f);
+    public static readonly Vector3 BG_COLOR = new(0.58f, 0.83f, 0.99f);
 
     // Textures
     public const int SAND = 1;
