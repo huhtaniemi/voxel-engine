@@ -9,6 +9,7 @@ public abstract class BaseMesh
 
     // vertex buffer data type format: [count]type[size] [[count]type[size]...] [/usage]
     protected string vbo_format;
+    protected int vbo_format_size;
 
     // attribute names according to the format, like: ("in_position", "in_color")
     // names are defined by the user in the vertex shader program stage.
@@ -22,11 +23,12 @@ public abstract class BaseMesh
         //this.vbo = null;
         //this.vao = null;
         this.vbo_format = vbo_format;
+        // todo: 'size' is ignored, assumed byte
+        this.vbo_format_size = vbo_format.Split(' ').Sum(fmt => int.Parse(fmt[..1]));
         this.attrs = attrs;
     }
 
     protected abstract object GetVertexData();
-
 
     /// <summary>
     /// Creates and initializes the VBO and VAO, sets up the vertex attributes, and returns the VAO.
@@ -44,10 +46,10 @@ public abstract class BaseMesh
         return vao;
     }
 
+    protected void Rebuild() =>
+        this.vao = GetVAO();
 
-    public void Render()
-    {
+    public void Render() =>
         this.vao?.render();
-    }
 }
 

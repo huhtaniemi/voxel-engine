@@ -6,7 +6,7 @@ public class QuadMesh : BaseMesh
     public QuadMesh(VoxelEngine app)
         : base(ref app.ctx, ref app.shader_program.quad, "3f 3f", ["in_position", "in_color"])
     {
-        this.vao = this.GetVAO();
+        Rebuild();
     }
 
     protected override object GetVertexData()
