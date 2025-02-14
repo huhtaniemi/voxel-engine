@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Diagnostics;
 using ModernGL;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 public class MovingAverage
 {
@@ -57,30 +58,30 @@ public class VoxelEngine : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
+        CursorState = CursorState.Grabbed;
+
         time_init = DateTime.Now.Ticks;
     }
 
 
     private void HandleEvents()
     {
-        // event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE)
-        if (KeyboardState.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape))
-        {
+        if (KeyboardState.IsKeyDown(Keys.Escape))
             Close();
-        }
-
-        // Handle other events, such as player input
-        //player.HandleEvent(MouseState);
+        player.HandleEvent(MouseState, KeyboardState);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
 
+        // player kayboard and mouse events
         HandleEvents();
 
-        player.Update();
+        // update shader uniforms
         shader_program.Update();
+
+        // update vertex data
         scene.Update();
 
         time = (DateTime.Now.Ticks - time_init) * 0.001;
@@ -92,10 +93,11 @@ public class VoxelEngine : GameWindow
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
+
+        // move to somewere else. moderngl?
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        Thread.Sleep(100); // Sleep for 100 milliseconds
-
+        // render vertex data
         scene.Render();
 
         SwapBuffers();
@@ -121,9 +123,7 @@ public class VoxelEngine : GameWindow
             DepthBits = Settings.DEPTH_SIZE
         };
 
-        using (var window = new VoxelEngine(GameWindowSettings.Default, nativeWindowSettings))
-        {
-            window.Run();
-        }
+        using var window = new VoxelEngine(GameWindowSettings.Default, nativeWindowSettings);
+        window.Run();
     }
 }

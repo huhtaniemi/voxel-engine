@@ -1,9 +1,8 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
-using System.Net;
-using System.Xml.Linq;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Windowing.Desktop;
 
-//using Camera;
 
 public class Player : Camera
 {
@@ -15,11 +14,11 @@ public class Player : Camera
         this.app = app;
     }
 
-    public override void Update()
+    public void HandleEvent(MouseState mouseState, KeyboardState keyState)
     {
-        KeyboardControl();
-        MouseControl();
-        base.Update();
+        MouseControl(mouseState);
+        KeyboardControl(keyState);
+        Update();
     }
 
     /*
@@ -42,46 +41,47 @@ public class Player : Camera
     }
     */
 
-    private void MouseControl()
+    // hack: for RDP connection mouse-delta fix
+    static Vector2 pos = new Vector2(0, 0);
+
+    private void MouseControl(MouseState mouseState)
     {
-        var (mouse_dx, mouse_dy) = app.MouseState.Delta;
-        if (mouse_dx != 0)
+        if (mouseState.Delta != Vector2.Zero)
         {
-            RotateYaw(mouse_dx * Settings.MOUSE_SENSITIVITY);
-        }
-        if (mouse_dy != 0)
-        {
-            RotatePitch(mouse_dy * Settings.MOUSE_SENSITIVITY);
+            var (mouse_dx, mouse_dy) = mouseState.Delta - pos;
+            if (mouse_dx != 0)
+                RotateYaw(mouse_dx * Settings.MOUSE_SENSITIVITY);
+            if (mouse_dy != 0)
+                RotatePitch(mouse_dy * Settings.MOUSE_SENSITIVITY);
+            if (mouse_dx != 0 || mouse_dy != 0)
+            {
+                Console.WriteLine("Mouse dx {0} dy {1}", mouse_dx, mouse_dy);
+                //Console.WriteLine("mouse delta {0}", mouseState.Delta);
+                //Console.WriteLine("mouse delta own {0}", mouseState.Delta - pos);
+            }
+            pos = mouseState.Delta;
         }
     }
 
-    private void KeyboardControl()
+    private void KeyboardControl(KeyboardState keyState)
     {
-        var keyState = app.KeyboardState;
-        var velocity = Settings.PLAYER_SPEED * (float)app.deltaTime;
-        if (keyState.IsKeyDown(Keys.W))
+        if (keyState.IsAnyKeyDown)
         {
-            MoveForward(velocity);
-        }
-        if (keyState.IsKeyDown(Keys.S))
-        {
-            MoveBack(velocity);
-        }
-        if (keyState.IsKeyDown(Keys.D))
-        {
-            MoveRight(velocity);
-        }
-        if (keyState.IsKeyDown(Keys.A))
-        {
-            MoveLeft(velocity);
-        }
-        if (keyState.IsKeyDown(Keys.Q))
-        {
-            MoveUp(velocity);
-        }
-        if (keyState.IsKeyDown(Keys.E))
-        {
-            MoveDown(velocity);
+            var velocity = Settings.PLAYER_SPEED * (float)app.deltaTime;
+            if (keyState.IsKeyDown(Keys.W))
+                MoveForward(velocity);
+            if (keyState.IsKeyDown(Keys.S))
+                MoveBack(velocity);
+            if (keyState.IsKeyDown(Keys.D))
+                MoveRight(velocity);
+            if (keyState.IsKeyDown(Keys.A))
+                MoveLeft(velocity);
+            if (keyState.IsKeyDown(Keys.Q))
+                MoveUp(velocity);
+            if (keyState.IsKeyDown(Keys.E))
+                MoveDown(velocity);
+
+            Console.WriteLine("position {0} yaw {1} pitch {2}", Position, Yaw, Pitch);
         }
     }
 }
