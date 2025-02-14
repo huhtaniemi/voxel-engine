@@ -5,6 +5,8 @@ using System.Linq;
 
 public static class VoxelMeshBuilder
 {
+    /*
+
     /// <summary>
     /// Calculates the ambient occlusion (AO) values for a voxel based on its neighbors.
     /// </summary>
@@ -95,10 +97,8 @@ public static class VoxelMeshBuilder
         int index = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
         return index;
     }
-
-    /// <summary>
-    ///  Checks if a voxel is empty (void) based on its local and world positions.
-    /// </summary>
+    */
+    /*
     public static bool IsVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[,,] worldVoxels)
     {
         int chunkIndex = GetChunkIndex(worldVoxelPos);
@@ -114,7 +114,10 @@ public static class VoxelMeshBuilder
 
         return chunkVoxels[voxelIndex] == 0;
     }
+    */
 
+
+    /*
     public static int AddData(uint[] vertexData, int index, params uint[] vertices)
     {
         foreach (uint vertex in vertices)
@@ -124,9 +127,11 @@ public static class VoxelMeshBuilder
         }
         return index;
     }
+    */
 
 
 
+    /*
     public static uint[] BuildChunkMesh(byte[] chunkVoxels, int formatSize, Vector3i chunkPos, byte[,,] worldVoxels)
     {
         uint[] vertexData = new uint[Settings.CHUNK_VOL * 18 * formatSize];
@@ -284,4 +289,16 @@ public static class VoxelMeshBuilder
         return vertexData.Take(index + 1).ToArray();
         //return vertexData.[:index + 1];
     }
+    */
+
+
+    public static byte[] BuildChunkMesh(byte[] chunkVoxels, int formatSize/*,Vector3i chunkPos, byte[,,] worldVoxels*/)
+    {
+        byte[] vertexData = new byte[CHUNK_VOL * 18 * formatSize * sizeof(byte)]; // asuming bytesize for vbo_data
+        int index = 0;
+
+        //return vertexData.[:index + 1];
+        return vertexData.Take(index + 1).ToArray();
+    }
+
 }
