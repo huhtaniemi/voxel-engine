@@ -55,18 +55,25 @@ public class Camera
         Pitch = MathHelper.Clamp(Pitch, -Settings.PITCH_MAX, Settings.PITCH_MAX);
     }
 
-    public void RotateYaw(float deltaX) => Yaw += deltaX;
+    public void RotateYaw(float deltaX) =>
+        Yaw += deltaX;
 
     // Moves the camera in the specified direction based on the given velocity.
-    public void MoveLeft(float velocity) => Position -= Right * velocity;
+    public void MoveLeft(float velocity) =>
+        Position -= Right * velocity;
 
-    public void MoveRight(float velocity) => Position += Right * velocity;
+    public void MoveRight(float velocity) =>
+        Position += Right * velocity;
 
-    public void MoveUp(float velocity) => Position += Up * velocity;
+    public void MoveUp(float velocity) =>
+        Position += Up * velocity;
 
-    public void MoveDown(float velocity) => Position -= Up * velocity;
+    public void MoveDown(float velocity) =>
+        Position -= Up * velocity;
 
-    public void MoveForward(float velocity) => Position += Forward * velocity;
+    public void MoveForward(float velocity) =>
+        Position += Forward * velocity;
 
-    public void MoveBack(float velocity) => Position -= Forward * velocity;
+    public void MoveBack(float velocity) =>
+        Position -= Forward * velocity;
 }
