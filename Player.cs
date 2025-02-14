@@ -82,6 +82,15 @@ public class Player : Camera
                 MoveDown(velocity);
 
             Console.WriteLine("position {0} yaw {1} pitch {2}", Position, Yaw, Pitch);
+
+            if (keyState.IsKeyDown(Keys.Z))
+            {
+#pragma warning disable CS0618
+                GL.PolygonMode(MaterialFace.FrontAndBack, wireframe ? PolygonMode.Line : PolygonMode.Fill);
+#pragma warning restore CS0618
+                wireframe = !wireframe;
+            }
         }
     }
+    static bool wireframe = false;
 }
