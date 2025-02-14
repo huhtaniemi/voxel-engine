@@ -2,6 +2,8 @@
 using OpenTK.Mathematics;
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using static Settings;
 
 public static class VoxelMeshBuilder
 {
@@ -116,6 +118,15 @@ public static class VoxelMeshBuilder
     }
     */
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool isVoid(Vector3i voxelPos, byte[] chunkVoxels)
+    {
+        (var x, var y, var z) = voxelPos;
+        if ((x is >= 0 and < CHUNK_SIZE) && (y is >= 0 and < CHUNK_SIZE) && (z is >= 0 and < CHUNK_SIZE))
+            return chunkVoxels[x + WORLD_W * z + WORLD_AREA * y] == 0;
+        return true;
+    }
+
 
     /*
     public static int AddData(uint[] vertexData, int index, params uint[] vertices)
@@ -129,6 +140,29 @@ public static class VoxelMeshBuilder
     }
     */
 
+    record struct packedVertex(int x, int y, int z, byte voxelId, byte face)
+    {
+        public int x { get; init; } = x;
+        public int y { get; init; } = y;
+        public int z { get; init; } = z;
+        public byte voxelId { get; init; } = voxelId;
+        public byte face { get; init; } = face;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int addData(byte[] vertexData, int index, packedVertex[] vertices)
+    {
+        foreach (var vertex in vertices)
+        {
+            vertexData[index + 0] = (byte)vertex.x;
+            vertexData[index + 1] = (byte)vertex.y;
+            vertexData[index + 2] = (byte)vertex.z;
+            vertexData[index + 3] = vertex.voxelId;
+            vertexData[index + 4] = vertex.face;
+            index += 5;
+        }
+        return index;
+    }
 
 
     /*
@@ -296,6 +330,97 @@ public static class VoxelMeshBuilder
     {
         byte[] vertexData = new byte[CHUNK_VOL * 18 * formatSize * sizeof(byte)]; // asuming bytesize for vbo_data
         int index = 0;
+
+        for (byte x = 0; x < CHUNK_SIZE; x++)
+        {
+            for (byte y = 0; y < CHUNK_SIZE; y++)
+            {
+                for (byte z = 0; z < CHUNK_SIZE; z++)
+                {
+                    byte voxelId = chunkVoxels[x + CHUNK_SIZE * z + CHUNK_AREA * y];
+                    if (voxelId == 0)
+                        continue;
+
+                    // Top face
+                    if (isVoid(new Vector3i(x, y + 1, z), chunkVoxels))
+                    {
+                        packedVertex[] v =
+                        [
+                            new(x    , y + 1, z    , voxelId, 0),
+                            new(x + 1, y + 1, z    , voxelId, 0),
+                            new(x + 1, y + 1, z + 1, voxelId, 0),
+                            new(x    , y + 1, z + 1, voxelId, 0)
+                        ];
+                        index = addData(vertexData, index, [v[0], v[2], v[3], v[0], v[1], v[2]]);
+                    }
+
+                    // Bottom face
+                    if (isVoid(new Vector3i(x, y - 1, z), chunkVoxels))
+                    {
+                        packedVertex[] v =
+                        [
+                            new(x    , y, z    , voxelId, 1),
+                            new(x + 1, y, z    , voxelId, 1),
+                            new(x + 1, y, z + 1, voxelId, 1),
+                            new(x    , y, z + 1, voxelId, 1)
+                        ];
+                        index = addData(vertexData, index, [v[0], v[2], v[3], v[0], v[1], v[2]]);
+                    }
+
+                    // Right face
+                    if (isVoid(new Vector3i(x + 1, y, z), chunkVoxels))
+                    {
+                        packedVertex[] v =
+                        [
+                            new(x + 1, y    , z    , voxelId, 2),
+                            new(x + 1, y + 1, z    , voxelId, 2),
+                            new(x + 1, y + 1, z + 1, voxelId, 2),
+                            new(x + 1, y    , z + 1, voxelId, 2)
+                        ];
+                        index = addData(vertexData, index, [v[0], v[1], v[2], v[0], v[2], v[3]]);
+                    }
+
+                    // Left face
+                    if (isVoid(new Vector3i(x - 1, y, z), chunkVoxels))
+                    {
+                        packedVertex[] v =
+                        [
+                            new(x, y    , z    , voxelId, 3),
+                            new(x, y + 1, z    , voxelId, 3),
+                            new(x, y + 1, z + 1, voxelId, 3),
+                            new(x, y    , z + 1, voxelId, 3)
+                        ];
+                        index = addData(vertexData, index, [v[0], v[2], v[1], v[0], v[3], v[2]]);
+                    }
+
+                    // Back face
+                    if (isVoid(new Vector3i(x, y, z - 1), chunkVoxels))
+                    {
+                        packedVertex[] v =
+                        [
+                            new(x    , y    , z, voxelId, 4),
+                            new(x    , y + 1, z, voxelId, 4),
+                            new(x + 1, y + 1, z, voxelId, 4),
+                            new(x + 1, y    , z, voxelId, 4)
+                        ];
+                        index = addData(vertexData, index, [v[0], v[1], v[2], v[0], v[2], v[3]]);
+                    }
+
+                    // Front face
+                    if (isVoid(new Vector3i(x, y, z + 1), chunkVoxels))
+                    {
+                        packedVertex[] v =
+                        [
+                            new(x    , y    , z + 1, voxelId, 5),
+                            new(x    , y + 1, z + 1, voxelId, 5),
+                            new(x + 1, y + 1, z + 1, voxelId, 5),
+                            new(x + 1, y    , z + 1, voxelId, 5)
+                        ];
+                        index = addData(vertexData, index, [v[0], v[2], v[1], v[0], v[3], v[2]]);
+                    }
+                }
+            }
+        }
 
         //return vertexData.[:index + 1];
         return vertexData.Take(index + 1).ToArray();
