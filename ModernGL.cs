@@ -88,25 +88,22 @@ namespace ModernGL
                     int location = GL.GetUniformLocation(id, key);
                     GL.UseProgram(id);
 
-                    if (value is int ival)
+                    switch (value)
                     {
-                        GL.Uniform1(location, ival);
-                    }
-                    else if (value is float fval)
-                    {
-                        GL.Uniform1(location, fval);
-                    }
-                    else if (value is Vector3 v3val)
-                    {
-                        GL.Uniform3(location, v3val);
-                    }
-                    else if (value is Matrix4 m4val)
-                    {
-                        GL.UniformMatrix4(location, false, ref m4val);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"Type '{value.GetType()}' not supported.");
+                        case int ival:
+                            GL.Uniform1(location, ival);
+                            break;
+                        case float fval:
+                            GL.Uniform1(location, fval);
+                            break;
+                        case Vector3 v3val:
+                            GL.Uniform3(location, v3val);
+                            break;
+                        case Matrix4 m4val:
+                            GL.UniformMatrix4(location, false, ref m4val);
+                            break;
+                        default:
+                            throw new NotSupportedException($"Type '{value.GetType()}' not supported.");
                     }
                 }
             }
