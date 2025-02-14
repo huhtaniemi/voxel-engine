@@ -3,36 +3,24 @@ using System.Linq;
 
 public class ChunkMesh : BaseMesh
 {
-    private VoxelEngine app;
     private Chunk chunk;
-    private int formatSize;
 
-    public ChunkMesh(Chunk chunk) : base()
+    public ChunkMesh(Chunk chunk)
+        : base(ref chunk.app.ctx, ref chunk.app.shader_program.chunk, "3u1 1u1 1u1", ["in_position", "voxel_id", "face_id"])
     {
-        this.app = chunk.app;
         this.chunk = chunk;
-        this.program = app.shader_program.chunkProgram;
-
-        this.vboFormat = "1u4";
-        this.formatSize = vboFormat.Split(' ').Sum(fmt => int.Parse(fmt.Substring(0, 1)));
-        this.attrs = new[] { "packed_data" };
-        this.vao = GetVAO();
+        Rebuild();
     }
 
-    public void Rebuild()
+    protected override object GetVertexData()
     {
-        this.vao = GetVAO();
-    }
-
-    protected override float[] GetVertexData()
-    {
-        uint[] mesh = VoxelMeshBuilder.BuildChunkMesh(
+        byte[] mesh = VoxelMeshBuilder.BuildChunkMesh(
             chunk.voxels,
-            formatSize,
-            chunk.Position,
-            chunk.world.voxels
+            vbo_format_size//,
+            //chunk.Position,
+            //chunk.world.voxels
         );
-        return mesh.Select(v => (float)v).ToArray();
+        return mesh;
     }
 
 }
