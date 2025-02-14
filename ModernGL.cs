@@ -1,5 +1,5 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 
@@ -17,20 +17,21 @@ namespace ModernGL
         {
             public class Shader : IDisposable
             {
-                internal int id;
+                internal readonly int id;
+
+                public Shader(ShaderType type) =>
+                    this.id = GL.CreateShader(type);
 
                 public Shader(ShaderType type, string source)
+                    : this(type)
                 {
-                    id = GL.CreateShader(type);
                     GL.ShaderSource(id, source);
                     GL.CompileShader(id);
                     CheckShaderCompile(id);
                 }
 
-                public void Dispose()
-                {
+                public void Dispose() =>
                     GL.DeleteShader(id);
-                }
 
                 private void CheckShaderCompile(int shader)
                 {
@@ -45,10 +46,8 @@ namespace ModernGL
 
             internal readonly int id;
 
-            public Program()
-            {
+            public Program() =>
                 this.id = GL.CreateProgram();
-            }
 
             public Program(Shader[] shaders) : this()
             {
@@ -59,15 +58,11 @@ namespace ModernGL
                 link();
             }
 
-            public void Dispose()
-            {
+            public void Dispose() =>
                 GL.DeleteProgram(id);
-            }
 
-            internal void attach(Shader shader)
-            {
+            internal void attach(Shader shader) =>
                 GL.AttachShader(id, shader.id);
-            }
 
             internal void link()
             {
@@ -303,10 +298,9 @@ namespace ModernGL
                 && ptype != VertexAttribPointerType.Double;
             }
 
-            public Buffer()
-            {
+            public Buffer() =>
                 this.id = GL.GenBuffer();
-            }
+
             public Buffer(ref object data, bool dynamic = false) : this()
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, id);
@@ -365,14 +359,20 @@ namespace ModernGL
 
             private int vertices;
 
-            protected VertexArray(ref Program program)
-            {
-                this.program = program;
+            protected VertexArray() =>
                 this.id = GL.GenVertexArray();
+
+            protected VertexArray(ref Program program) : this() =>
+                this.program = program;
+
+            public VertexArray(ref Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
+                : this(ref program)
+            {
+                foreach (var item in content)
+                    bind_content(item);
             }
 
-            public VertexArray(ref Program program, (Buffer vbo, string vbo_format, string[] attrs) content)
-                : this(ref program)
+            private void bind_content((Buffer vbo, string vbo_format, string[] attrs) content)
             {
                 var vbo_tokens = new Buffer.BufferFormat(content.vbo_format, content.attrs);
                 this.vertices = content.vbo.length / vbo_tokens.stride;
@@ -392,16 +392,9 @@ namespace ModernGL
                 GL.BindVertexArray(0);
             }
 
-            public VertexArray(ref Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
-                : this(ref program, content[0])
-            {
-            }
 
-            public void Dispose()
-            {
+            public void Dispose() =>
                 GL.DeleteVertexArray(id);
-                //GL.DisableVertexAttribArray();??
-            }
 
             public void render(PrimitiveType mode = PrimitiveType.Triangles, int vertices = -1, int first = 0, int instances = -1)
             {
