@@ -354,19 +354,19 @@ namespace ModernGL
         /// </summary>
         public class VertexArray : IDisposable
         {
-            private readonly Program program;
             protected readonly int id;
+            private readonly int program_id;
 
             private int vertices;
 
             protected VertexArray() =>
                 this.id = GL.GenVertexArray();
 
-            protected VertexArray(ref Program program) : this() =>
-                this.program = program;
+            protected VertexArray(Program program) : this() =>
+                this.program_id = program.id;
 
-            public VertexArray(ref Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
-                : this(ref program)
+            public VertexArray(Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
+                : this(program)
             {
                 foreach (var item in content)
                     bind_content(item);
@@ -383,7 +383,7 @@ namespace ModernGL
                 foreach (var token in vbo_tokens)
                 {
                     // https://stackoverflow.com/a/39684775/1820584
-                    var index = GL.GetAttribLocation(program.id, token.attr);
+                    var index = GL.GetAttribLocation(program_id, token.attr);
                     GL.EnableVertexAttribArray(index);
                     GL.VertexAttribPointer(index, token.count, content.vbo.ptype,
                         content.vbo.normalized, vbo_tokens.stride, offset);
@@ -398,7 +398,7 @@ namespace ModernGL
 
             public void render(PrimitiveType mode = PrimitiveType.Triangles, int vertices = -1, int first = 0, int instances = -1)
             {
-                GL.UseProgram(program.id);
+                GL.UseProgram(program_id);
                 GL.BindVertexArray(id);
                 if (instances == -1)
                     // Specifies the number of indices to be rendered. (6 in water example)
@@ -443,9 +443,9 @@ namespace ModernGL
         /// any number of attribute names.Attribute names are defined by the user in
         /// the Vertex Shader program stage.
         /// The default mode is TRIANGLES.
-        public VertexArray vertex_array(ref Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
+        public VertexArray vertex_array(Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
         {
-            return new VertexArray(ref program, content, skip_errors);
+            return new VertexArray(program, content, skip_errors);
         }
 
     };

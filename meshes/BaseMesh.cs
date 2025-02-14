@@ -36,7 +36,7 @@ public abstract class BaseMesh
         var vertex_data = GetVertexData();
         using var vbo = ctx.buffer(ref vertex_data);
         var vao = ctx.vertex_array(
-            ref program, [(vbo, this.vbo_format, this.attrs)], true
+            program, [(vbo, this.vbo_format, this.attrs)], true
         );
         //vao = self.ctx.vertex_array(
         //   self.program, [(vbo, self.vbo_format, *self.attrs)], skip_errors = True
