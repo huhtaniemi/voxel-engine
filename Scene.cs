@@ -8,7 +8,8 @@ public class Scene
     //private Water water;
     //private Clouds clouds;
 
-    private QuadMesh quad;
+    //private QuadMesh quad; // demo
+    private Chunk chunk; // demo2
 
     public Scene(VoxelEngine app)
     {
@@ -17,7 +18,8 @@ public class Scene
         //this.water = new Water(app);
         //this.clouds = new Clouds(app);
 
-        this.quad = new QuadMesh(app);
+        //this.quad = new QuadMesh(app); // demo
+        this.chunk = new Chunk(app); // demo2
     }
 
     public void Update()
@@ -33,14 +35,15 @@ public class Scene
         //this.world.Render();
 
         // Rendering without cull face
-        GL.Disable(EnableCap.CullFace);
+        //GL.Disable(EnableCap.CullFace);
         //this.clouds.Render();
         //this.water.Render();
-        GL.Enable(EnableCap.CullFace);
+        //GL.Enable(EnableCap.CullFace);
 
         // Voxel selection
         //this.voxelMarker.Render();
 
-        this.quad.Render();
+        //this.quad.Render(); // demo
+        this.chunk.Render(); // demo2
     }
 }
