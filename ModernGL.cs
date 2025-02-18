@@ -283,6 +283,44 @@ namespace ModernGL
                         this.attr = attr;
                     }
 
+                    public VertexAttribPointerType ptype
+                    {
+                        get {
+                            return type switch
+                            {
+                                ElementType.f => size switch
+                                {
+                                    1 => VertexAttribPointerType.Float,
+                                    2 => VertexAttribPointerType.HalfFloat,
+                                    4 => VertexAttribPointerType.Float,
+                                    8 => VertexAttribPointerType.Double,
+                                    _ => VertexAttribPointerType.Float
+                                },
+                                ElementType.i => size switch
+                                {
+                                    1 => VertexAttribPointerType.Byte,
+                                    2 => VertexAttribPointerType.Short,
+                                    _ => VertexAttribPointerType.Int
+                                },
+                                ElementType.u => size switch
+                                {
+                                    1 => VertexAttribPointerType.UnsignedByte,
+                                    2 => VertexAttribPointerType.UnsignedShort,
+                                    _ => VertexAttribPointerType.UnsignedInt
+                                },
+                                ElementType.x => size switch
+                                {
+                                    1 => VertexAttribPointerType.Byte,
+                                    2 => VertexAttribPointerType.Short,
+                                    4 => VertexAttribPointerType.Float,
+                                    8 => VertexAttribPointerType.Double,
+                                    _ => VertexAttribPointerType.Byte
+                                },
+                                _ => VertexAttribPointerType.Float
+                            };
+                        }
+                    }
+
                     public bool normalized
                     {
                         get => type == ElementType.f && size == 1; // vbo_format is "[n]f[1]"
@@ -368,7 +406,6 @@ namespace ModernGL
 
             internal readonly int id;
             // always count of bytes in the buffer
-            public VertexAttribPointerType ptype;
             public int length;
 
             public Buffer() =>
@@ -383,22 +420,18 @@ namespace ModernGL
                 {
                     case byte[] byteData:
                         length *= sizeof(byte);
-                        ptype = VertexAttribPointerType.UnsignedByte;
                         GL.BufferData(BufferTarget.ArrayBuffer, length, byteData, DrawType);
                         break;
                     case int[] integerData:
                         length *= sizeof(int);
-                        ptype = VertexAttribPointerType.Int;
                         GL.BufferData(BufferTarget.ArrayBuffer, length, integerData, DrawType);
                         break;
                     case float[] floatData:
                         length *= sizeof(float);
-                        ptype = VertexAttribPointerType.Float;
                         GL.BufferData(BufferTarget.ArrayBuffer, length, floatData, DrawType);
                         break;
                     case double[] doubleData:
                         length *= sizeof(double);
-                        ptype = VertexAttribPointerType.Double;
                         GL.BufferData(BufferTarget.ArrayBuffer, length, doubleData, DrawType);
                         break;
                     default:
@@ -461,15 +494,15 @@ namespace ModernGL
                 var vbo_tokens = new Buffer.BufferFormat(content.vbo_format, content.attrs);
                 this.vertices = content.vbo.length / vbo_tokens.stride;
 
-                var offset = 0;
                 GL.BindVertexArray(id);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, content.vbo.id);
+                var offset = 0;
                 foreach (var token in vbo_tokens)
                 {
                     // https://stackoverflow.com/a/39684775/1820584
                     var index = GL.GetAttribLocation(program_id, token.attr);
                     GL.EnableVertexAttribArray(index);
-                    GL.VertexAttribPointer(index, token.count, content.vbo.ptype,
+                    GL.VertexAttribPointer(index, token.count, token.ptype,
                         token.normalized, vbo_tokens.stride, offset);
                     GL.VertexAttribDivisor(location, vbo_tokens.divisor);
                     offset += token.size * token.count;
