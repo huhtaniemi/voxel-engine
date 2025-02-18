@@ -474,7 +474,8 @@ namespace ModernGL
             protected readonly int id;
             private readonly int program_id;
 
-            private int vertices;
+            private int num_vertices;
+            private int num_instances;
 
             protected VertexArray() =>
                 this.id = GL.GenVertexArray();
@@ -485,29 +486,46 @@ namespace ModernGL
             public VertexArray(Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
                 : this(program)
             {
+                GL.BindVertexArray(id);
                 foreach (var item in content)
                     bind_content(item);
+                GL.BindVertexArray(0);
             }
 
             private void bind_content((Buffer vbo, string vbo_format, string[] attrs) content)
             {
                 var vbo_tokens = new Buffer.BufferFormat(content.vbo_format, content.attrs);
-                this.vertices = content.vbo.length / vbo_tokens.stride;
 
-                GL.BindVertexArray(id);
+                this.num_vertices = content.vbo.length / vbo_tokens.stride;
+                this.num_instances = 1;
+
                 GL.BindBuffer(BufferTarget.ArrayBuffer, content.vbo.id);
+
                 var offset = 0;
                 foreach (var token in vbo_tokens)
                 {
+                    if (token.type == Buffer.BufferFormat.ElementToken.ElementType.x)
+                    {
+                        offset += token.size;
+                        continue;
+                    }
+
                     // https://stackoverflow.com/a/39684775/1820584
-                    var index = GL.GetAttribLocation(program_id, token.attr);
-                    GL.EnableVertexAttribArray(index);
-                    GL.VertexAttribPointer(index, token.count, token.ptype,
+                    var location = GL.GetAttribLocation(program_id, token.attr);
+                    if (location == -1)
+                    {
+                        offset += token.size;
+                        continue;
+                        //if (skip_errors)
+                    }
+
+                    GL.VertexAttribPointer(location, token.count, token.ptype,
                         token.normalized, vbo_tokens.stride, offset);
                     GL.VertexAttribDivisor(location, vbo_tokens.divisor);
+                    GL.EnableVertexAttribArray(location);
+
                     offset += token.size * token.count;
                 }
-                GL.BindVertexArray(0);
             }
 
 
@@ -518,13 +536,17 @@ namespace ModernGL
             {
                 GL.UseProgram(program_id);
                 GL.BindVertexArray(id);
-                if (instances == -1)
-                    // Specifies the number of indices to be rendered. (6 in water example)
-                    GL.DrawArrays(mode, first, vertices == -1 ? this.vertices : vertices);
-                else
-                    GL.DrawArraysInstanced(mode, first, vertices == -1 ? this.vertices : vertices, instances);
-                GL.BindVertexArray(0);
-                //GL.UseProgram(0);
+
+                if (vertices < 0)
+                    vertices = this.num_vertices;
+                if (instances < 0)
+                    instances = this.num_instances;
+
+                //if (self->index_buffer != None)
+                //    GL.DrawElementsInstanced(mode, vertices, self->index_element_type, ptr, instances);
+                //else
+                //GL.DrawArrays(mode, 0, vertices);
+                GL.DrawArraysInstanced(mode, first, vertices, instances);
             }
         }
 
