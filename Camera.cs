@@ -43,8 +43,15 @@ public class Camera
 
     private void UpdateVectors()
     {
+        // the front matrix is calculated
         Forward = (MathF.Cos(Yaw) * MathF.Cos(Pitch), MathF.Sin(Pitch), MathF.Sin(Yaw) * MathF.Cos(Pitch));
+
+        // We need to make sure the vectors are all normalized, as otherwise we would get some funky results.
         Forward = Vector3.Normalize(Forward);
+
+        // Calculate both the right and the up vector using cross product.
+        // Note that we are calculating the right from the global up; this behaviour might
+        // not be what you need for all cameras so keep this in mind if you do not want a FPS camera.
         Right = Vector3.Normalize(Vector3.Cross(Forward, Vector3.UnitY));
         Up = Vector3.Normalize(Vector3.Cross(Right, Forward));
     }
