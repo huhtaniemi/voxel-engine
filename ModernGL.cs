@@ -96,6 +96,7 @@ namespace ModernGL
                         var key = GL.GetActiveUniform(id, i, out int size, out ActiveUniformType type);
                         var location = GL.GetUniformLocation(id, key);
                         _uniforms[key] = new(i, location, size, type);
+                        Console.WriteLine($"uniform on program {id} location {location} type {type} - '{key}' " + "error:" + GL.GetError());
                     }
                 }
                 finally
@@ -437,6 +438,7 @@ namespace ModernGL
                     default:
                         throw new NotSupportedException($"Type '{data.GetType()}' not supported.");
                 }
+                Console.WriteLine($"buffer id {id} length {length} type '{data.GetType()}' error:" + GL.GetError());
             }
             public Buffer(int reserve = 0, bool dynamic = false) : this()
             {
@@ -572,20 +574,24 @@ namespace ModernGL
                 {
                     if (token.type == Buffer.BufferFormat.ElementToken.ElementType.x)
                     {
+                        Console.WriteLine($"padding bytes vbo {content.vbo.id} token '{token}' stride {vbo_tokens.stride} offset {offset}  ");
                         offset += token.size;
                         continue;
                     }
 
                     // https://stackoverflow.com/a/39684775/1820584
                     var location = GL.GetAttribLocation(program_id, token.attr);
+                    Console.Write($"attrib-ptr '{token.attr}' location {location}  ");
                     if (location == -1)
                     {
+                        Console.WriteLine("error:" + GL.GetError());
                         offset += token.size;
                         continue;
                         //if (skip_errors)
                     }
 
                     GL.GetActiveAttrib(program_id, location, out int size, out ActiveAttribType type);
+                    Console.Write($"size {size} type '{type}'  vbo {content.vbo.id} token '{token}' stride {vbo_tokens.stride} offset {offset}  " );
 
                     if (IsFloatType(type))
                     {
@@ -599,6 +605,8 @@ namespace ModernGL
                     {
                         GL.VertexAttribLPointer(location, token.count, (VertexAttribDoubleType)token.ptype, vbo_tokens.stride, offset);
                     }
+
+                    Console.WriteLine("error:" + GL.GetError());
 
                     GL.VertexAttribDivisor(location, vbo_tokens.divisor);
                     GL.EnableVertexAttribArray(location);
