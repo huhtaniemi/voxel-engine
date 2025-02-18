@@ -1,10 +1,8 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using System.Diagnostics;
-using ModernGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using OpenTK.Graphics.OpenGL4;
+using ModernGL;
 
 public class MovingAverage
 {
@@ -40,14 +38,10 @@ public class VoxelEngine : GameWindow
     public VoxelEngine(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
     {
-        GL.ClearColor(Color4.CornflowerBlue);
-        GL.Enable(EnableCap.DepthTest);
-        GL.Enable(EnableCap.CullFace);
-        GL.Enable(EnableCap.Blend);
-
-        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         this.ctx = moderngl.create_context();
+        this.ctx.enable();// ctx.DepthTest | ctx.CullFace | ctx.Blend);
+        this.ctx.set_clearcolor(System.Drawing.Color.CornflowerBlue);
 
         //textures = new Textures(this);
         player = new Player(this, Settings.PLAYER_POS);
@@ -93,9 +87,6 @@ public class VoxelEngine : GameWindow
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
-
-        // move to somewere else. moderngl?
-        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         // render vertex data
         scene.Render();

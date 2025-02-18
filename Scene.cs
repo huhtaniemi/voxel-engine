@@ -31,6 +31,8 @@ public class Scene
 
     public void Render()
     {
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
         // Chunks rendering
         //this.world.Render();
 

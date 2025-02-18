@@ -445,6 +445,18 @@ namespace ModernGL
             return new VertexArray(program, content, skip_errors);
         }
 
+        public void enable()
+        {
+            GL.Enable(EnableCap.DepthTest);
+            //GL.Enable(EnableCap.CullFace);
+            //GL.Enable(EnableCap.Blend);
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        }
+
+        internal void set_clearcolor(System.Drawing.Color color)
+        {
+            GL.ClearColor(color);// Color4.CornflowerBlue);
+        }
     };
 
 
