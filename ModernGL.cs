@@ -8,8 +8,26 @@ namespace ModernGL
     /// <summary>
     /// Modern OpenGL context
     /// </summary>
-    public class glContext
+    public class glContext : IDisposable
     {
+        private bool _disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                //GL.DeleteProgram(Handle);
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
         /// <summary>
         /// shader program
         /// </summary>
@@ -108,6 +126,16 @@ namespace ModernGL
                 }
             }
         }
+
+        public Program program(string vertex_shader, string fragment_shader)
+        {
+            using (Program.Shader vertex = new(ShaderType.VertexShader, vertex_shader))
+            using (Program.Shader fragment = new(ShaderType.FragmentShader, fragment_shader))
+            {
+                return new Program([vertex, fragment]);
+            }
+        }
+
 
         /// <summary>
         /// A buffer format is a short string describing the layout of data in a vertex buffer object (VBO).
@@ -344,6 +372,17 @@ namespace ModernGL
         }
 
         /// <summary>
+        /// Returns a new Buffer object.
+        /// The data can be anything supporting the buffer interface.
+        /// The data and reserve parameters are mutually exclusive.
+        /// </summary>
+        public Buffer buffer(ref object data, bool dynamic = false)
+        {
+            return new Buffer(ref data, dynamic);
+        }
+
+
+        /// <summary>
         /// A VertexArray object is an OpenGL object that stores all of the state needed to supply vertex data.
         /// It stores the format of the vertex data as well as the Buffer objects providing the vertex data arrays.
         /// In ModernGL, the VertexArray object also stores a reference for a Program object.
@@ -407,32 +446,6 @@ namespace ModernGL
             }
         }
 
-
-        public Program program(string vertex_shader, string fragment_shader)
-        {
-            //return = new Program([
-            //    new (ShaderType.VertexShader, vertex_shader),
-            //    new (ShaderType.FragmentShader, fragment_shader),
-            //]);
-
-            using (Program.Shader vertex = new(ShaderType.VertexShader, vertex_shader))
-            using (Program.Shader fragment = new(ShaderType.FragmentShader, fragment_shader))
-            {
-                return new Program([vertex, fragment]);
-            }
-        }
-
-        /// <summary>
-        /// Returns a new Buffer object.
-        /// The data can be anything supporting the buffer interface.
-        /// The data and reserve parameters are mutually exclusive.
-        /// </summary>
-        public Buffer buffer(ref object data, bool dynamic = false)
-        {
-            return new Buffer(ref data, dynamic);
-        }
-
-
         /// <summary>
         /// Returns a new VertexArray object.
         /// A VertexArray describes how buffers are read by a shader program.
@@ -444,6 +457,7 @@ namespace ModernGL
         {
             return new VertexArray(program, content, skip_errors);
         }
+
 
         public void enable()
         {
