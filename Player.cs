@@ -42,13 +42,13 @@ public class Player : Camera
     */
 
     // hack: for RDP connection mouse-delta fix
-    static Vector2 pos = new Vector2(0, 0);
+    static Vector2 _lastpos = new(0, 0);
 
     private void MouseControl(MouseState mouseState)
     {
         if (mouseState.Delta != Vector2.Zero)
         {
-            var (mouse_dx, mouse_dy) = mouseState.Delta - pos;
+            var (mouse_dx, mouse_dy) = mouseState.Delta - _lastpos;
             if (mouse_dx != 0)
                 RotateYaw(mouse_dx * Settings.MOUSE_SENSITIVITY);
             if (mouse_dy != 0)
@@ -59,7 +59,7 @@ public class Player : Camera
                 //Console.WriteLine("mouse delta {0}", mouseState.Delta);
                 //Console.WriteLine("mouse delta own {0}", mouseState.Delta - pos);
             }
-            pos = mouseState.Delta;
+            _lastpos = mouseState.Delta;
         }
     }
 
