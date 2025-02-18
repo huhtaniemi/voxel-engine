@@ -219,8 +219,6 @@ namespace ModernGL
                     internal readonly int count; // = 1;
                     internal readonly string? attr;
 
-                    internal readonly int offset;
-
                     // parse a token: [count]type[size]
                     public ElementToken(string tokenstr, string attr) : this()
                     {
@@ -258,46 +256,36 @@ namespace ModernGL
                         }
                         // Default sizes: numeric types default to 4; padding (x) defaults to 1.
                         if (this.size == 0)
-                        {
                             this.size = (this.type == ElementType.x) ? 1 : 4;
-                        }
 
                         // Validate the size for the given type using the allowed combinations.
 
                         var validSize = this.type switch
                         {
+                            // valid: 1 (unsigned byte normalized), 2 (half float), 4 (float), 8 (double)
                             ElementType.f => (size == 1 || size == 2 || size == 4 || size == 8),
+
+                            // valid: 1 (byte), 2 (short), 4 (int)
                             ElementType.i => (size == 1 || size == 2 || size == 4),
+
+                            // valid: 1 (unsigned byte), 2 (unsigned short), 4 (unsigned int)
                             ElementType.u => (size == 1 || size == 2 || size == 4),
+
+                            // valid: 1, 2, 4, 8 (padding bytes)
                             ElementType.x => (size == 1 || size == 2 || size == 4 || size == 8),
+
                             _ => throw new Exception($"Unknown type specifier: {this.type}"),
                         };
 
-                        //bool validSize = false;
-                        //switch (this.type)
-                        //{
-                        //    case ElementType.f:
-                        //        // Valid sizes: 1 (unsigned byte normalized), 2 (half float), 4 (float), 8 (double)
-                        //        validSize = (size == 1 || size == 2 || size == 4 || size == 8);
-                        //        break;
-                        //    case ElementType.i:
-                        //        // Valid sizes: 1 (byte), 2 (short), 4 (int)
-                        //        validSize = (size == 1 || size == 2 || size == 4);
-                        //        break;
-                        //    case ElementType.u:
-                        //        // Valid sizes: 1 (unsigned byte), 2 (unsigned short), 4 (unsigned int)
-                        //        validSize = (size == 1 || size == 2 || size == 4);
-                        //        break;
-                        //    case ElementType.x:
-                        //        // Valid sizes: 1, 2, 4, 8 (padding bytes)
-                        //        validSize = (size == 1 || size == 2 || size == 4 || size == 8);
-                        //        break;
-                        //}
                         if (!validSize)
                             throw new Exception($"Invalid size {this.size} for type '{this.type}' in token '{tokenstr}'.");
 
                         this.attr = attr;
-                        this.offset = 0; // TODO: calculate offset
+                    }
+
+                    public bool normalized
+                    {
+                        get => type == ElementType.f && size == 1; // vbo_format is "[n]f[1]"
                     }
 
                     public override string ToString()
@@ -314,6 +302,8 @@ namespace ModernGL
                     render     // /r
                 }
                 public BufferUsage usage { get; private set; } = BufferUsage.vertex;
+
+                internal readonly int divisor; // = 0?;
 
                 // specifies the byte offset between consecutive vertex attributes.
                 // is the total size in bytes of a single vertex entry.
@@ -347,6 +337,14 @@ namespace ModernGL
                             };
                         }
                         else this.tokens.Add(new ElementToken(elementfmt, attrs[attrpos++]));
+
+                        this.divisor = this.usage switch
+                        {
+                            BufferUsage.vertex => 0,
+                            BufferUsage.instance => 1,
+                            BufferUsage.render => 0x7fffffff,
+                            _ => throw new Exception($"Unknown usage specifier: {this.usage}"),
+                        };
                     }
 
                     stride = tokens.Sum(t => t.size * t.count);
@@ -368,20 +366,15 @@ namespace ModernGL
                 public IEnumerator<ElementToken> GetEnumerator() => tokens.GetEnumerator();
             }
 
-
             internal readonly int id;
-
+            // always count of bytes in the buffer
             public VertexAttribPointerType ptype;
             public int length;
-            public bool normalized { get
-                => ptype != VertexAttribPointerType.Float
-                && ptype != VertexAttribPointerType.Double;
-            }
 
             public Buffer() =>
                 this.id = GL.GenBuffer();
 
-            public Buffer(ref object data, bool dynamic = false) : this()
+            public Buffer(object data, bool dynamic = false) : this()
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, id);
                 var DrawType = dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
@@ -431,9 +424,9 @@ namespace ModernGL
         /// The data can be anything supporting the buffer interface.
         /// The data and reserve parameters are mutually exclusive.
         /// </summary>
-        public Buffer buffer(ref object data, bool dynamic = false)
+        public Buffer buffer(object data, bool dynamic = false)
         {
-            return new Buffer(ref data, dynamic);
+            return new Buffer(data, dynamic);
         }
 
 
@@ -477,7 +470,8 @@ namespace ModernGL
                     var index = GL.GetAttribLocation(program_id, token.attr);
                     GL.EnableVertexAttribArray(index);
                     GL.VertexAttribPointer(index, token.count, content.vbo.ptype,
-                        content.vbo.normalized, vbo_tokens.stride, offset);
+                        token.normalized, vbo_tokens.stride, offset);
+                    GL.VertexAttribDivisor(location, vbo_tokens.divisor);
                     offset += token.size * token.count;
                 }
                 GL.BindVertexArray(0);
