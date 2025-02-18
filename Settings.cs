@@ -19,7 +19,7 @@ public static class Settings
     public const int MAX_RAY_DIST = 6;
 
     // Chunk
-    public const int CHUNK_SIZE = 48;
+    public const int CHUNK_SIZE = 12;
     public const int H_CHUNK_SIZE = CHUNK_SIZE / 2;
     public const int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
     public const int CHUNK_VOL = CHUNK_AREA * CHUNK_SIZE;
@@ -46,10 +46,10 @@ public static class Settings
     public static readonly float PITCH_MAX = MathHelper.DegreesToRadians(89);
 
     // Player
-    public const float PLAYER_SPEED = 0.005f;
+    public const float PLAYER_SPEED = 0.05f;
     public const float PLAYER_ROT_SPEED = 0.003f;
     //public static readonly Vector3 PLAYER_POS = new(CENTER_XZ, CHUNK_SIZE, CENTER_XZ);
-    public static readonly Vector3 PLAYER_POS = new(0, 0, 1);
+    public static readonly Vector3 PLAYER_POS = new(H_CHUNK_SIZE, CHUNK_SIZE, 1.5f * CHUNK_SIZE);
     public const float MOUSE_SENSITIVITY = 0.002f;
 
     // Colors

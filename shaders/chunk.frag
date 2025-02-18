@@ -22,5 +22,4 @@ void main() {
     fragColor = vec4(tex_col, 1);
 */
     fragColor = vec4(voxel_color,1);
-    //fragColor = vec4(128);
 }

@@ -123,7 +123,7 @@ public static class VoxelMeshBuilder
     {
         (var x, var y, var z) = voxelPos;
         if ((x is >= 0 and < CHUNK_SIZE) && (y is >= 0 and < CHUNK_SIZE) && (z is >= 0 and < CHUNK_SIZE))
-            return chunkVoxels[x + WORLD_W * z + WORLD_AREA * y] == 0;
+            return chunkVoxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] == 0;
         return true;
     }
 
@@ -326,7 +326,7 @@ public static class VoxelMeshBuilder
     */
 
 
-    public static byte[] BuildChunkMesh(byte[] chunkVoxels, int formatSize/*,Vector3i chunkPos, byte[,,] worldVoxels*/)
+    public static object BuildChunkMesh(byte[] chunkVoxels, int formatSize/*,Vector3i chunkPos, byte[,,] worldVoxels*/)
     {
         byte[] vertexData = new byte[CHUNK_VOL * 18 * formatSize * sizeof(byte)]; // asuming bytesize for vbo_data
         int index = 0;
@@ -342,7 +342,7 @@ public static class VoxelMeshBuilder
                         continue;
 
                     // Top face
-                    if (isVoid(new Vector3i(x, y + 1, z), chunkVoxels))
+                    if (isVoid((x, y + 1, z), chunkVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -351,11 +351,11 @@ public static class VoxelMeshBuilder
                             new(x + 1, y + 1, z + 1, voxelId, 0),
                             new(x    , y + 1, z + 1, voxelId, 0)
                         ];
-                        index = addData(vertexData, index, [v[0], v[2], v[3], v[0], v[1], v[2]]);
+                        index = addData(vertexData, index, [v[0], v[3], v[2], v[0], v[2], v[1]]);
                     }
 
                     // Bottom face
-                    if (isVoid(new Vector3i(x, y - 1, z), chunkVoxels))
+                    if (isVoid((x, y - 1, z), chunkVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -368,7 +368,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Right face
-                    if (isVoid(new Vector3i(x + 1, y, z), chunkVoxels))
+                    if (isVoid((x + 1, y, z), chunkVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -381,7 +381,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Left face
-                    if (isVoid(new Vector3i(x - 1, y, z), chunkVoxels))
+                    if (isVoid((x - 1, y, z), chunkVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -394,7 +394,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Back face
-                    if (isVoid(new Vector3i(x, y, z - 1), chunkVoxels))
+                    if (isVoid((x, y, z - 1), chunkVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -407,7 +407,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Front face
-                    if (isVoid(new Vector3i(x, y, z + 1), chunkVoxels))
+                    if (isVoid((x, y, z + 1), chunkVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -422,8 +422,7 @@ public static class VoxelMeshBuilder
             }
         }
 
-        //return vertexData.[:index + 1];
-        return vertexData.Take(index + 1).ToArray();
+        return vertexData.Take(index).ToArray();
     }
 
 }

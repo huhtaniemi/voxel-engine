@@ -14,7 +14,7 @@ public class ChunkMesh : BaseMesh
 
     protected override object GetVertexData()
     {
-        byte[] mesh = VoxelMeshBuilder.BuildChunkMesh(
+        object mesh = VoxelMeshBuilder.BuildChunkMesh(
             chunk.voxels,
             vbo_format_size//,
             //chunk.Position,

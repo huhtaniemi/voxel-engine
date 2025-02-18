@@ -104,7 +104,7 @@ public class Chunk
                 {
                     // todo: noise
                     voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] =
-                        1;
+                        (byte)(x + y + z);
                 }
             }
         }
