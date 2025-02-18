@@ -471,8 +471,15 @@ namespace ModernGL
             if (instance == null)
             {
                 instance = new glContext();
+                GL.Enable(EnableCap.DebugOutput);
+                GL.DebugMessageCallback(DebugCallback, IntPtr.Zero);
             }
             return instance;
+        }
+        private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            var messageString = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message, length);
+            Console.WriteLine($"OpenGL Debug:\n{messageString}");
         }
     }
 }

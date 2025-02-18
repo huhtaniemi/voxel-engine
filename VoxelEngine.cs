@@ -93,7 +93,12 @@ public class VoxelEngine : GameWindow
 
         SwapBuffers();
     }
+    protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
+    {
+        base.OnFramebufferResize(e);
 
+        GL.Viewport(0, 0, e.Width, e.Height);
+    }
 
     protected override void OnUnload()
     {
@@ -110,7 +115,7 @@ public class VoxelEngine : GameWindow
             API = ContextAPI.OpenGL,
             APIVersion = new Version(3, 3),
             Profile = ContextProfile.Core,
-            Flags = ContextFlags.ForwardCompatible,
+            Flags = ContextFlags.ForwardCompatible | ContextFlags.Debug,
             DepthBits = Settings.DEPTH_SIZE
         };
 
