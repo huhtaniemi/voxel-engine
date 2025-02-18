@@ -20,8 +20,6 @@ public abstract class BaseMesh
     {
         this.ctx = ctx;
         this.program = program;
-        //this.vbo = null;
-        //this.vao = null;
         this.vbo_format = vbo_format;
         // todo: 'size' is ignored, assumed byte
         this.vbo_format_size = vbo_format.Split(' ').Sum(fmt => int.Parse(fmt[..1]));
@@ -40,9 +38,6 @@ public abstract class BaseMesh
         var vao = ctx.vertex_array(
             program, [(vbo, this.vbo_format, this.attrs)], true
         );
-        //vao = self.ctx.vertex_array(
-        //   self.program, [(vbo, self.vbo_format, *self.attrs)], skip_errors = True
-        //)
         return vao;
     }
 
