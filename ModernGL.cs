@@ -71,13 +71,19 @@ namespace ModernGL
             public Program() =>
                 this.id = GL.CreateProgram();
 
-            public Program(Shader[] shaders) : this()
+            public Program(List<Shader> shaders) : this()
             {
-                foreach (var shader in shaders)
+                try
                 {
-                    shader.attach(this);
+                    foreach (var shader in shaders)
+                        shader.attach(this);
+
+                    link();
                 }
-                link();
+                finally
+                {
+                    shaders.ForEach(s => s.Dispose());
+                }
             }
 
             public void Dispose() =>
@@ -125,11 +131,10 @@ namespace ModernGL
 
         public Program program(string vertex_shader, string fragment_shader)
         {
-            using (Program.Shader vertex = new(ShaderType.VertexShader, vertex_shader))
-            using (Program.Shader fragment = new(ShaderType.FragmentShader, fragment_shader))
-            {
-                return new Program([vertex, fragment]);
-            }
+            return new Program([
+                new(ShaderType.VertexShader, vertex_shader),
+                new(ShaderType.FragmentShader, fragment_shader)
+            ]);
         }
 
 
