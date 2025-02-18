@@ -67,6 +67,16 @@ namespace ModernGL
             }
 
             internal readonly int id;
+            internal record struct UniformInfo
+            {
+                public UniformInfo(int i, int location, int size, ActiveUniformType type) =>
+                    (index, this.location, this.size, this.type) = (i, location, size, type);
+                public int index { get; }
+                public int location { get; }
+                public int size { get; }
+                public ActiveUniformType type { get; }
+            }
+            internal readonly Dictionary<string, UniformInfo> _uniforms = [];
 
             public Program() =>
                 this.id = GL.CreateProgram();
@@ -79,6 +89,14 @@ namespace ModernGL
                         shader.attach(this);
 
                     link();
+
+                    GL.GetProgram(id, GetProgramParameterName.ActiveUniforms, out var uniformsCount);
+                    for (var i = 0; i < uniformsCount; i++)
+                    {
+                        var key = GL.GetActiveUniform(id, i, out int size, out ActiveUniformType type);
+                        var location = GL.GetUniformLocation(id, key);
+                        _uniforms[key] = new(i, location, size, type);
+                    }
                 }
                 finally
                 {
@@ -100,30 +118,66 @@ namespace ModernGL
                 }
             }
 
-            /// Sets the uniform values for the shader programs.
             public object this[string key]
             {
                 set
                 {
-                    int location = GL.GetUniformLocation(id, key);
+                    var info = _uniforms[key];
                     GL.UseProgram(id);
-
                     switch (value)
                     {
                         case int ival:
-                            GL.Uniform1(location, ival);
+                            GL.Uniform1(info.location, ival);
                             break;
                         case float fval:
-                            GL.Uniform1(location, fval);
+                            GL.Uniform1(info.location, fval);
+                            break;
+                        case Vector3i iv3val:
+                            GL.Uniform3(info.location, iv3val);
                             break;
                         case Vector3 v3val:
-                            GL.Uniform3(location, v3val);
+                            GL.Uniform3(info.location, v3val);
                             break;
                         case Matrix4 m4val:
-                            GL.UniformMatrix4(location, false, ref m4val);
+                            GL.UniformMatrix4(info.location, false, ref m4val);
                             break;
                         default:
                             throw new NotSupportedException($"Type '{value.GetType()}' not supported.");
+                    }
+                }
+                get
+                {
+                    var info = _uniforms[key];
+                    //Console.WriteLine($"Uniform '{key}' size: {info.size}, type: {info.type}");
+                    switch (info.type)
+                    {
+                        case ActiveUniformType.Int:
+                            int[] ival = new int[info.size];
+                            GL.GetUniform(id, info.location, ival);
+                            return info.size == 1 ? ival[0] : ival;
+
+                        case ActiveUniformType.Float:
+                            float[] fval = new float[info.size];
+                            GL.GetUniform(id, info.location, fval);
+                            return info.size == 1 ? fval[0] : fval;
+
+                        case ActiveUniformType.IntVec3:
+                            Vector3i[] iv3val = new Vector3i[1];
+                            GL.GetUniform(id, info.location, out iv3val[0].X);
+                            return info.size == 1 ? iv3val[0] : iv3val;
+
+                        case ActiveUniformType.FloatVec3:
+                            Vector3[] v3val = new Vector3[info.size];
+                            GL.GetUniform(id, info.location, out v3val[0].X);
+                            return info.size == 1 ? v3val[0] : v3val;
+
+                        case ActiveUniformType.FloatMat4:
+                            Matrix4[] m4val = new Matrix4[info.size];
+                            GL.GetUniform(id, info.location, out m4val[0].Row0.X);
+                            return info.size == 1 ? m4val[0] : m4val;
+
+                        default:
+                            throw new NotSupportedException($"Type '{info.type}' not supported.");
                     }
                 }
             }
