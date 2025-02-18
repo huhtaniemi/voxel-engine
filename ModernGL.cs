@@ -492,6 +492,72 @@ namespace ModernGL
                 GL.BindVertexArray(0);
             }
 
+            private static bool IsFloatType(ActiveAttribType type)
+            {
+                return type switch
+                {
+                    ActiveAttribType.Float or
+                    ActiveAttribType.FloatVec2 or
+                    ActiveAttribType.FloatVec3 or
+                    ActiveAttribType.FloatVec4 or
+                    ActiveAttribType.FloatMat2 or
+                    ActiveAttribType.FloatMat3 or
+                    ActiveAttribType.FloatMat4 or
+                    ActiveAttribType.FloatMat2x3 or
+                    ActiveAttribType.FloatMat2x4 or
+                    ActiveAttribType.FloatMat3x2 or
+                    ActiveAttribType.FloatMat3x4 or
+                    ActiveAttribType.FloatMat4x2 or
+                    ActiveAttribType.FloatMat4x3 => true,
+                    _ => false
+                };
+            }
+
+            private static bool IsDoubleType(ActiveAttribType type)
+            {
+                return type switch
+                {
+                    ActiveAttribType.Double or
+                    ActiveAttribType.DoubleVec2 or
+                    ActiveAttribType.DoubleVec3 or
+                    ActiveAttribType.DoubleVec4 or
+                    ActiveAttribType.DoubleMat2 or
+                    ActiveAttribType.DoubleMat3 or
+                    ActiveAttribType.DoubleMat4 or
+                    ActiveAttribType.DoubleMat2x3 or
+                    ActiveAttribType.DoubleMat2x4 or
+                    ActiveAttribType.DoubleMat3x2 or
+                    ActiveAttribType.DoubleMat3x4 or
+                    ActiveAttribType.DoubleMat4x2 or
+                    ActiveAttribType.DoubleMat4x3 => true,
+                    _ => false
+                };
+            }
+
+            private static bool IsIntType(ActiveAttribType type)
+            {
+                return type switch
+                {
+                    ActiveAttribType.Int or
+                    ActiveAttribType.IntVec2 or
+                    ActiveAttribType.IntVec3 or
+                    ActiveAttribType.IntVec4 => true,
+                    _ => false
+                };
+            }
+
+            private static bool IsUIntType(ActiveAttribType type)
+            {
+                return type switch
+                {
+                    ActiveAttribType.UnsignedInt or
+                    ActiveAttribType.UnsignedIntVec2 or
+                    ActiveAttribType.UnsignedIntVec3 or
+                    ActiveAttribType.UnsignedIntVec4 => true,
+                    _ => false
+                };
+            }
+
             private void bind_content((Buffer vbo, string vbo_format, string[] attrs) content)
             {
                 var vbo_tokens = new Buffer.BufferFormat(content.vbo_format, content.attrs);
@@ -519,8 +585,21 @@ namespace ModernGL
                         //if (skip_errors)
                     }
 
-                    GL.VertexAttribPointer(location, token.count, token.ptype,
-                        token.normalized, vbo_tokens.stride, offset);
+                    GL.GetActiveAttrib(program_id, location, out int size, out ActiveAttribType type);
+
+                    if (IsFloatType(type))
+                    {
+                        GL.VertexAttribPointer(location, token.count, token.ptype, token.normalized, vbo_tokens.stride, offset);
+                    }
+                    else if (IsIntType(type) || IsUIntType(type))
+                    {
+                        GL.VertexAttribIPointer(location, token.count, (VertexAttribIntegerType)token.ptype, vbo_tokens.stride, offset);
+                    }
+                    else if (IsDoubleType(type))
+                    {
+                        GL.VertexAttribLPointer(location, token.count, (VertexAttribDoubleType)token.ptype, vbo_tokens.stride, offset);
+                    }
+
                     GL.VertexAttribDivisor(location, vbo_tokens.divisor);
                     GL.EnableVertexAttribArray(location);
 
