@@ -36,6 +36,7 @@ namespace ModernGL
             public class Shader : IDisposable
             {
                 internal readonly int id;
+                internal int programm_id;
 
                 public Shader(ShaderType type) =>
                     this.id = GL.CreateShader(type);
@@ -45,21 +46,24 @@ namespace ModernGL
                 {
                     GL.ShaderSource(id, source);
                     GL.CompileShader(id);
-                    CheckShaderCompile(id);
-                }
-
-                public void Dispose() =>
-                    GL.DeleteShader(id);
-
-                private void CheckShaderCompile(int shader)
-                {
-                    GL.GetShader(shader, ShaderParameter.CompileStatus, out int status);
+                    GL.GetShader(id, ShaderParameter.CompileStatus, out int status);
                     if (status == (int)All.False)
                     {
-                        string infoLog = GL.GetShaderInfoLog(shader);
-                        throw new Exception($"Shader compilation failed: {infoLog}");
+                        string infoLog = GL.GetShaderInfoLog(id);
+                        throw new Exception($"Error compiling Shader({id}).\n\n{infoLog}");
                     }
                 }
+
+                public void Dispose()
+                {
+                    if (programm_id != 0)
+                        GL.DetachShader(programm_id, id);
+                    GL.DeleteShader(id);
+                }
+
+                internal void attach(Program program) =>
+                    GL.AttachShader((this.programm_id = program.id), id);
+
             }
 
             internal readonly int id;
@@ -71,7 +75,7 @@ namespace ModernGL
             {
                 foreach (var shader in shaders)
                 {
-                    attach(shader);
+                    shader.attach(this);
                 }
                 link();
             }
@@ -79,21 +83,13 @@ namespace ModernGL
             public void Dispose() =>
                 GL.DeleteProgram(id);
 
-            internal void attach(Shader shader) =>
-                GL.AttachShader(id, shader.id);
-
             internal void link()
             {
                 GL.LinkProgram(id);
-                CheckProgramLink(id);
-            }
-
-            private void CheckProgramLink(int program)
-            {
-                GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int status);
+                GL.GetProgram(id, GetProgramParameterName.LinkStatus, out int status);
                 if (status == (int)All.False)
                 {
-                    string infoLog = GL.GetProgramInfoLog(program);
+                    string infoLog = GL.GetProgramInfoLog(id);
                     throw new Exception($"Program linking failed: {infoLog}");
                 }
             }
