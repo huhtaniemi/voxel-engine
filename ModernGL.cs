@@ -650,6 +650,51 @@ namespace ModernGL
         }
 
 
+        public class Texture : IDisposable
+        {
+            private readonly (int Width, int Height, int layers) size;
+            private readonly int components;
+            private readonly int samples;
+            private readonly int id;
+
+            public void Dispose() =>
+                GL.DeleteTexture(this.id);
+
+            public Texture() =>
+                this.id = GL.GenTexture();
+
+            public Texture((int Width, int Height, int layers) size, int components, byte[] data,
+                int samples = 0, int alignment = 1, bool is_array=false) : this()
+            {
+                this.size = size;
+                this.components = components;
+                this.samples = 0; //samples;
+                //texture->data_type = data_type;
+            }
+
+            // The location is the texture unit we want to bind the texture.
+            // This should correspond with the value of the sampler2D uniform in the shader because
+            // samplers read from the texture unit we assign to them:
+            //   location(int) – The texture location/unit.
+            internal void use(int location=0)
+            {
+            }
+        }
+
+
+        public Texture texture((int Width, int Height) size, int components, byte[] data,
+            int samples = 0, int alignment = 1, string dtype = "f1")
+        {
+            return new Texture((size.Width, size.Height, 0), components, data, samples, alignment);
+        }
+
+        public Texture texture_array((int Width, int Height, int layers) size, int components, byte[] data,
+            int samples = 0, int alignment = 1, string dtype = "f1")
+        {
+            return new Texture(size, components, data, samples, alignment, is_array: true);
+        }
+
+
         public void enable()
         {
             GL.Enable(EnableCap.DepthTest);

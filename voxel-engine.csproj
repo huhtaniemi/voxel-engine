@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\frame.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\chunk.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
