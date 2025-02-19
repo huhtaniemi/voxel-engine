@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 using System;
+using StbImageSharp;
 
 
 public class Textures
@@ -28,6 +29,10 @@ public class Textures
     {
         //textureimg = pg.image.load(f'assets/{file_name}')
         //textureimg = pg.transform.flip(textureimg, flip_x = True, flip_y = False)
+
+        StbImage.stbi_set_flip_vertically_on_load(1);
+        using Stream stream = File.OpenRead($"assets/{fileName}");
+        var textureimg = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
         int textureId = GL.GenTexture();
         //texture = self.ctx.texture(
