@@ -657,6 +657,16 @@ namespace ModernGL
             private readonly int samples;
             private readonly int id;
 
+            private const int max_texture_units = 32;
+            private readonly int default_texture_unit = max_texture_units - 1;
+
+            private TextureTarget texture_target =>
+                this.samples > 0 ? TextureTarget.Texture2DMultisample: TextureTarget.Texture2D;
+
+            private PixelType pixel_type = PixelType.UnsignedByte; // data_type->gl_type;
+            private PixelFormat base_format = PixelFormat.Rgba; // data_type->base_format[components];
+            private PixelInternalFormat internal_format = PixelInternalFormat.Rgba; // data_type->internal_format[components];
+
             public void Dispose() =>
                 GL.DeleteTexture(this.id);
 
@@ -670,14 +680,33 @@ namespace ModernGL
                 this.components = components;
                 this.samples = 0; //samples;
                 //texture->data_type = data_type;
+
+                GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
+                GL.BindTexture(this.texture_target, this.id);
+
+                if (this.samples > 0)
+                {
+                    GL.TexImage2DMultisample((TextureTargetMultisample)this.texture_target,
+                        this.samples, internal_format, size.Width, size.Height, true);
+                }
+                else
+                {
+                    GL.PixelStore(PixelStoreParameter.PackAlignment, alignment);
+                    GL.PixelStore(PixelStoreParameter.UnpackAlignment, alignment);
+
+                    GL.TexImage2D(this.texture_target, 0, internal_format, size.Width, size.Height,0, base_format, pixel_type, data);
+                }
+
             }
 
             // The location is the texture unit we want to bind the texture.
             // This should correspond with the value of the sampler2D uniform in the shader because
             // samplers read from the texture unit we assign to them:
             //   location(int) – The texture location/unit.
-            internal void use(int location=0)
+            public void use(int location=0)
             {
+                GL.ActiveTexture(TextureUnit.Texture0 + location);
+                GL.BindTexture(this.texture_target, this.id);
             }
         }
 
