@@ -68,11 +68,11 @@ public class Noise
     };
 
 
-    private static Contribution2[] lookup2D;
-    private static Contribution3[] lookup3D;
-    private static Contribution4[] lookup4D;
+    private static readonly Contribution2[] lookup2D;
+    private static readonly Contribution3[] lookup3D;
+    private static readonly Contribution4[] lookup4D;
 
-    static Noise()
+    private static void BuildLookup(out Contribution2[] lookup2D)
     {
         int[][] base2D =
         [
@@ -105,8 +105,10 @@ public class Noise
         {
             lookup2D[lookupPairs2D[i]] = contributions2D[lookupPairs2D[i + 1]];
         }
+    }
 
-
+    private static void BuildLookup(out Contribution3[] lookup3D)
+    {
         int[][] base3D =
         [
             [0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1],
@@ -140,8 +142,10 @@ public class Noise
         {
             lookup3D[lookupPairs3D[i]] = contributions3D[lookupPairs3D[i + 1]];
         }
+    }
 
-
+    private static void BuildLookup(out Contribution4[] lookup4D)
+    {
         int[][] base4D =
         [
             [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1],
@@ -177,6 +181,13 @@ public class Noise
         {
             lookup4D[lookupPairs4D[i]] = contributions4D[lookupPairs4D[i + 1]];
         }
+    }
+
+    static Noise()
+    {
+        BuildLookup(out lookup2D);
+        BuildLookup(out lookup3D);
+        BuildLookup(out lookup4D);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
