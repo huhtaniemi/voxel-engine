@@ -34,7 +34,7 @@ public abstract class BaseMesh
     protected glContext.VertexArray GetVAO()
     {
         var vertex_data = GetVertexData();
-        using var vbo = ctx.buffer(ref vertex_data);
+        using var vbo = ctx.buffer(vertex_data);
         var vao = ctx.vertex_array(
             program, [(vbo, this.vbo_format, this.attrs)], true
         );
