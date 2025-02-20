@@ -89,18 +89,15 @@ public class Noise
             Contribution2 previous = null, current = null;
             for (int k = 0; k < baseSet.Length; k += 3)
             {
-                current = new Contribution2(baseSet[k], baseSet[k + 1], baseSet[k + 2]);
+                current = new(baseSet[k], baseSet[k + 1], baseSet[k + 2]);
                 if (previous == null)
-                {
                     contributions2D[i / 4] = current;
-                }
                 else
-                {
                     previous.Next = current;
-                }
                 previous = current;
             }
-            current.Next = new Contribution2(p2D[i + 1], p2D[i + 2], p2D[i + 3]);
+            if (current != null)
+                current.Next = new(p2D[i + 1], p2D[i + 2], p2D[i + 3]);
         }
 
         lookup2D = new Contribution2[64];
@@ -126,19 +123,16 @@ public class Noise
             Contribution3 previous = null, current = null;
             for (int k = 0; k < baseSet.Length; k += 4)
             {
-                current = new Contribution3(baseSet[k], baseSet[k + 1], baseSet[k + 2], baseSet[k + 3]);
+                current = new(baseSet[k], baseSet[k + 1], baseSet[k + 2], baseSet[k + 3]);
                 if (previous == null)
-                {
                     contributions3D[i / 9] = current;
-                }
                 else
-                {
                     previous.Next = current;
-                }
                 previous = current;
             }
-            current.Next = new Contribution3(p3D[i + 1], p3D[i + 2], p3D[i + 3], p3D[i + 4]);
-            current.Next.Next = new Contribution3(p3D[i + 5], p3D[i + 6], p3D[i + 7], p3D[i + 8]);
+            if (current != null)
+                current.Next = new(p3D[i + 1], p3D[i + 2], p3D[i + 3], p3D[i + 4]) {
+                            Next = new(p3D[i + 5], p3D[i + 6], p3D[i + 7], p3D[i + 8]) };
         }
 
         lookup3D = new Contribution3[2048];
@@ -165,20 +159,17 @@ public class Noise
             Contribution4 previous = null, current = null;
             for (int k = 0; k < baseSet.Length; k += 5)
             {
-                current = new Contribution4(baseSet[k], baseSet[k + 1], baseSet[k + 2], baseSet[k + 3], baseSet[k + 4]);
+                current = new(baseSet[k], baseSet[k + 1], baseSet[k + 2], baseSet[k + 3], baseSet[k + 4]);
                 if (previous == null)
-                {
                     contributions4D[i / 16] = current;
-                }
                 else
-                {
                     previous.Next = current;
-                }
                 previous = current;
             }
-            current.Next = new Contribution4(p4D[i + 1], p4D[i + 2], p4D[i + 3], p4D[i + 4], p4D[i + 5]);
-            current.Next.Next = new Contribution4(p4D[i + 6], p4D[i + 7], p4D[i + 8], p4D[i + 9], p4D[i + 10]);
-            current.Next.Next.Next = new Contribution4(p4D[i + 11], p4D[i + 12], p4D[i + 13], p4D[i + 14], p4D[i + 15]);
+            if (current != null)
+                current.Next = new(p4D[i + 1], p4D[i + 2], p4D[i + 3], p4D[i + 4], p4D[i + 5]) {
+                            Next = new(p4D[i + 6], p4D[i + 7], p4D[i + 8], p4D[i + 9], p4D[i + 10]) {
+                                Next = new(p4D[i + 11], p4D[i + 12], p4D[i + 13], p4D[i + 14], p4D[i + 15]) } };
         }
 
         lookup4D = new Contribution4[1048576];
