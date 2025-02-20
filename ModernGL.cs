@@ -757,6 +757,32 @@ namespace ModernGL
                 }
             }
 
+            private bool _repeat_x = true;
+            public bool repeat_x
+            {
+                get => _repeat_x;
+                internal set
+                {
+                    GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
+                    GL.BindTexture(this.texture_target, this.id);
+                    GL.TexParameter(this.texture_target, TextureParameterName.TextureWrapS,
+                        (_repeat_x = value) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
+                }
+            }
+
+            private bool _repeat_y = true;
+            public bool repeat_y
+            {
+                get => _repeat_y;
+                internal set
+                {
+                    GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
+                    GL.BindTexture(this.texture_target, this.id);
+                    GL.TexParameter(this.texture_target, TextureParameterName.TextureWrapT,
+                        (_repeat_y = value) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
+                }
+            }
+
             private float _anisotropy = 0.0f;
             public float anisotropy
             {
