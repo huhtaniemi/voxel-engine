@@ -51,6 +51,7 @@ public class Textures
             data: textureimg.Data
         );
 
+        texture.filter = (glContext.Texture.fTypes.NEAREST, glContext.Texture.fTypes.NEAREST);
         return texture;
     }
 

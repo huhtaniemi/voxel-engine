@@ -695,8 +695,9 @@ namespace ModernGL
                     GL.PixelStore(PixelStoreParameter.UnpackAlignment, alignment);
 
                     GL.TexImage2D(this.texture_target, 0, internal_format, size.Width, size.Height,0, base_format, pixel_type, data);
+                    // !float_type
+                    filter = (fTypes.NEAREST, fTypes.NEAREST);
                 }
-
             }
 
             // The location is the texture unit we want to bind the texture.
@@ -707,6 +708,30 @@ namespace ModernGL
             {
                 GL.ActiveTexture(TextureUnit.Texture0 + location);
                 GL.BindTexture(this.texture_target, this.id);
+            }
+
+            public enum fTypes
+            {
+                LINEAR = (int)TextureMinFilter.Linear,
+                NEAREST = (int)TextureMinFilter.Nearest,
+                LINEAR_MIPMAP_LINEAR = (int)TextureMinFilter.LinearMipmapLinear,
+                NEAREST_MIPMAP_LINEAR = (int)TextureMinFilter.NearestMipmapLinear,
+                LINEAR_MIPMAP_NEAREST = (int)TextureMinFilter.LinearMipmapNearest,
+            };
+
+            private (fTypes, fTypes) _filter = (fTypes.NEAREST_MIPMAP_LINEAR, fTypes.LINEAR);
+            public (fTypes, fTypes) filter
+            {
+                get => _filter;
+                internal set
+                {
+                    GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
+                    GL.BindTexture(this.texture_target, this.id);
+
+                    var (min_filter, mag_filter) = (_filter = value);
+                    GL.TexParameter(this.texture_target, TextureParameterName.TextureMinFilter, (int)min_filter);
+                    GL.TexParameter(this.texture_target, TextureParameterName.TextureMagFilter, (int)mag_filter);
+                }
             }
         }
 
