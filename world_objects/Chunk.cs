@@ -1,5 +1,6 @@
-using OpenTK.Mathematics;
 using System;
+using OpenSimplex;
+using OpenTK.Mathematics;
 using static Settings;
 
 
@@ -100,17 +101,21 @@ public class Chunk
         {
             for (byte z = 0; z < CHUNK_SIZE; z++)
             {
-                 for (byte y = 0; y < CHUNK_SIZE; y++)
+                for (byte y = 0; y < CHUNK_SIZE; y++)
                 {
-                    // todo: noise
+                    //var nval = 1;
+                    var nval = _noise.Evaluate(x * 0.1, y * 0.1, z * 0.1) + 1;
                     voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] =
-                        (byte)(x + y + z);
+                        (byte)((int)nval > 0 ? (x + y + z) : 0);
                 }
             }
         }
         return voxels;
     }
 
+    static private Noise _noise;
+    static Chunk() =>
+        _noise = new OpenSimplex.Noise(Settings.SEED);
 
     /*
     /// <summary>
@@ -137,4 +142,3 @@ public class Chunk
     }
     */
 }
-
