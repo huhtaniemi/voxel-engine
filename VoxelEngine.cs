@@ -30,7 +30,7 @@ public class VoxelEngine : GameWindow
     public double time_init;
     public double time;
 
-    //public Textures textures;
+    public Textures textures;
     public Player player;
     public ShaderProgram shader_program;
     public Scene scene;
@@ -43,7 +43,7 @@ public class VoxelEngine : GameWindow
         this.ctx.enable();// ctx.DepthTest | ctx.CullFace | ctx.Blend);
         this.ctx.set_clearcolor(System.Drawing.Color.CornflowerBlue);
 
-        //textures = new Textures(this);
+        textures = new Textures(this);
         player = new Player(this, Settings.PLAYER_POS);
         shader_program = new ShaderProgram(this, ctx);
         scene = new Scene(this);
@@ -93,6 +93,7 @@ public class VoxelEngine : GameWindow
 
         SwapBuffers();
     }
+
     protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
     {
         base.OnFramebufferResize(e);
