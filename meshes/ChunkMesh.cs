@@ -7,6 +7,7 @@ public class ChunkMesh : BaseMesh
 
     public ChunkMesh(Chunk chunk)
         : base(ref chunk.app.ctx, ref chunk.app.shader_program.chunk, "3u1 1u1 1u1", ["in_position", "voxel_id", "face_id"])
+        //: base(ref chunk.app.ctx, ref chunk.app.shader_program.chunk, "3f4", ["in_position"])
     {
         this.chunk = chunk;
         Rebuild();
@@ -20,6 +21,7 @@ public class ChunkMesh : BaseMesh
             //chunk.Position,
             //chunk.world.voxels
         );
+        //Console.WriteLine($"mesh: len {mesh.Length}, data {string.Join(", ", mesh)}");
         return mesh;
     }
 

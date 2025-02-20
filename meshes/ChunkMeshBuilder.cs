@@ -423,6 +423,7 @@ public static class VoxelMeshBuilder
         }
 
         return vertexData.Take(index).ToArray();
+        //return vertexData.Take(index).Select(v => (float)v).ToArray();
     }
 
 }
