@@ -700,6 +700,29 @@ namespace ModernGL
                 }
             }
 
+            private int max_level = 0;
+            public void build_mipmaps(int _base = 0, int max_level = 1000)
+            {
+                GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
+                GL.BindTexture(this.texture_target, this.id);
+
+                if (_base > max_level)
+                {
+                    Console.WriteLine($"invalid base {_base} > max_level {max_level}");
+                    return;
+                }
+                GL.TexParameter(this.texture_target, TextureParameterName.TextureBaseLevel, _base);
+                GL.TexParameter(this.texture_target, TextureParameterName.TextureMaxLevel, (this.max_level = max_level));
+
+                // Mipmaps are smaller copies of the texture, scaled down. Each mipmap level is half the size of the previous one
+                // Generated mipmaps go all the way down to just one pixel.
+                // OpenGL will automatically switch between mipmaps when an object gets sufficiently far away.
+                GL.GenerateMipmap((GenerateMipmapTarget)this.texture_target);
+
+                //  not necessary?
+                //filter = (fTypes.LINEAR_MIPMAP_LINEAR, fTypes.LINEAR);
+            }
+
             // The location is the texture unit we want to bind the texture.
             // This should correspond with the value of the sampler2D uniform in the shader because
             // samplers read from the texture unit we assign to them:
