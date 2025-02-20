@@ -673,17 +673,16 @@ namespace ModernGL
             public Texture() =>
                 this.id = GL.GenTexture();
 
-            public Texture((int Width, int Height, int layers) size, int components, byte[] data,
-                int samples = 0, int alignment = 1, bool is_array=false) : this()
-            {
-                this.size = size;
-                this.components = components;
-                this.samples = 0; //samples;
-                //texture->data_type = data_type;
+            public Texture((int Width, int Height, int layers) size, int components, int samples) : this() =>
+                (this.size, this.components, this.samples) = (size, components, samples);
 
+            public Texture((int Width, int Height, int layers) size, int components, byte[] data,
+                int samples = 0, int alignment = 1, bool is_array=false) : this(size, components, 0)
+            {
                 GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
                 GL.BindTexture(this.texture_target, this.id);
 
+                //texture->data_type = data_type;
                 if (this.samples > 0)
                 {
                     GL.TexImage2DMultisample((TextureTargetMultisample)this.texture_target,
