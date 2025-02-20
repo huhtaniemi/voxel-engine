@@ -5,9 +5,6 @@
 using System;
 using System.Runtime.CompilerServices;
 
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8618
 
 namespace OpenSimplex;
 public class Noise
@@ -21,11 +18,6 @@ public class Noise
     private const double NORM_2D = 1.0 / 47.0;
     private const double NORM_3D = 1.0 / 103.0;
     private const double NORM_4D = 1.0 / 30.0;
-
-    private byte[] perm;
-    private byte[] perm2D;
-    private byte[] perm3D;
-    private byte[] perm4D;
 
     private static readonly double[] GRADIENTS2 =
     {
@@ -86,7 +78,7 @@ public class Noise
         for (int i = 0; i < p2D.Length; i += 4)
         {
             int[] baseSet = base2D[p2D[i]];
-            Contribution2 previous = null, current = null;
+            Contribution2? previous = null, current = null;
             for (int k = 0; k < baseSet.Length; k += 3)
             {
                 current = new(baseSet[k], baseSet[k + 1], baseSet[k + 2]);
@@ -122,7 +114,7 @@ public class Noise
         for (int i = 0; i < p3D.Length; i += 9)
         {
             int[] baseSet = base3D[p3D[i]];
-            Contribution3 previous = null, current = null;
+            Contribution3? previous = null, current = null;
             for (int k = 0; k < baseSet.Length; k += 4)
             {
                 current = new(baseSet[k], baseSet[k + 1], baseSet[k + 2], baseSet[k + 3]);
@@ -160,7 +152,7 @@ public class Noise
         for (int i = 0; i < p4D.Length; i += 16)
         {
             int[] baseSet = base4D[p4D[i]];
-            Contribution4 previous = null, current = null;
+            Contribution4? previous = null, current = null;
             for (int k = 0; k < baseSet.Length; k += 5)
             {
                 current = new(baseSet[k], baseSet[k + 1], baseSet[k + 2], baseSet[k + 3], baseSet[k + 4]);
@@ -190,12 +182,10 @@ public class Noise
         BuildLookup(out lookup4D);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int FastFloor(double x)
-    {
-        var xi = (int)x;
-        return x < xi ? xi - 1 : xi;
-    }
+    private readonly byte[] perm;
+    private readonly byte[] perm2D;
+    private readonly byte[] perm3D;
+    private readonly byte[] perm4D;
 
     public Noise()
         : this(DateTime.Now.Ticks)
@@ -208,11 +198,11 @@ public class Noise
         perm2D = new byte[256];
         perm3D = new byte[256];
         perm4D = new byte[256];
+
         var source = new byte[256];
         for (int i = 0; i < 256; i++)
-        {
             source[i] = (byte)i;
-        }
+
         seed = seed * 6364136223846793005L + 1442695040888963407L;
         seed = seed * 6364136223846793005L + 1442695040888963407L;
         seed = seed * 6364136223846793005L + 1442695040888963407L;
@@ -221,9 +211,7 @@ public class Noise
             seed = seed * 6364136223846793005L + 1442695040888963407L;
             int r = (int)((seed + 31) % (i + 1));
             if (r < 0)
-            {
                 r += (i + 1);
-            }
             perm[i] = source[r];
             perm2D[i] = (byte)(perm[i] & 0x0E);
             perm3D[i] = (byte)((perm[i] % 24) * 3);
@@ -231,6 +219,10 @@ public class Noise
             source[r] = source[i];
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int FastFloor(double x) =>
+        x < (int)x ? (int)x - 1 : (int)x;
 
     public double Evaluate(double x, double y)
     {
@@ -436,6 +428,3 @@ public class Noise
         public Contribution4? Next = null;
     }
 }
-#pragma warning restore CS8600
-#pragma warning restore CS8602
-#pragma warning restore CS8618
