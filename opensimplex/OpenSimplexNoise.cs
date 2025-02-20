@@ -402,55 +402,34 @@ public class Noise
         return value * NORM_4D;
     }
 
-    private class Contribution2
+    private record Contribution2(double multiplier, int xsb, int ysb)
     {
-        public double dx, dy;
-        public int xsb, ysb;
-        public Contribution2 Next;
-
-        public Contribution2(double multiplier, int xsb, int ysb)
-        {
-            dx = -xsb - multiplier * SQUISH_2D;
+        public int xsb = xsb, ysb = ysb;
+        public double
+            dx = -xsb - multiplier * SQUISH_2D,
             dy = -ysb - multiplier * SQUISH_2D;
-            this.xsb = xsb;
-            this.ysb = ysb;
-        }
+        public Contribution2? Next = null;
     }
 
-    private class Contribution3
+    private record Contribution3(double multiplier, int xsb, int ysb, int zsb)
     {
-        public double dx, dy, dz;
-        public int xsb, ysb, zsb;
-        public Contribution3 Next;
-
-        public Contribution3(double multiplier, int xsb, int ysb, int zsb)
-        {
-            dx = -xsb - multiplier * SQUISH_3D;
-            dy = -ysb - multiplier * SQUISH_3D;
+        public int xsb = xsb, ysb = ysb, zsb = zsb;
+        public double
+            dx = -xsb - multiplier * SQUISH_3D,
+            dy = -ysb - multiplier * SQUISH_3D,
             dz = -zsb - multiplier * SQUISH_3D;
-            this.xsb = xsb;
-            this.ysb = ysb;
-            this.zsb = zsb;
-        }
+        public Contribution3? Next = null;
     }
 
-    private class Contribution4
+    private record Contribution4(double multiplier, int xsb, int ysb, int zsb, int wsb)
     {
-        public double dx, dy, dz, dw;
-        public int xsb, ysb, zsb, wsb;
-        public Contribution4 Next;
-
-        public Contribution4(double multiplier, int xsb, int ysb, int zsb, int wsb)
-        {
-            dx = -xsb - multiplier * SQUISH_4D;
-            dy = -ysb - multiplier * SQUISH_4D;
-            dz = -zsb - multiplier * SQUISH_4D;
+        public int xsb = xsb, ysb = ysb, zsb = zsb, wsb = wsb;
+        public double
+            dx = -xsb - multiplier * SQUISH_4D,
+            dy = -ysb - multiplier * SQUISH_4D,
+            dz = -zsb - multiplier * SQUISH_4D,
             dw = -wsb - multiplier * SQUISH_4D;
-            this.xsb = xsb;
-            this.ysb = ysb;
-            this.zsb = zsb;
-            this.wsb = wsb;
-        }
+        public Contribution4? Next = null;
     }
 }
 #pragma warning restore CS8600
