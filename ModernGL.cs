@@ -756,6 +756,20 @@ namespace ModernGL
                     GL.TexParameter(this.texture_target, TextureParameterName.TextureMagFilter, (int)mag_filter);
                 }
             }
+
+            private float _anisotropy = 0.0f;
+            public float anisotropy
+            {
+                get => _anisotropy;
+                internal set
+                {
+                    GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
+
+                    GL.BindTexture(this.texture_target, this.id);
+                    GL.TexParameter(this.texture_target, TextureParameterName.TextureMaxAnisotropy, _anisotropy = value);
+                    Console.WriteLine("TextureMaxAnisotropy error:" + GL.GetError());
+                }
+            }
         }
 
 

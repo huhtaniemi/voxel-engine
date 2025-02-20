@@ -51,6 +51,7 @@ public class Textures
             data: textureimg.Data
         );
 
+        texture.anisotropy = 32.0f;
         texture.build_mipmaps();
         texture.filter = (glContext.Texture.fTypes.NEAREST, glContext.Texture.fTypes.NEAREST);
         return texture;
