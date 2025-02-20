@@ -3,15 +3,14 @@
  * and heavily refactored to improve performance. */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8618
 
-public class OpenSimplexNoise
+namespace OpenSimplex;
+public class Noise
 {
     private const double STRETCH_2D = -0.211324865405187;    //(1/Math.sqrt(2+1)-1)/2;
     private const double STRETCH_3D = -1.0 / 6.0;            //(1/Math.sqrt(3+1)-1)/3;
@@ -28,16 +27,16 @@ public class OpenSimplexNoise
     private byte[] perm3D;
     private byte[] perm4D;
 
-    private static double[] gradients2D = new double[]
-    {
+    private static readonly double[] GRADIENTS2 =
+    [
             5,  2,    2,  5,
         -5,  2,   -2,  5,
             5, -2,    2, -5,
         -5, -2,   -2, -5,
-    };
+    ];
 
-    private static double[] gradients3D =
-    {
+    private static readonly double[] GRADIENTS3 =
+    [
         -11,  4,  4,     -4,  11,  4,    -4,  4,  11,
             11,  4,  4,      4,  11,  4,     4,  4,  11,
         -11, -4,  4,     -4, -11,  4,    -4, -4,  11,
@@ -46,10 +45,10 @@ public class OpenSimplexNoise
             11,  4, -4,      4,  11, -4,     4,  4, -11,
         -11, -4, -4,     -4, -11, -4,    -4, -4, -11,
             11, -4, -4,      4, -11, -4,     4, -4, -11,
-    };
+    ];
 
-    private static double[] gradients4D =
-    {
+    private static readonly double[] GRADIENTS4 =
+    [
             3,  1,  1,  1,      1,  3,  1,  1,      1,  1,  3,  1,      1,  1,  1,  3,
         -3,  1,  1,  1,     -1,  3,  1,  1,     -1,  1,  3,  1,     -1,  1,  1,  3,
             3, -1,  1,  1,      1, -3,  1,  1,      1, -1,  3,  1,      1, -1,  1,  3,
@@ -66,13 +65,13 @@ public class OpenSimplexNoise
         -3,  1, -1, -1,     -1,  3, -1, -1,     -1,  1, -3, -1,     -1,  1, -1, -3,
             3, -1, -1, -1,      1, -3, -1, -1,      1, -1, -3, -1,      1, -1, -1, -3,
         -3, -1, -1, -1,     -1, -3, -1, -1,     -1, -1, -3, -1,     -1, -1, -1, -3,
-    };
+    ];
 
     private static Contribution2[] lookup2D;
     private static Contribution3[] lookup3D;
     private static Contribution4[] lookup4D;
 
-    static OpenSimplexNoise()
+    static Noise()
     {
         var base2D = new int[][]
         {
@@ -147,6 +146,7 @@ public class OpenSimplexNoise
             lookup3D[lookupPairs3D[i]] = contributions3D[lookupPairs3D[i + 1]];
         }
 
+
         var base4D = new int[][]
         {
             new int[] { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1 },
@@ -193,12 +193,12 @@ public class OpenSimplexNoise
         return x < xi ? xi - 1 : xi;
     }
 
-    public OpenSimplexNoise()
+    public Noise()
         : this(DateTime.Now.Ticks)
     {
     }
 
-    public OpenSimplexNoise(long seed)
+    public Noise(long seed)
     {
         perm = new byte[256];
         perm2D = new byte[256];
@@ -266,7 +266,7 @@ public class OpenSimplexNoise
                 var py = ysb + c.ysb;
 
                 var i = perm2D[(perm[px & 0xFF] + py) & 0xFF];
-                var valuePart = gradients2D[i] * dx + gradients2D[i + 1] * dy;
+                var valuePart = GRADIENTS2[i] * dx + GRADIENTS2[i + 1] * dy;
 
                 attn *= attn;
                 value += attn * attn * valuePart;
@@ -323,7 +323,7 @@ public class OpenSimplexNoise
                 var pz = zsb + c.zsb;
 
                 var i = perm3D[(perm[(perm[px & 0xFF] + py) & 0xFF] + pz) & 0xFF];
-                var valuePart = gradients3D[i] * dx + gradients3D[i + 1] * dy + gradients3D[i + 2] * dz;
+                var valuePart = GRADIENTS3[i] * dx + GRADIENTS3[i + 1] * dy + GRADIENTS3[i + 2] * dz;
 
                 attn *= attn;
                 value += attn * attn * valuePart;
@@ -391,7 +391,7 @@ public class OpenSimplexNoise
                 var pw = wsb + c.wsb;
 
                 var i = perm4D[(perm[(perm[(perm[px & 0xFF] + py) & 0xFF] + pz) & 0xFF] + pw) & 0xFF];
-                var valuePart = gradients4D[i] * dx + gradients4D[i + 1] * dy + gradients4D[i + 2] * dz + gradients4D[i + 3] * dw;
+                var valuePart = GRADIENTS4[i] * dx + GRADIENTS4[i + 1] * dy + GRADIENTS4[i + 2] * dz + GRADIENTS4[i + 3] * dw;
 
                 attn *= attn;
                 value += attn * attn * valuePart;
