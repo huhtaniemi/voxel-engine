@@ -12,9 +12,9 @@ public class Chunk
     public Vector3i Position { get; private set; }
     public Matrix4 MModel { get; private set; }
     */
-    public byte[] voxels { get; private set; }
+    public byte[] voxels;// { get; private set; }
 
-    internal ChunkMesh? mesh { get; private set; }
+    internal ChunkMesh? mesh;// { get; private set; }
     /*
     public bool IsEmpty { get; private set; }
 
@@ -41,9 +41,8 @@ public class Chunk
     public Chunk(VoxelEngine app)
     {
         this.app = app;
-        this.voxels = BuildVoxels();
-
-        BuildMesh();
+        BuildVoxels(out this.voxels);
+        BuildMesh(out this.mesh);
     }
 
     /*
@@ -61,15 +60,9 @@ public class Chunk
     }
     */
 
-    /// <summary>
-    /// Builds the mesh for the chunk.
-    /// </summary>
-    private void BuildMesh() =>
-        this.mesh = new ChunkMesh(this);
+    internal void BuildMesh(out ChunkMesh mesh) =>
+        mesh = new ChunkMesh(this);
 
-    /// <summary>
-    /// Renders the chunk if it is not empty and is within the frustum.
-    /// </summary>
     public void Render()
     {
         /*
@@ -82,10 +75,7 @@ public class Chunk
         this.mesh?.Render();
     }
 
-    /// <summary>
-    ///  Builds the voxels for the chunk and checks if the chunk is empty.
-    /// </summary>
-    static private byte[] BuildVoxels()
+    static internal byte[] BuildVoxels(out byte[] voxels)
     {
         var voxels = new byte[CHUNK_VOL];
         /*
