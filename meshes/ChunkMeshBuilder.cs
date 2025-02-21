@@ -346,6 +346,7 @@ public static class VoxelMeshBuilder
                     if (isVoid((x, y + 1, z), (wx, wy + 1, wz), worldVoxels))
                     {
                         var ao = GetAO((x, y + 1, z), (wx, wy + 1, wz), worldVoxels, 'Y');
+                        var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
                             new(x    , y + 1, z    , voxelId, 0, ao[0]),
@@ -353,13 +354,17 @@ public static class VoxelMeshBuilder
                             new(x + 1, y + 1, z + 1, voxelId, 0, ao[2]),
                             new(x    , y + 1, z + 1, voxelId, 0, ao[3])
                         ];
-                        index = addData(vertexData, index, [v[0], v[3], v[2], v[0], v[2], v[1]]);
+                        index = addData(vertexData, index,
+                            flip_id
+                            ? [v[1], v[0], v[3], v[1], v[3], v[2]]
+                            : [v[0], v[3], v[2], v[0], v[2], v[1]]);
                     }
 
                     // Bottom face
                     if (isVoid((x, y - 1, z), (wx, wy - 1, wz), worldVoxels))
                     {
                         var ao = GetAO((x, y - 1, z), (wx, wy - 1, wz), worldVoxels, 'Y');
+                        var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
                             new(x    , y, z    , voxelId, 1, ao[0]),
@@ -367,13 +372,17 @@ public static class VoxelMeshBuilder
                             new(x + 1, y, z + 1, voxelId, 1, ao[2]),
                             new(x    , y, z + 1, voxelId, 1, ao[3])
                         ];
-                        index = addData(vertexData, index, [v[0], v[2], v[3], v[0], v[1], v[2]]);
+                        index = addData(vertexData, index,
+                            flip_id
+                            ? [v[1], v[3], v[0], v[1], v[2], v[3]]
+                            : [v[0], v[2], v[3], v[0], v[1], v[2]]);
                     }
 
                     // Right face
                     if (isVoid((x + 1, y, z), (wx + 1, wy, wz), worldVoxels))
                     {
                         var ao = GetAO((x + 1, y, z), (wx + 1, wy, wz), worldVoxels, 'X');
+                        var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
                             new(x + 1, y    , z    , voxelId, 2, ao[0]),
@@ -381,13 +390,17 @@ public static class VoxelMeshBuilder
                             new(x + 1, y + 1, z + 1, voxelId, 2, ao[2]),
                             new(x + 1, y    , z + 1, voxelId, 2, ao[3])
                         ];
-                        index = addData(vertexData, index, [v[0], v[1], v[2], v[0], v[2], v[3]]);
+                        index = addData(vertexData, index,
+                            flip_id
+                            ? [v[3], v[0], v[1], v[3], v[1], v[0]]
+                            : [v[0], v[1], v[2], v[0], v[2], v[3]]);
                     }
 
                     // Left face
                     if (isVoid((x - 1, y, z), (wx - 1, wy, wz), worldVoxels))
                     {
                         var ao = GetAO((x - 1, y, z), (wx - 1, wy, wz), worldVoxels, 'X');
+                        var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
                             new(x, y    , z    , voxelId, 3, ao[0]),
@@ -395,13 +408,17 @@ public static class VoxelMeshBuilder
                             new(x, y + 1, z + 1, voxelId, 3, ao[2]),
                             new(x, y    , z + 1, voxelId, 3, ao[3])
                         ];
-                        index = addData(vertexData, index, [v[0], v[2], v[1], v[0], v[3], v[2]]);
+                        index = addData(vertexData, index,
+                            flip_id
+                            ? [v[3], v[1], v[0], v[3], v[2], v[1]]
+                            : [v[0], v[2], v[1], v[0], v[3], v[2]]);
                     }
 
                     // Back face
                     if (isVoid((x, y, z - 1), (wx, wy, wz - 1), worldVoxels))
                     {
                         var ao = GetAO((x, y, z - 1), (wx, wy, wz - 1), worldVoxels, 'Z');
+                        var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
                             new(x    , y    , z, voxelId, 4, ao[0]),
@@ -409,13 +426,17 @@ public static class VoxelMeshBuilder
                             new(x + 1, y + 1, z, voxelId, 4, ao[2]),
                             new(x + 1, y    , z, voxelId, 4, ao[3])
                         ];
-                        index = addData(vertexData, index, [v[0], v[1], v[2], v[0], v[2], v[3]]);
+                        index = addData(vertexData, index,
+                            flip_id
+                            ? [v[3], v[0], v[1], v[3], v[1], v[2]]
+                            : [v[0], v[1], v[2], v[0], v[2], v[3]]);
                     }
 
                     // Front face
                     if (isVoid((x, y, z + 1), (wx, wy, wz + 1), worldVoxels))
                     {
                         var ao = GetAO((x, y, z + 1), (wx, wy, wz + 1), worldVoxels, 'Z');
+                        var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
                             new(x    , y    , z + 1, voxelId, 5, ao[0]),
@@ -423,7 +444,10 @@ public static class VoxelMeshBuilder
                             new(x + 1, y + 1, z + 1, voxelId, 5, ao[2]),
                             new(x + 1, y    , z + 1, voxelId, 5, ao[3])
                         ];
-                        index = addData(vertexData, index, [v[0], v[2], v[1], v[0], v[3], v[2]]);
+                        index = addData(vertexData, index,
+                            flip_id
+                            ? [v[3], v[1], v[0], v[3], v[2], v[1]]
+                            : [v[0], v[2], v[1], v[0], v[3], v[2]]);
                     }
                 }
             }
