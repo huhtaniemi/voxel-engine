@@ -79,10 +79,9 @@ public static class VoxelMeshBuilder
             | g;
         return packedData;
     }
+    */
 
-    /// <summary>
-    /// Calculates the chunk index based on the world voxel position.
-    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetChunkIndex(Vector3i worldVoxelPos)
     {
         int wx = worldVoxelPos.X,
@@ -92,40 +91,53 @@ public static class VoxelMeshBuilder
         int cy = wy / Settings.CHUNK_SIZE;
         int cz = wz / Settings.CHUNK_SIZE;
         if (!(0 <= cx && cx < Settings.WORLD_W && 0 <= cy && cy < Settings.WORLD_H && 0 <= cz && cz < Settings.WORLD_D))
-        {
             return -1;
-        }
 
         int index = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
         return index;
     }
-    */
-    /*
-    public static bool IsVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[,,] worldVoxels)
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static int MathMod(int a, int b)
+    {
+        return (Math.Abs(a * b) + a) % b;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static int PythonModulo(int a, int b)
+    {
+        int mod = a % b;
+        if ((mod < 0 && b > 0) || (mod > 0 && b < 0))
+            mod += b;
+        return mod;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool isVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[,] worldVoxels)
     {
         int chunkIndex = GetChunkIndex(worldVoxelPos);
         if (chunkIndex == -1)
             return false;
-        byte[] chunkVoxels = worldVoxels[chunkIndex];
 
-        int x = localVoxelPos.X, y = localVoxelPos.Y, z = localVoxelPos.Z;
+        var (x, y, z) = localVoxelPos;
         int voxelIndex =
-            x % Settings.CHUNK_SIZE +
-            z % Settings.CHUNK_SIZE * Settings.CHUNK_SIZE +
-            y % Settings.CHUNK_SIZE * Settings.CHUNK_AREA;
+            MathMod(x, Settings.CHUNK_SIZE) +
+            MathMod(z, Settings.CHUNK_SIZE) * Settings.CHUNK_SIZE +
+            MathMod(y, Settings.CHUNK_SIZE) * Settings.CHUNK_AREA;
 
-        return chunkVoxels[voxelIndex] == 0;
+        return worldVoxels[chunkIndex, voxelIndex] == 0;
     }
-    */
 
+    /*
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool isVoid(Vector3i voxelPos, byte[] chunkVoxels)
+    private static bool isVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[,] chunkVoxels)
     {
-        (var x, var y, var z) = voxelPos;
+        (var x, var y, var z) = localVoxelPos;
         if ((x is >= 0 and < CHUNK_SIZE) && (y is >= 0 and < CHUNK_SIZE) && (z is >= 0 and < CHUNK_SIZE))
             return chunkVoxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] == 0;
         return true;
     }
+    */
 
 
     /*
@@ -326,7 +338,7 @@ public static class VoxelMeshBuilder
     */
 
 
-    public static object BuildChunkMesh(byte[] chunkVoxels, int formatSize/*,Vector3i chunkPos, byte[,,] worldVoxels*/)
+    public static object BuildChunkMesh(byte[] chunkVoxels, int formatSize,Vector3i chunkPos, byte[,] worldVoxels)
     {
         byte[] vertexData = new byte[CHUNK_VOL * 18 * formatSize * sizeof(byte)]; // asuming bytesize for vbo_data
         int index = 0;
@@ -341,8 +353,14 @@ public static class VoxelMeshBuilder
                     if (voxelId == 0)
                         continue;
 
+                    // Voxel world position
+                    var (cx, cy, cz) = chunkPos;
+                    int wx = x + cx * CHUNK_SIZE;
+                    int wy = y + cy * CHUNK_SIZE;
+                    int wz = z + cz * CHUNK_SIZE;
+
                     // Top face
-                    if (isVoid((x, y + 1, z), chunkVoxels))
+                    if (isVoid((x, y + 1, z), (wx, wy + 1, wz), worldVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -355,7 +373,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Bottom face
-                    if (isVoid((x, y - 1, z), chunkVoxels))
+                    if (isVoid((x, y - 1, z), (wx, wy - 1, wz), worldVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -368,7 +386,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Right face
-                    if (isVoid((x + 1, y, z), chunkVoxels))
+                    if (isVoid((x + 1, y, z), (wx + 1, wy, wz), worldVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -381,7 +399,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Left face
-                    if (isVoid((x - 1, y, z), chunkVoxels))
+                    if (isVoid((x - 1, y, z), (wx - 1, wy, wz), worldVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -394,7 +412,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Back face
-                    if (isVoid((x, y, z - 1), chunkVoxels))
+                    if (isVoid((x, y, z - 1), (wx, wy, wz - 1), worldVoxels))
                     {
                         packedVertex[] v =
                         [
@@ -407,7 +425,7 @@ public static class VoxelMeshBuilder
                     }
 
                     // Front face
-                    if (isVoid((x, y, z + 1), chunkVoxels))
+                    if (isVoid((x, y, z + 1), (wx, wy, wz + 1), worldVoxels))
                     {
                         packedVertex[] v =
                         [

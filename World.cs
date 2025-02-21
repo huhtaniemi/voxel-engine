@@ -7,11 +7,8 @@ public class World
     public VoxelEngine app;
     public Chunk[] chunks { get; private set; }
     public byte[,] voxels { get; private set; }
-    public VoxelHandler voxelHandler { get; private set; }
+    //public VoxelHandler voxelHandler { get; private set; }
 
-    /// <summary>
-    /// Initializes the World class, creating arrays for chunks and voxels, and building the chunks and their meshes. It also initializes the VoxelHandler.
-    /// </summary>
     public World(VoxelEngine app)
     {
         this.app = app;
@@ -19,17 +16,9 @@ public class World
         voxels = new byte[Settings.WORLD_VOL, Settings.CHUNK_VOL];
         BuildChunks();
         BuildChunkMesh();
-        voxelHandler = new VoxelHandler(this);
+        //voxelHandler = new VoxelHandler(this);
     }
 
-    public void Update()
-    {
-        voxelHandler.Update();
-    }
-
-    /// <summary>
-    /// Creates chunks and assigns them to the Chunks array. It also builds the voxels for each chunk and assigns them to the Voxels array.
-    /// </summary>
     private void BuildChunks()
     {
         for (int x = 0; x < Settings.WORLD_W; x++)
@@ -38,18 +27,29 @@ public class World
             {
                 for (int z = 0; z < Settings.WORLD_D; z++)
                 {
-                    var chunk = new Chunk(this, new Vector3i(x, y, z));
+                    int chunk_index = x + Settings.WORLD_W * z + Settings.WORLD_AREA * y;
 
-                    int chunkIndex = x + Settings.WORLD_W * z + Settings.WORLD_AREA * y;
-                    chunks[chunkIndex] = chunk;
+                    var chunk = new Chunk(this, new(x, y, z));
 
+                    // note:
+                    // it okey to build voxels for each chunk beforehand
+                    // build besh (of each chunk) uses world voxels to test for adjecent spaces?
+
+                    chunks[chunk_index] = chunk;
+
+                    //chunk.BuildVoxels(out this.voxels[chunk_index]);
+                    Buffer.BlockCopy(
+                        chunk.voxels, 0,
+                        this.voxels, chunk_index * voxels.GetLength(1),
+                        chunk.voxels.Length);
+
+                    /*
                     // Put the chunk voxels in a separate array
                     //voxels[chunkIndex,:] = chunk.BuildVoxels();
-                    Array.Copy(chunk.BuildVoxels(), 0, voxels, chunkIndex * Settings.WORLD_VOL, Settings.WORLD_VOL);
-                    //for (int i = 0; i < Settings.WORLD_VOL; i++) { voxels[chunkIndex, i] = voxels_chunk[i]; }
 
                     // Get pointer to voxels
-                    chunk.voxels = ref voxels[chunkIndex,0];
+                    //chunk.voxels = ref voxels[chunkIndex,0];
+                    */
                 }
             }
         }
@@ -58,9 +58,12 @@ public class World
     private void BuildChunkMesh()
     {
         foreach (var chunk in chunks)
-        {
-            chunk.BuildMesh();
-        }
+            chunk.BuildMesh(out chunk.mesh);
+    }
+
+    public void Update()
+    {
+        //voxelHandler.Update();
     }
 
     public void Render()

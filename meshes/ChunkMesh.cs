@@ -17,9 +17,9 @@ public class ChunkMesh : BaseMesh
     {
         object mesh = VoxelMeshBuilder.BuildChunkMesh(
             chunk.voxels,
-            vbo_format_size//,
-            //chunk.Position,
-            //chunk.world.voxels
+            vbo_format_size,
+            chunk.position,
+            chunk.world.voxels
         );
         //Console.WriteLine($"mesh: len {mesh.Length}, data {string.Join(", ", mesh)}");
         return mesh;

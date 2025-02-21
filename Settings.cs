@@ -19,15 +19,15 @@ public static class Settings
     public const int MAX_RAY_DIST = 6;
 
     // Chunk
-    public const int CHUNK_SIZE = 12;
+    public const int CHUNK_SIZE = 32;
     public const int H_CHUNK_SIZE = CHUNK_SIZE / 2;
     public const int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
     public const int CHUNK_VOL = CHUNK_AREA * CHUNK_SIZE;
     public static readonly double CHUNK_SPHERE_RADIUS = H_CHUNK_SIZE * Math.Sqrt(3);
 
     // World
-    public const int WORLD_W = 20;
-    public const int WORLD_H = 2;
+    public const int WORLD_W = 10;
+    public const int WORLD_H = 3;
     public const int WORLD_D = WORLD_W;
     public const int WORLD_AREA = WORLD_W * WORLD_D;
     public const int WORLD_VOL = WORLD_AREA * WORLD_H;
@@ -49,7 +49,8 @@ public static class Settings
     public const float PLAYER_SPEED = 0.05f;
     public const float PLAYER_ROT_SPEED = 0.003f;
     //public static readonly Vector3 PLAYER_POS = new(CENTER_XZ, CHUNK_SIZE, CENTER_XZ);
-    public static readonly Vector3 PLAYER_POS = new(H_CHUNK_SIZE, CHUNK_SIZE, 1.5f * CHUNK_SIZE);
+    //public static readonly Vector3 PLAYER_POS = new(H_CHUNK_SIZE, CHUNK_SIZE, 1.5f * CHUNK_SIZE);
+    public static readonly Vector3 PLAYER_POS = new(CENTER_XZ, CENTER_Y, CENTER_XZ);
     public const float MOUSE_SENSITIVITY = 0.002f;
 
     // Colors
