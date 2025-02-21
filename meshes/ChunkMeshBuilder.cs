@@ -7,57 +7,51 @@ using static Settings;
 
 public static class VoxelMeshBuilder
 {
-    /*
-
-    /// <summary>
-    /// Calculates the ambient occlusion (AO) values for a voxel based on its neighbors.
-    /// </summary>
-    public static Vector4h GetAO(Vector3i localPos, Vector3i worldPos, byte[,,] worldVoxels, char plane)
+    public static byte[] GetAO(Vector3i localPos, Vector3i worldPos, byte[,] worldVoxels, char plane)
     {
         int x = localPos.X, y = localPos.Y, z = localPos.Z;
         int wx = worldPos.X, wy = worldPos.Y, wz = worldPos.Z;
 
-        bool a, b, c, d, e, f, g, h;
+        int a, b, c, d, e, f, g, h;
 
         switch (plane)
         {
             case 'Y':
-                a = IsVoid(new Vector3i(x, y, z - 1), new Vector3i(wx, wy, wz - 1), worldVoxels);
-                b = IsVoid(new Vector3i(x - 1, y, z - 1), new Vector3i(wx - 1, wy, wz - 1), worldVoxels);
-                c = IsVoid(new Vector3i(x - 1, y, z), new Vector3i(wx - 1, wy, wz), worldVoxels);
-                d = IsVoid(new Vector3i(x - 1, y, z + 1), new Vector3i(wx - 1, wy, wz + 1), worldVoxels);
-                e = IsVoid(new Vector3i(x, y, z + 1), new Vector3i(wx, wy, wz + 1), worldVoxels);
-                f = IsVoid(new Vector3i(x + 1, y, z + 1), new Vector3i(wx + 1, wy, wz + 1), worldVoxels);
-                g = IsVoid(new Vector3i(x + 1, y, z), new Vector3i(wx + 1, wy, wz), worldVoxels);
-                h = IsVoid(new Vector3i(x + 1, y, z - 1), new Vector3i(wx + 1, wy, wz - 1), worldVoxels);
+                a = isVoid((x    , y, z - 1), (wx    , wy, wz - 1), worldVoxels) ? 1:0;
+                b = isVoid((x - 1, y, z - 1), (wx - 1, wy, wz - 1), worldVoxels) ? 1:0;
+                c = isVoid((x - 1, y, z    ), (wx - 1, wy, wz    ), worldVoxels) ? 1:0;
+                d = isVoid((x - 1, y, z + 1), (wx - 1, wy, wz + 1), worldVoxels) ? 1:0;
+                e = isVoid((x    , y, z + 1), (wx    , wy, wz + 1), worldVoxels) ? 1:0;
+                f = isVoid((x + 1, y, z + 1), (wx + 1, wy, wz + 1), worldVoxels) ? 1:0;
+                g = isVoid((x + 1, y, z    ), (wx + 1, wy, wz    ), worldVoxels) ? 1:0;
+                h = isVoid((x + 1, y, z - 1), (wx + 1, wy, wz - 1), worldVoxels) ? 1:0;
                 break;
             case 'X':
-                a = IsVoid(new Vector3i(x, y, z - 1), new Vector3i(wx, wy, wz - 1), worldVoxels);
-                b = IsVoid(new Vector3i(x, y - 1, z - 1), new Vector3i(wx, wy - 1, wz - 1), worldVoxels);
-                c = IsVoid(new Vector3i(x, y - 1, z), new Vector3i(wx, wy - 1, wz), worldVoxels);
-                d = IsVoid(new Vector3i(x, y - 1, z + 1), new Vector3i(wx, wy - 1, wz + 1), worldVoxels);
-                e = IsVoid(new Vector3i(x, y, z + 1), new Vector3i(wx, wy, wz + 1), worldVoxels);
-                f = IsVoid(new Vector3i(x, y + 1, z + 1), new Vector3i(wx, wy + 1, wz + 1), worldVoxels);
-                g = IsVoid(new Vector3i(x, y + 1, z), new Vector3i(wx, wy + 1, wz), worldVoxels);
-                h = IsVoid(new Vector3i(x, y + 1, z - 1), new Vector3i(wx, wy + 1, wz - 1), worldVoxels);
+                a = isVoid((x, y    , z - 1), (wx, wy    , wz - 1), worldVoxels) ? 1:0;
+                b = isVoid((x, y - 1, z - 1), (wx, wy - 1, wz - 1), worldVoxels) ? 1:0;
+                c = isVoid((x, y - 1, z    ), (wx, wy - 1, wz    ), worldVoxels) ? 1:0;
+                d = isVoid((x, y - 1, z + 1), (wx, wy - 1, wz + 1), worldVoxels) ? 1:0;
+                e = isVoid((x, y    , z + 1), (wx, wy    , wz + 1), worldVoxels) ? 1:0;
+                f = isVoid((x, y + 1, z + 1), (wx, wy + 1, wz + 1), worldVoxels) ? 1:0;
+                g = isVoid((x, y + 1, z    ), (wx, wy + 1, wz    ), worldVoxels) ? 1:0;
+                h = isVoid((x, y + 1, z - 1), (wx, wy + 1, wz - 1), worldVoxels) ? 1:0;
                 break;
             default: // 'Z'
-                a = IsVoid(new Vector3i(x - 1, y, z), new Vector3i(wx - 1, wy, wz), worldVoxels);
-                b = IsVoid(new Vector3i(x - 1, y - 1, z), new Vector3i(wx - 1, wy - 1, wz), worldVoxels);
-                c = IsVoid(new Vector3i(x, y - 1, z), new Vector3i(wx, wy - 1, wz), worldVoxels);
-                d = IsVoid(new Vector3i(x + 1, y - 1, z), new Vector3i(wx + 1, wy - 1, wz), worldVoxels);
-                e = IsVoid(new Vector3i(x + 1, y, z), new Vector3i(wx + 1, wy, wz), worldVoxels);
-                f = IsVoid(new Vector3i(x + 1, y + 1, z), new Vector3i(wx + 1, wy + 1, wz), worldVoxels);
-                g = IsVoid(new Vector3i(x, y + 1, z), new Vector3i(wx, wy + 1, wz), worldVoxels);
-                h = IsVoid(new Vector3i(x - 1, y + 1, z), new Vector3i(wx - 1, wy + 1, wz), worldVoxels);
+                a = isVoid((x - 1, y    , z), (wx - 1, wy    , wz), worldVoxels) ? 1:0;
+                b = isVoid((x - 1, y - 1, z), (wx - 1, wy - 1, wz), worldVoxels) ? 1:0;
+                c = isVoid((x    , y - 1, z), (wx    , wy - 1, wz), worldVoxels) ? 1:0;
+                d = isVoid((x + 1, y - 1, z), (wx + 1, wy - 1, wz), worldVoxels) ? 1:0;
+                e = isVoid((x + 1, y    , z), (wx + 1, wy    , wz), worldVoxels) ? 1:0;
+                f = isVoid((x + 1, y + 1, z), (wx + 1, wy + 1, wz), worldVoxels) ? 1:0;
+                g = isVoid((x    , y + 1, z), (wx    , wy + 1, wz), worldVoxels) ? 1:0;
+                h = isVoid((x - 1, y + 1, z), (wx - 1, wy + 1, wz), worldVoxels) ? 1:0;
                 break;
         }
 
-        Vector4h ao;// = new((a + b + c), (g + h + a), (e + f + g), (c + d + e)));
-        //uint ao = (uint)((a ? 1 : 0) + (b ? 1 : 0) + (c ? 1 : 0)), (g ? 1 : 0) + (h ? 1 : 0) + (a ? 1 : 0), (e ? 1 : 0) + (f ? 1 : 0) + (g ? 1 : 0), (c ? 1 : 0) + (d ? 1 : 0) + (e ? 1 : 0);
-        return ao;
+        return [(byte)(a + b + c), (byte)(g + h + a), (byte)(e + f + g), (byte)(c + d + e)];
     }
 
+    /*
     public static uint PackData(int x, int y, int z, byte voxelId, byte faceId, int aoId, byte flipId)
     {
         uint a = (uint)x, b = (uint)y, c = (uint)z, d = voxelId, e = faceId, f = (uint)aoId, g = flipId;
@@ -139,26 +133,14 @@ public static class VoxelMeshBuilder
     }
     */
 
-
-    /*
-    public static int AddData(uint[] vertexData, int index, params uint[] vertices)
-    {
-        foreach (uint vertex in vertices)
-        {
-            vertexData[index] = vertex;
-            index++;
-        }
-        return index;
-    }
-    */
-
-    record struct packedVertex(int x, int y, int z, byte voxelId, byte face)
+    record struct packedVertex(int x, int y, int z, byte voxelId, byte face, byte ao_id)
     {
         public int x { get; init; } = x;
         public int y { get; init; } = y;
         public int z { get; init; } = z;
         public byte voxelId { get; init; } = voxelId;
         public byte face { get; init; } = face;
+        public byte ao_id { get; init; } = ao_id;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -171,7 +153,8 @@ public static class VoxelMeshBuilder
             vertexData[index + 2] = (byte)vertex.z;
             vertexData[index + 3] = vertex.voxelId;
             vertexData[index + 4] = vertex.face;
-            index += 5;
+            vertexData[index + 5] = vertex.ao_id;
+            index += 6;
         }
         return index;
     }
@@ -362,12 +345,13 @@ public static class VoxelMeshBuilder
                     // Top face
                     if (isVoid((x, y + 1, z), (wx, wy + 1, wz), worldVoxels))
                     {
+                        var ao = GetAO((x, y + 1, z), (wx, wy + 1, wz), worldVoxels, 'Y');
                         packedVertex[] v =
                         [
-                            new(x    , y + 1, z    , voxelId, 0),
-                            new(x + 1, y + 1, z    , voxelId, 0),
-                            new(x + 1, y + 1, z + 1, voxelId, 0),
-                            new(x    , y + 1, z + 1, voxelId, 0)
+                            new(x    , y + 1, z    , voxelId, 0, ao[0]),
+                            new(x + 1, y + 1, z    , voxelId, 0, ao[1]),
+                            new(x + 1, y + 1, z + 1, voxelId, 0, ao[2]),
+                            new(x    , y + 1, z + 1, voxelId, 0, ao[3])
                         ];
                         index = addData(vertexData, index, [v[0], v[3], v[2], v[0], v[2], v[1]]);
                     }
@@ -375,12 +359,13 @@ public static class VoxelMeshBuilder
                     // Bottom face
                     if (isVoid((x, y - 1, z), (wx, wy - 1, wz), worldVoxels))
                     {
+                        var ao = GetAO((x, y - 1, z), (wx, wy - 1, wz), worldVoxels, 'Y');
                         packedVertex[] v =
                         [
-                            new(x    , y, z    , voxelId, 1),
-                            new(x + 1, y, z    , voxelId, 1),
-                            new(x + 1, y, z + 1, voxelId, 1),
-                            new(x    , y, z + 1, voxelId, 1)
+                            new(x    , y, z    , voxelId, 1, ao[0]),
+                            new(x + 1, y, z    , voxelId, 1, ao[1]),
+                            new(x + 1, y, z + 1, voxelId, 1, ao[2]),
+                            new(x    , y, z + 1, voxelId, 1, ao[3])
                         ];
                         index = addData(vertexData, index, [v[0], v[2], v[3], v[0], v[1], v[2]]);
                     }
@@ -388,12 +373,13 @@ public static class VoxelMeshBuilder
                     // Right face
                     if (isVoid((x + 1, y, z), (wx + 1, wy, wz), worldVoxels))
                     {
+                        var ao = GetAO((x + 1, y, z), (wx + 1, wy, wz), worldVoxels, 'X');
                         packedVertex[] v =
                         [
-                            new(x + 1, y    , z    , voxelId, 2),
-                            new(x + 1, y + 1, z    , voxelId, 2),
-                            new(x + 1, y + 1, z + 1, voxelId, 2),
-                            new(x + 1, y    , z + 1, voxelId, 2)
+                            new(x + 1, y    , z    , voxelId, 2, ao[0]),
+                            new(x + 1, y + 1, z    , voxelId, 2, ao[1]),
+                            new(x + 1, y + 1, z + 1, voxelId, 2, ao[2]),
+                            new(x + 1, y    , z + 1, voxelId, 2, ao[3])
                         ];
                         index = addData(vertexData, index, [v[0], v[1], v[2], v[0], v[2], v[3]]);
                     }
@@ -401,12 +387,13 @@ public static class VoxelMeshBuilder
                     // Left face
                     if (isVoid((x - 1, y, z), (wx - 1, wy, wz), worldVoxels))
                     {
+                        var ao = GetAO((x - 1, y, z), (wx - 1, wy, wz), worldVoxels, 'X');
                         packedVertex[] v =
                         [
-                            new(x, y    , z    , voxelId, 3),
-                            new(x, y + 1, z    , voxelId, 3),
-                            new(x, y + 1, z + 1, voxelId, 3),
-                            new(x, y    , z + 1, voxelId, 3)
+                            new(x, y    , z    , voxelId, 3, ao[0]),
+                            new(x, y + 1, z    , voxelId, 3, ao[1]),
+                            new(x, y + 1, z + 1, voxelId, 3, ao[2]),
+                            new(x, y    , z + 1, voxelId, 3, ao[3])
                         ];
                         index = addData(vertexData, index, [v[0], v[2], v[1], v[0], v[3], v[2]]);
                     }
@@ -414,12 +401,13 @@ public static class VoxelMeshBuilder
                     // Back face
                     if (isVoid((x, y, z - 1), (wx, wy, wz - 1), worldVoxels))
                     {
+                        var ao = GetAO((x, y, z - 1), (wx, wy, wz - 1), worldVoxels, 'Z');
                         packedVertex[] v =
                         [
-                            new(x    , y    , z, voxelId, 4),
-                            new(x    , y + 1, z, voxelId, 4),
-                            new(x + 1, y + 1, z, voxelId, 4),
-                            new(x + 1, y    , z, voxelId, 4)
+                            new(x    , y    , z, voxelId, 4, ao[0]),
+                            new(x    , y + 1, z, voxelId, 4, ao[1]),
+                            new(x + 1, y + 1, z, voxelId, 4, ao[2]),
+                            new(x + 1, y    , z, voxelId, 4, ao[3])
                         ];
                         index = addData(vertexData, index, [v[0], v[1], v[2], v[0], v[2], v[3]]);
                     }
@@ -427,12 +415,13 @@ public static class VoxelMeshBuilder
                     // Front face
                     if (isVoid((x, y, z + 1), (wx, wy, wz + 1), worldVoxels))
                     {
+                        var ao = GetAO((x, y, z + 1), (wx, wy, wz + 1), worldVoxels, 'Z');
                         packedVertex[] v =
                         [
-                            new(x    , y    , z + 1, voxelId, 5),
-                            new(x    , y + 1, z + 1, voxelId, 5),
-                            new(x + 1, y + 1, z + 1, voxelId, 5),
-                            new(x + 1, y    , z + 1, voxelId, 5)
+                            new(x    , y    , z + 1, voxelId, 5, ao[0]),
+                            new(x    , y + 1, z + 1, voxelId, 5, ao[1]),
+                            new(x + 1, y + 1, z + 1, voxelId, 5, ao[2]),
+                            new(x + 1, y    , z + 1, voxelId, 5, ao[3])
                         ];
                         index = addData(vertexData, index, [v[0], v[2], v[1], v[0], v[3], v[2]]);
                     }
