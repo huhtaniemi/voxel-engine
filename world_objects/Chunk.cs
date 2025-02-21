@@ -13,8 +13,8 @@ public class Chunk
     public byte[] voxels;// { get; private set; }
 
     internal ChunkMesh? mesh;// { get; private set; }
+    internal bool IsEmpty;// { get; private set; }
     /*
-    public bool IsEmpty { get; private set; }
 
     public Vector3 Center { get; private set; }
     private Func<Chunk, bool> isOnFrustum;
@@ -51,6 +51,8 @@ public class Chunk
 
     public void Render()
     {
+        if (IsEmpty) return;
+
         /*
         if (!IsEmpty && isOnFrustum(this))
         {
@@ -99,6 +101,7 @@ public class Chunk
             */
             }
         }
+        IsEmpty = !voxels.Any(v => v != 0);
         return voxels;
     }
 
