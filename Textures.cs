@@ -17,7 +17,7 @@ public class Textures
         this.app = app;
 
         // Load textures
-        this.texture0 = Load("frame.png");
+        this.texture0 = Load("test.png");
         /*
         texture1 = Load("water.png");
         textureArray0 = Load("tex_array_0.png", isTexArray: true);

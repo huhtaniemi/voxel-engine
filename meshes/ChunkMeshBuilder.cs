@@ -133,7 +133,7 @@ public static class VoxelMeshBuilder
     }
     */
 
-    record struct packedVertex(int x, int y, int z, byte voxelId, byte face, byte ao_id)
+    record struct packedVertex(int x, int y, int z, byte voxelId, byte face, byte ao_id, bool flip_id)
     {
         public int x { get; init; } = x;
         public int y { get; init; } = y;
@@ -141,6 +141,7 @@ public static class VoxelMeshBuilder
         public byte voxelId { get; init; } = voxelId;
         public byte face { get; init; } = face;
         public byte ao_id { get; init; } = ao_id;
+        public bool flip_id { get; init; } = flip_id;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -154,7 +155,8 @@ public static class VoxelMeshBuilder
             vertexData[index + 3] = vertex.voxelId;
             vertexData[index + 4] = vertex.face;
             vertexData[index + 5] = vertex.ao_id;
-            index += 6;
+            vertexData[index + 6] = (byte)(vertex.flip_id ? 1 : 0);
+            index += 7;
         }
         return index;
     }
@@ -349,10 +351,10 @@ public static class VoxelMeshBuilder
                         var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
-                            new(x    , y + 1, z    , voxelId, 0, ao[0]),
-                            new(x + 1, y + 1, z    , voxelId, 0, ao[1]),
-                            new(x + 1, y + 1, z + 1, voxelId, 0, ao[2]),
-                            new(x    , y + 1, z + 1, voxelId, 0, ao[3])
+                            new(x    , y + 1, z    , voxelId, 0, ao[0], flip_id),
+                            new(x + 1, y + 1, z    , voxelId, 0, ao[1], flip_id),
+                            new(x + 1, y + 1, z + 1, voxelId, 0, ao[2], flip_id),
+                            new(x    , y + 1, z + 1, voxelId, 0, ao[3], flip_id)
                         ];
                         index = addData(vertexData, index,
                             flip_id
@@ -367,10 +369,10 @@ public static class VoxelMeshBuilder
                         var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
-                            new(x    , y, z    , voxelId, 1, ao[0]),
-                            new(x + 1, y, z    , voxelId, 1, ao[1]),
-                            new(x + 1, y, z + 1, voxelId, 1, ao[2]),
-                            new(x    , y, z + 1, voxelId, 1, ao[3])
+                            new(x    , y, z    , voxelId, 1, ao[0], flip_id),
+                            new(x + 1, y, z    , voxelId, 1, ao[1], flip_id),
+                            new(x + 1, y, z + 1, voxelId, 1, ao[2], flip_id),
+                            new(x    , y, z + 1, voxelId, 1, ao[3], flip_id)
                         ];
                         index = addData(vertexData, index,
                             flip_id
@@ -385,10 +387,10 @@ public static class VoxelMeshBuilder
                         var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
-                            new(x + 1, y    , z    , voxelId, 2, ao[0]),
-                            new(x + 1, y + 1, z    , voxelId, 2, ao[1]),
-                            new(x + 1, y + 1, z + 1, voxelId, 2, ao[2]),
-                            new(x + 1, y    , z + 1, voxelId, 2, ao[3])
+                            new(x + 1, y    , z    , voxelId, 2, ao[0], flip_id),
+                            new(x + 1, y + 1, z    , voxelId, 2, ao[1], flip_id),
+                            new(x + 1, y + 1, z + 1, voxelId, 2, ao[2], flip_id),
+                            new(x + 1, y    , z + 1, voxelId, 2, ao[3], flip_id)
                         ];
                         index = addData(vertexData, index,
                             flip_id
@@ -403,10 +405,10 @@ public static class VoxelMeshBuilder
                         var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
-                            new(x, y    , z    , voxelId, 3, ao[0]),
-                            new(x, y + 1, z    , voxelId, 3, ao[1]),
-                            new(x, y + 1, z + 1, voxelId, 3, ao[2]),
-                            new(x, y    , z + 1, voxelId, 3, ao[3])
+                            new(x, y    , z    , voxelId, 3, ao[0], flip_id),
+                            new(x, y + 1, z    , voxelId, 3, ao[1], flip_id),
+                            new(x, y + 1, z + 1, voxelId, 3, ao[2], flip_id),
+                            new(x, y    , z + 1, voxelId, 3, ao[3], flip_id)
                         ];
                         index = addData(vertexData, index,
                             flip_id
@@ -421,10 +423,10 @@ public static class VoxelMeshBuilder
                         var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
-                            new(x    , y    , z, voxelId, 4, ao[0]),
-                            new(x    , y + 1, z, voxelId, 4, ao[1]),
-                            new(x + 1, y + 1, z, voxelId, 4, ao[2]),
-                            new(x + 1, y    , z, voxelId, 4, ao[3])
+                            new(x    , y    , z, voxelId, 4, ao[0], flip_id),
+                            new(x    , y + 1, z, voxelId, 4, ao[1], flip_id),
+                            new(x + 1, y + 1, z, voxelId, 4, ao[2], flip_id),
+                            new(x + 1, y    , z, voxelId, 4, ao[3], flip_id)
                         ];
                         index = addData(vertexData, index,
                             flip_id
@@ -439,10 +441,10 @@ public static class VoxelMeshBuilder
                         var flip_id = ao[1] + ao[3] > ao[0] + ao[2];
                         packedVertex[] v =
                         [
-                            new(x    , y    , z + 1, voxelId, 5, ao[0]),
-                            new(x    , y + 1, z + 1, voxelId, 5, ao[1]),
-                            new(x + 1, y + 1, z + 1, voxelId, 5, ao[2]),
-                            new(x + 1, y    , z + 1, voxelId, 5, ao[3])
+                            new(x    , y    , z + 1, voxelId, 5, ao[0], flip_id),
+                            new(x    , y + 1, z + 1, voxelId, 5, ao[1], flip_id),
+                            new(x + 1, y + 1, z + 1, voxelId, 5, ao[2], flip_id),
+                            new(x + 1, y    , z + 1, voxelId, 5, ao[3], flip_id)
                         ];
                         index = addData(vertexData, index,
                             flip_id
