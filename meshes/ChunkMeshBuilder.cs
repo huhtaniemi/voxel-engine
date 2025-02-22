@@ -394,7 +394,7 @@ public static class VoxelMeshBuilder
                         ];
                         index = addData(vertexData, index,
                             flip_id
-                            ? [v[3], v[0], v[1], v[3], v[1], v[0]]
+                            ? [v[3], v[0], v[1], v[3], v[1], v[2]]
                             : [v[0], v[1], v[2], v[0], v[2], v[3]]);
                     }
 
