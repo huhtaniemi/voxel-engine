@@ -487,7 +487,7 @@ namespace ModernGL
             {
                 GL.BindVertexArray(id);
                 foreach (var item in content)
-                    bind_content(item);
+                    bind_content(item, skip_errors);
                 GL.BindVertexArray(0);
             }
 
@@ -557,7 +557,7 @@ namespace ModernGL
                 };
             }
 
-            private void bind_content((Buffer vbo, string vbo_format, string[] attrs) content)
+            private void bind_content((Buffer vbo, string vbo_format, string[] attrs) content, bool skip_errors)
             {
                 var vbo_tokens = new Buffer.BufferFormat(content.vbo_format, content.attrs);
 
@@ -583,8 +583,9 @@ namespace ModernGL
                     {
                         Console.WriteLine("error:" + GL.GetError());
                         offset += token.size;
-                        continue;
-                        //if (skip_errors)
+                        if (!skip_errors)
+                            throw new ArgumentException($"attribute {token.attr} not found in shader program.");
+                        else continue;
                     }
 
                     GL.GetActiveAttrib(program.id, location, out int size, out ActiveAttribType type);
