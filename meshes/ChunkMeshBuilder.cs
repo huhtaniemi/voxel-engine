@@ -51,30 +51,6 @@ public static class VoxelMeshBuilder
         return [(byte)(a + b + c), (byte)(g + h + a), (byte)(e + f + g), (byte)(c + d + e)];
     }
 
-    /*
-    public static uint PackData(int x, int y, int z, byte voxelId, byte faceId, int aoId, byte flipId)
-    {
-        uint a = (uint)x, b = (uint)y, c = (uint)z, d = voxelId, e = faceId, f = (uint)aoId, g = flipId;
-
-        int bBit = 6, cBit = 6, dBit = 8, eBit = 3, fBit = 2, gBit = 1;
-        int fgBit = fBit + gBit;
-        int efgBit = eBit + fgBit;
-        int defgBit = dBit + efgBit;
-        int cdefgBit = cBit + defgBit;
-        int bcdefgBit = bBit + cdefgBit;
-
-        uint packedData
-            = (a << bcdefgBit)
-            | (b << cdefgBit)
-            | (c << defgBit)
-            | (d << efgBit)
-            | (e << fgBit)
-            | (f << gBit)
-            | g;
-        return packedData;
-    }
-    */
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetChunkIndex(Vector3i worldVoxelPos)
     {
@@ -133,22 +109,31 @@ public static class VoxelMeshBuilder
     }
     */
 
-    record struct packedVertex(int x, int y, int z, byte voxelId, byte face, byte ao_id, bool flip_id)
+    record struct packedVertex(int x, int y, int z, byte voxel_id, byte face_id, byte ao_id, bool flip_id)
     {
         public int x { get; init; } = x;
         public int y { get; init; } = y;
         public int z { get; init; } = z;
-        public byte voxelId { get; init; } = voxelId;
-        public byte face { get; init; } = face;
+        public byte voxel_id { get; init; } = voxel_id;
+        public byte face_id { get; init; } = face_id;
         public byte ao_id { get; init; } = ao_id;
         public bool flip_id { get; init; } = flip_id;
+
+        public uint packed_data {
+            // x: 6bit  y: 6bit  z: 6bit  voxel_id: 8bit  face_id: 3bit  ao_id: 2bit  flip_id: 1bit
+            get =>
+                (uint)((x << 6+6+8+3+2+1) | (y << 6+8+3+2+1) | (z << 8+3+2+1) |
+                (voxel_id << 3+2+1) | (face_id << 2+1) | (ao_id << 1) | (flip_id?1:0));
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int addData(byte[] vertexData, int index, packedVertex[] vertices)
+    private static int addData(uint[] vertexData, int index, packedVertex[] vertices)
     {
         foreach (var vertex in vertices)
         {
+            vertexData[index++] = vertex.packed_data;
+            /*
             vertexData[index + 0] = (byte)vertex.x;
             vertexData[index + 1] = (byte)vertex.y;
             vertexData[index + 2] = (byte)vertex.z;
@@ -157,6 +142,7 @@ public static class VoxelMeshBuilder
             vertexData[index + 5] = vertex.ao_id;
             vertexData[index + 6] = (byte)(vertex.flip_id ? 1 : 0);
             index += 7;
+            */
         }
         return index;
     }
@@ -325,7 +311,7 @@ public static class VoxelMeshBuilder
 
     public static object BuildChunkMesh(byte[] chunkVoxels, int formatSize,Vector3i chunkPos, byte[,] worldVoxels)
     {
-        byte[] vertexData = new byte[CHUNK_VOL * 18 * formatSize * sizeof(byte)]; // asuming bytesize for vbo_data
+        uint[] vertexData = new uint[CHUNK_VOL * 18 * formatSize * sizeof(uint)]; // asuming bytesize for vbo_data
         int index = 0;
 
         for (byte x = 0; x < CHUNK_SIZE; x++)
