@@ -67,6 +67,64 @@ namespace ModernGL
             }
 
             internal readonly int id;
+
+            internal record struct AttributesInfo
+            {
+                public AttributesInfo(int i, int location, int size, ActiveAttribType type) =>
+                    (index, this.location, this.size, this.type) = (i, location, size, type);
+                public int index { get; }
+                public int location { get; }
+                public int size { get; }
+                public ActiveAttribType type { get; }
+
+                public bool IsFloat
+                {
+                    get => type switch
+                    {
+                        ActiveAttribType.Float or
+                        ActiveAttribType.FloatVec2 or ActiveAttribType.FloatVec3 or ActiveAttribType.FloatVec4 or
+                        ActiveAttribType.FloatMat2 or ActiveAttribType.FloatMat3 or ActiveAttribType.FloatMat4 or
+                        ActiveAttribType.FloatMat2x3 or ActiveAttribType.FloatMat2x4 or
+                        ActiveAttribType.FloatMat3x2 or ActiveAttribType.FloatMat3x4 or
+                        ActiveAttribType.FloatMat4x2 or ActiveAttribType.FloatMat4x3 => true,
+                        _ => false
+                    };
+                }
+                public bool IsDouble
+                {
+                    get => type switch
+                    {
+                        ActiveAttribType.Double or
+                        ActiveAttribType.DoubleVec2 or ActiveAttribType.DoubleVec3 or
+                        ActiveAttribType.DoubleVec4 or ActiveAttribType.DoubleMat2 or
+                        ActiveAttribType.DoubleMat3 or ActiveAttribType.DoubleMat4 or
+                        ActiveAttribType.DoubleMat2x3 or ActiveAttribType.DoubleMat2x4 or
+                        ActiveAttribType.DoubleMat3x2 or ActiveAttribType.DoubleMat3x4 or
+                        ActiveAttribType.DoubleMat4x2 or ActiveAttribType.DoubleMat4x3 => true,
+                        _ => false
+                    };
+                }
+                public bool IsInt
+                {
+                    get => type switch
+                    {
+                        ActiveAttribType.Int or
+                        ActiveAttribType.IntVec2 or ActiveAttribType.IntVec3 or ActiveAttribType.IntVec4 => true,
+                        _ => false
+                    };
+                }
+                public bool IsUInt
+                {
+                    get => type switch
+                    {
+                        ActiveAttribType.UnsignedInt or
+                        ActiveAttribType.UnsignedIntVec2 or ActiveAttribType.UnsignedIntVec3 or ActiveAttribType.UnsignedIntVec4 => true,
+                        _ => false
+                    };
+                }
+            }
+            internal readonly Dictionary<string, AttributesInfo> _attributes = [];
+
             internal record struct UniformInfo
             {
                 public UniformInfo(int i, int location, int size, ActiveUniformType type) =>
@@ -90,13 +148,19 @@ namespace ModernGL
 
                     link();
 
+                    GL.GetProgram(id, GetProgramParameterName.ActiveAttributes, out var attributesCount);
+                    for (var i = 0; i < attributesCount; i++)
+                    {
+                        var key = GL.GetActiveAttrib(id, i, out int size, out ActiveAttribType type);
+                        var location = GL.GetAttribLocation(id, key);
+                        _attributes[key] = new(i, location, size, type);
+                    }
                     GL.GetProgram(id, GetProgramParameterName.ActiveUniforms, out var uniformsCount);
                     for (var i = 0; i < uniformsCount; i++)
                     {
                         var key = GL.GetActiveUniform(id, i, out int size, out ActiveUniformType type);
                         var location = GL.GetUniformLocation(id, key);
                         _uniforms[key] = new(i, location, size, type);
-                        Console.WriteLine($"uniform on program {id} location {location} type {type} - '{key}' " + "error:" + GL.GetError());
                     }
                 }
                 finally
@@ -493,71 +557,6 @@ namespace ModernGL
                 GL.BindVertexArray(0);
             }
 
-            private static bool IsFloatType(ActiveAttribType type)
-            {
-                return type switch
-                {
-                    ActiveAttribType.Float or
-                    ActiveAttribType.FloatVec2 or
-                    ActiveAttribType.FloatVec3 or
-                    ActiveAttribType.FloatVec4 or
-                    ActiveAttribType.FloatMat2 or
-                    ActiveAttribType.FloatMat3 or
-                    ActiveAttribType.FloatMat4 or
-                    ActiveAttribType.FloatMat2x3 or
-                    ActiveAttribType.FloatMat2x4 or
-                    ActiveAttribType.FloatMat3x2 or
-                    ActiveAttribType.FloatMat3x4 or
-                    ActiveAttribType.FloatMat4x2 or
-                    ActiveAttribType.FloatMat4x3 => true,
-                    _ => false
-                };
-            }
-
-            private static bool IsDoubleType(ActiveAttribType type)
-            {
-                return type switch
-                {
-                    ActiveAttribType.Double or
-                    ActiveAttribType.DoubleVec2 or
-                    ActiveAttribType.DoubleVec3 or
-                    ActiveAttribType.DoubleVec4 or
-                    ActiveAttribType.DoubleMat2 or
-                    ActiveAttribType.DoubleMat3 or
-                    ActiveAttribType.DoubleMat4 or
-                    ActiveAttribType.DoubleMat2x3 or
-                    ActiveAttribType.DoubleMat2x4 or
-                    ActiveAttribType.DoubleMat3x2 or
-                    ActiveAttribType.DoubleMat3x4 or
-                    ActiveAttribType.DoubleMat4x2 or
-                    ActiveAttribType.DoubleMat4x3 => true,
-                    _ => false
-                };
-            }
-
-            private static bool IsIntType(ActiveAttribType type)
-            {
-                return type switch
-                {
-                    ActiveAttribType.Int or
-                    ActiveAttribType.IntVec2 or
-                    ActiveAttribType.IntVec3 or
-                    ActiveAttribType.IntVec4 => true,
-                    _ => false
-                };
-            }
-
-            private static bool IsUIntType(ActiveAttribType type)
-            {
-                return type switch
-                {
-                    ActiveAttribType.UnsignedInt or
-                    ActiveAttribType.UnsignedIntVec2 or
-                    ActiveAttribType.UnsignedIntVec3 or
-                    ActiveAttribType.UnsignedIntVec4 => true,
-                    _ => false
-                };
-            }
 
             private void bind_content((Buffer vbo, string vbo_format, string[] attrs) content, bool skip_errors)
             {
@@ -577,39 +576,33 @@ namespace ModernGL
                         offset += token.bytes;
                         continue;
                     }
-
-                    // https://stackoverflow.com/a/39684775/1820584
-                    var location = GL.GetAttribLocation(program.id, token.attr);
-                    Console.Write($"attrib-ptr '{token.attr}' location {location}  ");
-                    if (location == -1)
+                    if (!program._attributes.ContainsKey(token.attr))
                     {
-                        Console.WriteLine("error:" + GL.GetError());
                         offset += token.bytes;
                         if (!skip_errors)
                             throw new ArgumentException($"attribute {token.attr} not found in shader program.");
                         else continue;
                     }
 
-                    GL.GetActiveAttrib(program.id, location, out int size, out ActiveAttribType type);
-                    Console.Write($"size {size} type '{type}'  vbo {content.vbo.id} token '{token}' stride {vbo_tokens.stride} offset {offset}  " );
-
-                    if (IsFloatType(type))
+                    var attr = program._attributes[token.attr];
+                    if (attr.IsFloat)
                     {
-                        GL.VertexAttribPointer(location, token.count, token.ptype, token.normalized, vbo_tokens.stride, offset);
+                        GL.VertexAttribPointer(attr.location, token.count, token.ptype, token.normalized, vbo_tokens.stride, offset);
                     }
-                    else if (IsIntType(type) || IsUIntType(type))
+                    else if (attr.IsInt || attr.IsUInt)
                     {
-                        GL.VertexAttribIPointer(location, token.count, (VertexAttribIntegerType)token.ptype, vbo_tokens.stride, offset);
+                        GL.VertexAttribIPointer(attr.location, token.count, (VertexAttribIntegerType)token.ptype, vbo_tokens.stride, offset);
                     }
-                    else if (IsDoubleType(type))
+                    else if (attr.IsDouble)
                     {
-                        GL.VertexAttribLPointer(location, token.count, (VertexAttribDoubleType)token.ptype, vbo_tokens.stride, offset);
+                        GL.VertexAttribLPointer(attr.location, token.count, (VertexAttribDoubleType)token.ptype, vbo_tokens.stride, offset);
                     }
+                    else throw new NotSupportedException($"attrib ype '{attr.type}' not supported.");
 
                     Console.WriteLine("error:" + GL.GetError());
 
-                    GL.VertexAttribDivisor(location, vbo_tokens.divisor);
-                    GL.EnableVertexAttribArray(location);
+                    GL.VertexAttribDivisor(attr.location, vbo_tokens.divisor);
+                    GL.EnableVertexAttribArray(attr.location);
 
                     offset += token.bytes;
                 }
