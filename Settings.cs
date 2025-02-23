@@ -3,12 +3,6 @@ using OpenTK.Mathematics;
 
 public static class Settings
 {
-    // OpenGL settings
-    public const int MAJOR_VER = 3;
-    public const int MINOR_VER = 3;
-    public const int DEPTH_SIZE = 24;
-    public const int NUM_SAMPLES = 1;  // antialiasing
-
     // Resolution
     public static readonly Vector2i WIN_RES = new Vector2i(1600, 900);
 

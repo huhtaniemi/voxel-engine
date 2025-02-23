@@ -15,7 +15,6 @@ public class Chunk
     internal ChunkMesh? mesh;// { get; private set; }
     internal bool IsEmpty;// { get; private set; }
     /*
-
     public Vector3 Center { get; private set; }
     private Func<Chunk, bool> isOnFrustum;
 
@@ -90,15 +89,6 @@ public class Chunk
                     var wy = y + cy;
                     voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (byte)(wy + 1);
                 }
-            /*
-                for (byte y = 0; y < CHUNK_SIZE; y++)
-                {
-                    //var nval = 1;
-                    var nval = _noise.Evaluate(x * 0.1, y * 0.1, z * 0.1) + 1;
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] =
-                        (byte)((int)nval > 0 ? (x + y + z) : 0);
-                }
-            */
             }
         }
         IsEmpty = !voxels.Any(v => v != 0);

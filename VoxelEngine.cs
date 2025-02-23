@@ -38,7 +38,6 @@ public class VoxelEngine : GameWindow
     public VoxelEngine(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
     {
-
         this.ctx = moderngl.create_context();
         this.ctx.enable();// ctx.DepthTest | ctx.CullFace | ctx.Blend);
         this.ctx.set_clearcolor(System.Drawing.Color.CornflowerBlue);
@@ -117,7 +116,7 @@ public class VoxelEngine : GameWindow
             APIVersion = new Version(3, 3),
             Profile = ContextProfile.Core,
             Flags = ContextFlags.ForwardCompatible | ContextFlags.Debug,
-            DepthBits = Settings.DEPTH_SIZE
+            DepthBits = 24
         };
 
         using var window = new VoxelEngine(GameWindowSettings.Default, nativeWindowSettings);

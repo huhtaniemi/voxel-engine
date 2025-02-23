@@ -827,7 +827,7 @@ namespace ModernGL
 
 
 #pragma warning disable CS8981
-    public class moderngl
+    public static class moderngl
 #pragma warning restore CS8981
     {
         private static glContext? instance;

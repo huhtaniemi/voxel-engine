@@ -43,13 +43,11 @@ public class World
                         this.voxels, chunk_index * voxels.GetLength(1),
                         chunk.voxels.Length);
 
-                    /*
                     // Put the chunk voxels in a separate array
                     //voxels[chunkIndex,:] = chunk.BuildVoxels();
 
                     // Get pointer to voxels
                     //chunk.voxels = ref voxels[chunkIndex,0];
-                    */
                 }
             }
         }
