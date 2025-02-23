@@ -474,16 +474,13 @@ namespace ModernGL
         public class VertexArray : IDisposable
         {
             protected readonly int id;
-            private readonly int program_id;
+            private readonly Program program;
 
             private int num_vertices;
             private int num_instances;
 
-            protected VertexArray() =>
-                this.id = GL.GenVertexArray();
-
-            protected VertexArray(Program program) : this() =>
-                this.program_id = program.id;
+            protected VertexArray(Program program) =>
+                (this.id, this.program) = (GL.GenVertexArray(), program);
 
             public VertexArray(Program program, (Buffer vbo, string vbo_format, string[] attrs)[] content, bool skip_errors = false)
                 : this(program)
@@ -580,7 +577,7 @@ namespace ModernGL
                     }
 
                     // https://stackoverflow.com/a/39684775/1820584
-                    var location = GL.GetAttribLocation(program_id, token.attr);
+                    var location = GL.GetAttribLocation(program.id, token.attr);
                     Console.Write($"attrib-ptr '{token.attr}' location {location}  ");
                     if (location == -1)
                     {
@@ -590,7 +587,7 @@ namespace ModernGL
                         //if (skip_errors)
                     }
 
-                    GL.GetActiveAttrib(program_id, location, out int size, out ActiveAttribType type);
+                    GL.GetActiveAttrib(program.id, location, out int size, out ActiveAttribType type);
                     Console.Write($"size {size} type '{type}'  vbo {content.vbo.id} token '{token}' stride {vbo_tokens.stride} offset {offset}  " );
 
                     if (IsFloatType(type))
@@ -621,7 +618,7 @@ namespace ModernGL
 
             public void render(PrimitiveType mode = PrimitiveType.Triangles, int vertices = -1, int first = 0, int instances = -1)
             {
-                GL.UseProgram(program_id);
+                GL.UseProgram(program.id);
                 GL.BindVertexArray(id);
 
                 if (vertices < 0)
