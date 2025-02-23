@@ -208,7 +208,7 @@ namespace ModernGL
             internal class BufferFormat
             {
                 // each token represents one [count]type[size] triple.
-                internal record ElementToken()
+                internal record ElementToken
                 {
                     public enum ElementType
                     {
@@ -218,10 +218,10 @@ namespace ModernGL
                     internal readonly ElementType type;
                     internal readonly int size; // = 4;
                     internal readonly int count; // = 1;
-                    internal readonly string? attr;
+                    internal readonly string attr;
 
                     // parse a token: [count]type[size]
-                    public ElementToken(string tokenstr, string attr) : this()
+                    public ElementToken(string tokenstr, string attr)
                     {
                         int index = 0;
                         // Parse optional count (if any digits appear at the start).
