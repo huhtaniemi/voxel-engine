@@ -17,7 +17,7 @@ public class Textures
         this.app = app;
 
         // Load textures
-        this.texture0 = Load("test.png");
+        this.texture0 = Load("frame.png");
         /*
         texture1 = Load("water.png");
         textureArray0 = Load("tex_array_0.png", isTexArray: true);
@@ -31,14 +31,37 @@ public class Textures
         */
     }
 
+    private void flip_horisontal(byte[] pixelbytes, int width, int height, int channels)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            int rowStart = y * width * channels;
+            // Swap pixels horizontally in the current row
+            for (int x = 0; x < width / 2; x++)
+            {
+                int leftIndex = rowStart + x * channels;
+                int rightIndex = rowStart + (width - x - 1) * channels;
+
+                // Swap each channel (R, G, B, A)
+                for (int c = 0; c < channels; c++)
+                {
+                    byte temp = pixelbytes[leftIndex + c];
+                    pixelbytes[leftIndex + c] = pixelbytes[rightIndex + c];
+                    pixelbytes[rightIndex + c] = temp;
+                }
+            }
+        }
+    }
+
     private glContext.Texture Load(string fileName, bool isTexArray = false)
     {
         //textureimg = pg.image.load(f'assets/{file_name}')
         //textureimg = pg.transform.flip(textureimg, flip_x = True, flip_y = False)
 
-        StbImage.stbi_set_flip_vertically_on_load(1);
+        //StbImage.stbi_set_flip_vertically_on_load(1);
         using Stream stream = File.OpenRead($"assets/{fileName}");
         var textureimg = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+        flip_horisontal(textureimg.Data, textureimg.Width, textureimg.Height, (int)textureimg.Comp);
 
         //texture = self.ctx.texture(
         //    size = texture.get_size(),

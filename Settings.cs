@@ -46,11 +46,12 @@ public static class Settings
     public static readonly float PITCH_MAX = MathHelper.DegreesToRadians(89);
 
     // Player
-    public const float PLAYER_SPEED = 0.05f;
+    //public const float PLAYER_SPEED = 0.005f;
+    public const float PLAYER_SPEED = 0.01f;
     public const float PLAYER_ROT_SPEED = 0.003f;
     //public static readonly Vector3 PLAYER_POS = new(CENTER_XZ, CHUNK_SIZE, CENTER_XZ);
-    //public static readonly Vector3 PLAYER_POS = new(H_CHUNK_SIZE, CHUNK_SIZE, 1.5f * CHUNK_SIZE);
     public static readonly Vector3 PLAYER_POS = new(CENTER_XZ, CENTER_Y, CENTER_XZ);
+    //public static readonly Vector3 PLAYER_POS = new(H_CHUNK_SIZE, CHUNK_SIZE, 1.5f * CHUNK_SIZE);
     public const float MOUSE_SENSITIVITY = 0.002f;
 
     // Colors
