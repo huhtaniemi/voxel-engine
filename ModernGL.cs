@@ -327,6 +327,8 @@ namespace ModernGL
                         get => type == ElementType.f && size == 1; // vbo_format is "[n]f[1]"
                     }
 
+                    public int bytes { get => size * count; }
+
                     public override string ToString()
                     {
                         return $"{count}{type}{size}";
@@ -572,7 +574,7 @@ namespace ModernGL
                     if (token.type == Buffer.BufferFormat.ElementToken.ElementType.x)
                     {
                         Console.WriteLine($"padding bytes vbo {content.vbo.id} token '{token}' stride {vbo_tokens.stride} offset {offset}  ");
-                        offset += token.size;
+                        offset += token.bytes;
                         continue;
                     }
 
@@ -582,7 +584,7 @@ namespace ModernGL
                     if (location == -1)
                     {
                         Console.WriteLine("error:" + GL.GetError());
-                        offset += token.size;
+                        offset += token.bytes;
                         if (!skip_errors)
                             throw new ArgumentException($"attribute {token.attr} not found in shader program.");
                         else continue;
@@ -609,7 +611,7 @@ namespace ModernGL
                     GL.VertexAttribDivisor(location, vbo_tokens.divisor);
                     GL.EnableVertexAttribArray(location);
 
-                    offset += token.size * token.count;
+                    offset += token.bytes;
                 }
             }
 
