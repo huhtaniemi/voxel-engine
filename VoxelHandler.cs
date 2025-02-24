@@ -18,10 +18,6 @@ public class VoxelHandler
     public bool interactionMode = false;  // false: remove voxel, true: add voxel
     private const byte newVoxelId = Settings.DIRT;
 
-    /// <summary>
-    /// Initializes the VoxelHandler class with a reference to the World instance and its chunks.
-    /// </summary>
-
     public VoxelHandler(World world)
     //public VoxelHandler(VoxelEngine app, Chunk[] chunks)
     {
@@ -34,9 +30,7 @@ public class VoxelHandler
         RayCast();
     }
 
-    /// <summary>
-    /// Adds or removes a voxel based on the current interaction mode.
-    /// </summary>
+    /*
     public void SetVoxel()
     {
         if (interactionMode)
@@ -49,17 +43,11 @@ public class VoxelHandler
         }
     }
 
-    /// <summary>
-    /// Toggles the interaction mode between adding and removing voxels.
-    /// </summary>
     public void SwitchMode()
     {
         interactionMode = !interactionMode;
     }
 
-    /// <summary>
-    /// Adds a voxel at the specified position if the position is empty.
-    /// </summary>
     private void AddVoxel()
     {
         if (voxelId != 0)
@@ -79,9 +67,6 @@ public class VoxelHandler
         }
     }
 
-    /// <summary>
-    /// Removes a voxel at the specified position and rebuilds adjacent chunks.
-    /// </summary>
     private void RemoveVoxel()
     {
         if (voxelId != 0)
@@ -92,9 +77,6 @@ public class VoxelHandler
         }
     }
 
-    /// <summary>
-    /// Rebuilds the mesh of a specific adjacent chunk.
-    /// </summary>
     private void RebuildAdjacentChunks()
     {
         int lx = voxelLocalPos.X, ly = voxelLocalPos.Y, lz = voxelLocalPos.Z;
@@ -110,9 +92,6 @@ public class VoxelHandler
         else if (lz == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new Vector3i(wx, wy, wz + 1));
     }
 
-    /// <summary>
-    /// Rebuilds the mesh of a specific adjacent chunk.
-    /// </summary>
     private void RebuildAdjChunk(Vector3i adjVoxelPos)
     {
         int index = GetChunkIndex(adjVoxelPos);
@@ -122,9 +101,6 @@ public class VoxelHandler
         }
     }
 
-    /// <summary>
-    /// Calculates the chunk index based on the voxel position.
-    /// </summary>
     private int GetChunkIndex(Vector3i position)
     {
         int x = position.X / Settings.CHUNK_SIZE;
@@ -132,10 +108,8 @@ public class VoxelHandler
         int z = position.Z / Settings.CHUNK_SIZE;
         return x + Settings.WORLD_W * z + Settings.WORLD_AREA * y;
     }
+    */
 
-    /// <summary>
-    ///  Retrieves the voxel ID, index, local position, and chunk based on the voxel world position.
-    /// </summary>
     private (byte voxelId, int voxelIndex, Vector3i voxelLocalPos, Chunk chunk) GetVoxelId(Vector3i voxelWorldPos)
     {
         int cx = voxelWorldPos.X / Settings.CHUNK_SIZE;
@@ -159,9 +133,6 @@ public class VoxelHandler
         return (0, 0, new Vector3i(0), null);
     }
 
-    /// <summary>
-    /// Performs ray casting to determine the voxel being interacted with.
-    /// </summary>
     private void RayCast()
     {
         Vector3 start = app.player.Position;
