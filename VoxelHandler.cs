@@ -48,7 +48,7 @@ public class VoxelHandler
     {
         if (voxel_id != 0)
         {
-            var  result = GetVoxelId(voxel_world_pos + voxel_normal);
+            var result = GetVoxelId(voxel_world_pos + voxel_normal);
 
             if (result.voxel_id == 0 && result.chunk != null)
             {
@@ -68,6 +68,13 @@ public class VoxelHandler
         {
             chunk.voxels[voxel_index] = 0;
             //chunk.BuildMesh();
+
+            var chunk_index = VoxelMeshBuilder.GetChunkIndex(voxel_world_pos);
+            Buffer.BlockCopy(
+                chunk.voxels, 0,
+                chunk.world.voxels, chunk_index * this.chunk.world.voxels.GetLength(1),
+                chunk.voxels.Length);
+
             chunk.BuildMesh(ref chunk.mesh);
             RebuildAdjacentChunks();
         }

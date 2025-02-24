@@ -40,7 +40,7 @@ public class World
                     //chunk.BuildVoxels(out this.voxels[chunk_index]);
                     Buffer.BlockCopy(
                         chunk.voxels, 0,
-                        this.voxels, chunk_index * voxels.GetLength(1),
+                        this.voxels, chunk_index * this.voxels.GetLength(1),
                         chunk.voxels.Length);
 
                     // Put the chunk voxels in a separate array
