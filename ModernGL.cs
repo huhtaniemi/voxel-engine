@@ -840,6 +840,44 @@ namespace ModernGL
         }
 
 
+        public enum BLEND
+        {
+            ZERO,
+            ONE = BlendingFactor.One,
+            SRC_COLOR = BlendingFactor.SrcColor,
+            ONE_MINUS_SRC_COLOR = BlendingFactor.OneMinusSrcColor,
+            DST_COLOR = BlendingFactor.DstColor,
+            ONE_MINUS_DST_COLOR = BlendingFactor.OneMinusSrcColor,
+            SRC_ALPHA = BlendingFactor.SrcAlpha,
+            ONE_MINUS_SRC_ALPHA = BlendingFactor.OneMinusSrcAlpha,
+            DST_ALPHA = BlendingFactor.DstAlpha,
+            ONE_MINUS_DST_ALPHA = BlendingFactor.OneMinusDstAlpha,
+        }
+        public static readonly (BLEND,BLEND) DEFAULT_BLENDING = (BLEND.SRC_ALPHA, BLEND.ONE_MINUS_SRC_ALPHA);
+        public static readonly (BLEND, BLEND) ADDITIVE_BLENDING = (BLEND.ONE, BLEND.ONE);
+        public static readonly (BLEND, BLEND) PREMULTIPLIED_ALPHA = (BLEND.SRC_ALPHA, BLEND.ONE);
+        public object blend_func
+        {
+            set
+            {
+                if (value is (BLEND a1, BLEND a2, BLEND a3, BLEND a4))
+                {
+                    GL.BlendFuncSeparate(
+                        (BlendingFactorSrc)a1,(BlendingFactorDest)a2,
+                        (BlendingFactorSrc)a3,(BlendingFactorDest)a4
+                    );
+                }
+                else if (value is (BLEND b1, BLEND b2))
+                {
+                    GL.BlendFuncSeparate(
+                        (BlendingFactorSrc)b1, (BlendingFactorDest)b2,
+                        (BlendingFactorSrc)b1, (BlendingFactorDest)b2
+                    );
+                }
+            }
+        }
+
+
         [Flags]
         // these are for ctx.Enable() function
         public enum EnableFlags
