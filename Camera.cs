@@ -2,17 +2,17 @@ using OpenTK.Mathematics;
 
 public class Camera
 {
-    protected Vector3 Position { get; private set; }
+    public Vector3 Position { get; private set; }
 
     protected float Yaw { get; private set; }
     protected float Pitch { get; private set; }
 
     protected Vector3 Up { get; private set; } = Vector3.UnitY;
     protected Vector3 Right { get; private set; } = Vector3.UnitX;
-    protected Vector3 Forward { get; private set; } = -Vector3.UnitZ;
+    public Vector3 Forward { get; private set; } = -Vector3.UnitZ;
 
 
-    public Matrix4 m_proj { get; private set; }
+    public Matrix4 m_proj { get; set; }
     public Matrix4 m_view { get; private set; }
 
     //public Frustum Frustum { get; private set; }

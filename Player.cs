@@ -21,26 +21,6 @@ public class Player : Camera
         Update();
     }
 
-    /*
-    public void HandleEvent(MouseState e)
-    {
-        // Adding and removing voxels with clicks
-        if (e.IsAnyButtonDown)
-        {
-            var voxelHandler = app.scene.world.voxelHandler;
-
-            if (e.IsButtonDown(MouseButton.Button1))
-            {
-                voxelHandler.SetVoxel();
-            }
-            if (e.IsButtonDown(MouseButton.Button3))
-            {
-                voxelHandler.SwitchMode();
-            }
-        }
-    }
-    */
-
     // hack: for RDP connection mouse-delta fix
     static Vector2 _lastpos = new(0, 0);
 
@@ -60,6 +40,17 @@ public class Player : Camera
                 //Console.WriteLine("mouse delta own {0}", mouseState.Delta - pos);
             }
             _lastpos = mouseState.Delta;
+        }
+        if (mouseState.IsAnyButtonDown)
+        {
+            var voxelHandler = app.scene.world.voxelHandler;
+
+            /*
+            if (mouseState.IsButtonDown(MouseButton.Button1))
+                voxelHandler.SetVoxel();
+            if (mouseState.IsButtonDown(MouseButton.Button3))
+                voxelHandler.SwitchMode();
+            */
         }
     }
 

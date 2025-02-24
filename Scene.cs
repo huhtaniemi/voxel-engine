@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 
 public class Scene
 {
-    private World world;
+    public World world;
     //private VoxelMarker voxelMarker;
     //private Water water;
     //private Clouds clouds;

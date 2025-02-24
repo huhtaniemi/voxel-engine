@@ -7,7 +7,7 @@ public class World
     public VoxelEngine app;
     public Chunk[] chunks { get; private set; }
     public byte[,] voxels { get; private set; }
-    //public VoxelHandler voxelHandler { get; private set; }
+    public VoxelHandler voxelHandler { get; private set; }
 
     public World(VoxelEngine app)
     {
@@ -16,7 +16,7 @@ public class World
         voxels = new byte[Settings.WORLD_VOL, Settings.CHUNK_VOL];
         BuildChunks();
         BuildChunkMesh();
-        //voxelHandler = new VoxelHandler(this);
+        voxelHandler = new VoxelHandler(this);
     }
 
     private void BuildChunks()
@@ -61,7 +61,7 @@ public class World
 
     public void Update()
     {
-        //voxelHandler.Update();
+        voxelHandler.Update();
     }
 
     public void Render()
