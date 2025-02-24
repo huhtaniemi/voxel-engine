@@ -1,6 +1,6 @@
-using OpenTK.Mathematics;
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using OpenTK.Mathematics;
 
 public class VoxelHandler
 {
@@ -8,15 +8,15 @@ public class VoxelHandler
     private Chunk[] chunks;
 
     // Ray casting result
-    private Chunk chunk;
-    public byte voxelId;
-    private int voxelIndex;
-    private Vector3i voxelLocalPos;
-    public Vector3i voxelWorldPos;
-    public Vector3i voxelNormal;
+    private Chunk? chunk;
+    public byte voxel_id;
+    private int voxel_index;
+    private Vector3i voxel_local_pos;
+    public Vector3i voxel_world_pos;
+    public Vector3i voxel_normal;
 
     public bool interactionMode = false;  // false: remove voxel, true: add voxel
-    private const byte newVoxelId = Settings.DIRT;
+    private const byte new_voxel_id = Settings.DIRT;
 
     public VoxelHandler(World world)
     //public VoxelHandler(VoxelEngine app, Chunk[] chunks)
@@ -34,13 +34,9 @@ public class VoxelHandler
     public void SetVoxel()
     {
         if (interactionMode)
-        {
             AddVoxel();
-        }
         else
-        {
             RemoveVoxel();
-        }
     }
 
     public void SwitchMode()
@@ -50,46 +46,46 @@ public class VoxelHandler
 
     private void AddVoxel()
     {
-        if (voxelId != 0)
+        if (voxel_id != 0)
         {
-            var result = GetVoxelId(voxelWorldPos + voxelNormal);
+            var  result = GetVoxelId(voxel_world_pos + voxel_normal);
 
-            if (result.voxelId == 0)
+            if (result.voxel_id == 0 && result.chunk != null)
             {
-                result.chunk.voxels[result.voxelIndex] = newVoxelId;
-                result.chunk.BuildMesh();
+                result.chunk.voxels[result.voxel_index] = new_voxel_id;
+                //result.chunk.BuildMesh();
+                result.chunk.BuildMesh(out result.chunk.mesh);
 
                 if (result.chunk.IsEmpty)
-                {
                     result.chunk.IsEmpty = false;
-                }
             }
         }
     }
 
     private void RemoveVoxel()
     {
-        if (voxelId != 0)
+        if (voxel_id != 0 && chunk != null)
         {
-            chunk.voxels[voxelIndex] = 0;
-            chunk.BuildMesh();
+            chunk.voxels[voxel_index] = 0;
+            //chunk.BuildMesh();
+            chunk.BuildMesh(out chunk.mesh);
             RebuildAdjacentChunks();
         }
     }
 
     private void RebuildAdjacentChunks()
     {
-        int lx = voxelLocalPos.X, ly = voxelLocalPos.Y, lz = voxelLocalPos.Z;
-        int wx = voxelWorldPos.X, wy = voxelWorldPos.Y, wz = voxelWorldPos.Z;
+        var (lx, ly, lz) = voxel_local_pos;
+        var (wx, wy, wz) = voxel_world_pos;
 
-        if (lx == 0) RebuildAdjChunk(new Vector3i(wx - 1, wy, wz));
-        else if (lx == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new Vector3i(wx + 1, wy, wz));
+        if (lx == 0) RebuildAdjChunk(new(wx - 1, wy, wz));
+        else if (lx == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new(wx + 1, wy, wz));
 
-        if (ly == 0) RebuildAdjChunk(new Vector3i(wx, wy - 1, wz));
-        else if (ly == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new Vector3i(wx, wy + 1, wz));
+        if (ly == 0) RebuildAdjChunk(new(wx, wy - 1, wz));
+        else if (ly == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new(wx, wy + 1, wz));
 
-        if (lz == 0) RebuildAdjChunk(new Vector3i(wx, wy, wz - 1));
-        else if (lz == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new Vector3i(wx, wy, wz + 1));
+        if (lz == 0) RebuildAdjChunk(new(wx, wy, wz - 1));
+        else if (lz == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new(wx, wy, wz + 1));
     }
 
     private void RebuildAdjChunk(Vector3i adjVoxelPos)
@@ -97,7 +93,8 @@ public class VoxelHandler
         int index = GetChunkIndex(adjVoxelPos);
         if (index != -1)
         {
-            chunks[index].BuildMesh();
+            //chunks[index].BuildMesh();
+            chunks[index].BuildMesh(out chunks[index].mesh);
         }
     }
 
@@ -110,79 +107,93 @@ public class VoxelHandler
     }
     */
 
-    private (byte voxelId, int voxelIndex, Vector3i voxelLocalPos, Chunk chunk) GetVoxelId(Vector3i voxelWorldPos)
+    private (byte voxel_id, int voxel_index, Vector3i voxel_pos, Chunk? chunk) GetVoxelId(Vector3i voxel_world_pos)
     {
-        int cx = voxelWorldPos.X / Settings.CHUNK_SIZE;
-        int cy = voxelWorldPos.Y / Settings.CHUNK_SIZE;
-        int cz = voxelWorldPos.Z / Settings.CHUNK_SIZE;
+        var chunk_pos = voxel_world_pos / Settings.CHUNK_SIZE;
+        var (cx, cy, cz) = chunk_pos;
 
         if (cx >= 0 && cx < Settings.WORLD_W && cy >= 0 && cy < Settings.WORLD_H && cz >= 0 && cz < Settings.WORLD_D)
         {
-            int chunkIndex = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
-            var chunk = chunks[chunkIndex];
+            var chunk_index = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
+            var chunk = chunks[chunk_index];
 
-            int lx = voxelWorldPos.X % Settings.CHUNK_SIZE;
-            int ly = voxelWorldPos.Y % Settings.CHUNK_SIZE;
-            int lz = voxelWorldPos.Z % Settings.CHUNK_SIZE;
+            var (lx, ly, lz) = (voxel_local_pos = (voxel_world_pos - chunk_pos * Settings.CHUNK_SIZE));
 
-            int voxelIndex = lx + Settings.CHUNK_SIZE * lz + Settings.CHUNK_AREA * ly;
-            byte voxelId = chunk.voxels[voxelIndex];
+            var voxel_index = lx + Settings.CHUNK_SIZE * lz + Settings.CHUNK_AREA * ly;
+            var voxel_id = chunk.voxels[voxel_index];
 
-            return (voxelId, voxelIndex, new Vector3i(lx, ly, lz), chunk);
+            return (voxel_id, voxel_index, new(lx, ly, lz), chunk);
         }
-        return (0, 0, new Vector3i(0), null);
+        return (0, 0, new(0), null);
     }
 
-    private void RayCast()
+    /*
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int FastFloor(double x) =>
+        x < (int)x ? (int)x - 1 : (int)x;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public decimal FastFract(decimal value) =>
+        value - Math.Floor(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public double FastFract(double x) => (x % 1 + 1) % 1;
+    */
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float FastFract(float x) => (x % 1 + 1) % 1;
+
+    private bool RayCast()
     {
-        Vector3 start = app.player.Position;
-        Vector3 end = app.player.Position + app.player.Forward * Settings.MAX_RAY_DIST;
+        var (x1, y1, z1) = app.player.Position;
+        var (x2, y2, z2) = app.player.Position + app.player.Forward * Settings.MAX_RAY_DIST;
 
-        Vector3i currentVoxelPos = new Vector3i((int)start.X, (int)start.Y, (int)start.Z);
-        voxelId = 0;
-        voxelNormal = new Vector3i(0);
+        var current_voxel_pos = ((Vector3i)app.player.Position);
+
+        var dx = MathF.Sign(x2 - x1);
+        float deltaX = dx != 0 ? Math.Min(dx / (x2 - x1), 10000000.0f) : 10000000.0f;
+        float maxX = dx > 0 ? deltaX * (1.0f - FastFract(x1)) : deltaX * FastFract(x1);
+
+        var dy = MathF.Sign(y2 - y1);
+        float deltaY = dy != 0 ? MathF.Min(dy / (y2 - y1), 10000000.0f) : 10000000.0f;
+        float maxY = dy > 0 ? deltaY * (1.0f - FastFract(y1)) : deltaY * FastFract(y1);
+
+        var dz = MathF.Sign(z2 - z1);
+        float deltaZ = dz != 0 ? MathF.Min(dz / (z2 - z1), 10000000.0f) : 10000000.0f;
+        float maxZ = dz > 0 ? deltaZ * (1.0f - FastFract(z1)) : deltaZ * FastFract(z1);
+
+        voxel_id = 0;
+        voxel_normal = new(0);
         int stepDir = -1;
-
-        float dx = MathF.Sign(end.X - start.X);
-        float deltaX = dx != 0 ? MathF.Min(dx / (end.X - start.X), 10000000.0f) : 10000000.0f;
-        float maxX = dx > 0 ? deltaX * (1.0f - MathF.Fract(start.X)) : deltaX * MathF.Fract(start.X);
-
-        float dy = MathF.Sign(end.Y - start.Y);
-        float deltaY = dy != 0 ? MathF.Min(dy / (end.Y - start.Y), 10000000.0f) : 10000000.0f;
-        float maxY = dy > 0 ? deltaY * (1.0f - MathF.Fract(start.Y)) : deltaY * MathF.Fract(start.Y);
-
-        float dz = MathF.Sign(end.Z - start.Z);
-        float deltaZ = dz != 0 ? MathF.Min(dz / (end.Z - start.Z), 10000000.0f) : 10000000.0f;
-        float maxZ = dz > 0 ? deltaZ * (1.0f - MathF.Fract(start.Z)) : deltaZ * MathF.Fract(start.Z);
 
         while (!(maxX > 1.0f && maxY > 1.0f && maxZ > 1.0f))
         {
-            var result = GetVoxelId(currentVoxelPos);
-            if (result.voxelId != 0)
+            var result = GetVoxelId(current_voxel_pos);
+            if (result.voxel_id != 0)
             {
-                voxelId = result.voxelId;
-                voxelIndex = result.voxelIndex;
-                voxelLocalPos = result.voxelLocalPos;
-                chunk = result.chunk;
-                voxelWorldPos = currentVoxelPos;
+                (voxel_id, voxel_index, voxel_local_pos, chunk) = result;
+                voxel_world_pos = current_voxel_pos;
 
-                if (stepDir == 0) voxelNormal.X = -dx;
-                else if (stepDir == 1) voxelNormal.Y = -dy;
-                else voxelNormal.Z = -dz;
-                return;
+                if (stepDir == 0)
+                    voxel_normal.X = -dx;
+                else if (stepDir == 1)
+                    voxel_normal.Y = -dy;
+                else
+                    voxel_normal.Z = -dz;
+                return true;
             }
 
             if (maxX < maxY)
             {
                 if (maxX < maxZ)
                 {
-                    currentVoxelPos.X += (int)dx;
+                    current_voxel_pos.X += (int)dx;
                     maxX += deltaX;
                     stepDir = 0;
                 }
                 else
                 {
-                    currentVoxelPos.Z += (int)dz;
+                    current_voxel_pos.Z += (int)dz;
                     maxZ += deltaZ;
                     stepDir = 2;
                 }
@@ -191,18 +202,19 @@ public class VoxelHandler
             {
                 if (maxY < maxZ)
                 {
-                    currentVoxelPos.Y += (int)dy;
+                    current_voxel_pos.Y += (int)dy;
                     maxY += deltaY;
                     stepDir = 1;
                 }
                 else
                 {
-                    currentVoxelPos.Z += (int)dz;
+                    current_voxel_pos.Z += (int)dz;
                     maxZ += deltaZ;
                     stepDir = 2;
                 }
             }
         }
+        return false;
     }
 }
 
