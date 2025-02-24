@@ -1,7 +1,7 @@
 using System;
 using ModernGL;
 
-public abstract class BaseMesh
+public abstract class BaseMesh : IDisposable
 {
     protected readonly glContext ctx;
     protected glContext.Program program;
@@ -15,6 +15,10 @@ public abstract class BaseMesh
     // names are defined by the user in the vertex shader program stage.
     protected string[] attrs;
 
+    public void Dispose()
+    {
+        vao?.Dispose();
+    }
 
     public BaseMesh(ref glContext ctx, ref glContext.Program program, string vbo_format, string[] attrs)
     {

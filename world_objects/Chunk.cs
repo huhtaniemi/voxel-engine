@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 using static Settings;
 
 
-public class Chunk
+public class Chunk : IDisposable
 {
     public VoxelEngine app;
     public World world;
@@ -35,6 +35,11 @@ public class Chunk
     }
     */
 
+    public void Dispose()
+    {
+        mesh?.Dispose();
+    }
+
     public Chunk(World world, Vector3i position)
     {
         this.app = world.app;
@@ -45,8 +50,11 @@ public class Chunk
         //BuildMesh(out this.mesh);
     }
 
-    internal void BuildMesh(out ChunkMesh mesh) =>
+    internal void BuildMesh(ref ChunkMesh mesh)
+    {
+        mesh?.Dispose();
         mesh = new ChunkMesh(this);
+    }
 
     public void Render()
     {

@@ -56,7 +56,7 @@ public class World
     private void BuildChunkMesh()
     {
         foreach (var chunk in chunks)
-            chunk.BuildMesh(out chunk.mesh);
+            chunk.BuildMesh(ref chunk.mesh);
     }
 
     public void Update()
