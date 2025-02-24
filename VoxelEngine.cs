@@ -4,6 +4,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Graphics.OpenGL4;
 using ModernGL;
 using OpenTK.Mathematics;
+using static ModernGL.glContext;
 
 public class MovingAverage
 {
@@ -40,7 +41,8 @@ public class VoxelEngine : GameWindow
         : base(gameWindowSettings, nativeWindowSettings)
     {
         this.ctx = moderngl.create_context();
-        this.ctx.enable();// ctx.DepthTest | ctx.CullFace | ctx.Blend);
+        //this.ctx.enable(EnableFlags.DEPTH_TEST | EnableFlags.CULL_FACE | EnableFlags.BLEND);
+        this.ctx.enable(EnableFlags.DEPTH_TEST);
         this.ctx.set_clearcolor(System.Drawing.Color.CornflowerBlue);
 
         textures = new Textures(this);

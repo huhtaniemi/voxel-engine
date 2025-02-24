@@ -804,12 +804,26 @@ namespace ModernGL
         }
 
 
-        public void enable()
+        [Flags]
+        // these are for ctx.Enable() function
+        public enum EnableFlags
         {
-            GL.Enable(EnableCap.DepthTest);
-            //GL.Enable(EnableCap.CullFace);
-            //GL.Enable(EnableCap.Blend);
-            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            NOTHING = 0,
+            BLEND = 1,
+            DEPTH_TEST = 2,
+            CULL_FACE = 4,
+            RASTERIZER_DISCARD = 8,
+            PROGRAM_POINT_SIZE = 16,
+            INVALID = 0x40000000,
+        }
+        public void enable(EnableFlags flags = EnableFlags.NOTHING)
+        {
+            if (flags.HasFlag(EnableFlags.DEPTH_TEST))
+                GL.Enable(EnableCap.DepthTest);
+            if (flags.HasFlag(EnableFlags.CULL_FACE))
+                GL.Enable(EnableCap.CullFace);
+            if (flags.HasFlag(EnableFlags.BLEND))
+                GL.Enable(EnableCap.Blend);
         }
 
         internal void set_clearcolor(System.Drawing.Color color)
