@@ -13,7 +13,7 @@ public class ShaderProgram
     //public glContext.Program water;
     //public glContext.Program clouds;
 
-    public glContext.Program quad; // demo
+    public glContext.Program? quad; // demo
 
     public ShaderProgram(VoxelEngine app, glContext ctx)
     {
@@ -27,7 +27,7 @@ public class ShaderProgram
         water = GetProgram("water");
         clouds = GetProgram("clouds");
         */
-        quad = GetProgram("quad"); // demo
+        //quad = GetProgram("quad"); // demo
 
         // Set uniforms on initialization
         SetUniformsOnInit();
@@ -69,8 +69,8 @@ public class ShaderProgram
         */
 
         // demo
-        this.quad["m_proj"] = app.player.m_proj;
-        this.quad["m_model"] = Matrix4.Identity;
+        //this.quad["m_proj"] = app.player.m_proj;
+        //this.quad["m_model"] = Matrix4.Identity;
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class ShaderProgram
         this.water["m_view"] = app.player.MView;
         this.clouds["m_view"] = app.player.MView;
         */
-        this.quad["m_view"] = app.player.m_view;
+        //this.quad["m_view"] = app.player.m_view;
     }
 
     /// <summary>
