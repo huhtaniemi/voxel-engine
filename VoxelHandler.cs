@@ -85,14 +85,20 @@ public class VoxelHandler
         var (lx, ly, lz) = voxel_local_pos;
         var (wx, wy, wz) = voxel_world_pos;
 
-        if (lx == 0) RebuildAdjChunk(new(wx - 1, wy, wz));
-        else if (lx == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new(wx + 1, wy, wz));
+        if (lx == 0)
+            RebuildAdjChunk(new(wx - 1, wy, wz));
+        else if (lx == Settings.CHUNK_SIZE - 1)
+            RebuildAdjChunk(new(wx + 1, wy, wz));
 
-        if (ly == 0) RebuildAdjChunk(new(wx, wy - 1, wz));
-        else if (ly == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new(wx, wy + 1, wz));
+        if (ly == 0)
+            RebuildAdjChunk(new(wx, wy - 1, wz));
+        else if (ly == Settings.CHUNK_SIZE - 1)
+            RebuildAdjChunk(new(wx, wy + 1, wz));
 
-        if (lz == 0) RebuildAdjChunk(new(wx, wy, wz - 1));
-        else if (lz == Settings.CHUNK_SIZE - 1) RebuildAdjChunk(new(wx, wy, wz + 1));
+        if (lz == 0)
+            RebuildAdjChunk(new(wx, wy, wz - 1));
+        else if (lz == Settings.CHUNK_SIZE - 1)
+            RebuildAdjChunk(new(wx, wy, wz + 1));
     }
 
     private void RebuildAdjChunk(Vector3i adjVoxelPos)
