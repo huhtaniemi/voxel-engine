@@ -38,6 +38,12 @@
     <None Update="shaders\quad.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="shaders\voxel_marker.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="shaders\voxel_marker.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\water.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
