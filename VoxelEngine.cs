@@ -3,6 +3,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Graphics.OpenGL4;
 using ModernGL;
+using OpenTK.Mathematics;
 
 public class MovingAverage
 {
@@ -97,6 +98,8 @@ public class VoxelEngine : GameWindow
     {
         base.OnFramebufferResize(e);
 
+        player.m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, (float)e.Width / e.Height, Settings.NEAR, Settings.FAR);
+        shader_program.chunk["m_proj"] = player.m_proj;
         GL.Viewport(0, 0, e.Width, e.Height);
     }
 

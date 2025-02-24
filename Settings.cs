@@ -31,7 +31,7 @@ public static class Settings
     public static readonly int CENTER_Y = WORLD_H * H_CHUNK_SIZE;
 
     // Camera
-    public static readonly float ASPECT_RATIO = WIN_RES.X / WIN_RES.Y;
+    public static readonly float ASPECT_RATIO = (float)WIN_RES.X / WIN_RES.Y;
     public const float FOV_DEG = 50;
     public static readonly float V_FOV = MathHelper.DegreesToRadians(FOV_DEG);  // vertical FOV
     public static readonly float H_FOV = 2 * (float)Math.Atan(Math.Tan(V_FOV * 0.5) * ASPECT_RATIO);  // horizontal FOV
