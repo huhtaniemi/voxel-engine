@@ -27,6 +27,42 @@ namespace ModernGL
             GC.SuppressFinalize(this);
         }
 
+        internal glContext()
+        {
+            // DEFAULT_BLENDING
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.Enable(EnableCap.TextureCubeMapSeamless);
+
+            /*
+            this.max_samples = 0;
+            GL.GetInteger(GetPName.MaxSamples, out this.max_samples);
+
+            this.max_integer_samples = 0;
+            GL.GetInteger(GetPName.MaxIntegerSamples, out this.max_integer_samples);
+
+            this.max_color_attachments = 0;
+            GL.GetInteger(GetPName.MaxColorAttachments, out this.max_color_attachments);
+
+            this.max_texture_units = 0;
+            GL.GetInteger(GetPName.MaxTextureImageUnits, out this.max_texture_units);
+            this.default_texture_unit = this.max_texture_units - 1;
+
+            this.max_label_length = 0;
+            GL.GetInteger(GetPName.MaxLabelLength, out this.max_label_length);
+
+            this.max_debug_message_length = 0;
+            GL.GetInteger(GetPName.MaxDebugMessageLength, out this.max_debug_message_length);
+
+            this.max_debug_group_stack_depth = 0;
+            GL.GetInteger(GetPName.MaxDebugGroupStackDepth, out this.max_debug_group_stack_depth);
+
+            this.max_anisotropy = 0.0f;
+            GL.GetFloatv(GetPName.MaxTextureMaxAnisotropy, out this.max_anisotropy);
+
+            int bound_framebuffer = 0;
+            GL.GetInteger(GetPName.DrawFramebufferBinding, out bound_framebuffer);
+            //*/
+        }
 
         /// <summary>
         /// shader program
