@@ -30,7 +30,7 @@ public class VoxelHandler
         RayCast();
     }
 
-    /*
+
     public void SetVoxel()
     {
         if (interactionMode)
@@ -90,7 +90,7 @@ public class VoxelHandler
 
     private void RebuildAdjChunk(Vector3i adjVoxelPos)
     {
-        int index = GetChunkIndex(adjVoxelPos);
+        int index = VoxelMeshBuilder.GetChunkIndex(adjVoxelPos);
         if (index != -1)
         {
             //chunks[index].BuildMesh();
@@ -98,14 +98,6 @@ public class VoxelHandler
         }
     }
 
-    private int GetChunkIndex(Vector3i position)
-    {
-        int x = position.X / Settings.CHUNK_SIZE;
-        int y = position.Y / Settings.CHUNK_SIZE;
-        int z = position.Z / Settings.CHUNK_SIZE;
-        return x + Settings.WORLD_W * z + Settings.WORLD_AREA * y;
-    }
-    */
 
     private (byte voxel_id, int voxel_index, Vector3i voxel_pos, Chunk? chunk) GetVoxelId(Vector3i voxel_world_pos)
     {

@@ -45,12 +45,10 @@ public class Player : Camera
         {
             var voxelHandler = app.scene.world.voxelHandler;
 
-            /*
             if (mouseState.IsButtonDown(MouseButton.Button1))
                 voxelHandler.SetVoxel();
             if (mouseState.IsButtonDown(MouseButton.Button3))
                 voxelHandler.SwitchMode();
-            */
         }
     }
 
