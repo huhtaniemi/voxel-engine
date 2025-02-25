@@ -529,6 +529,10 @@ namespace ModernGL
                         length *= sizeof(int);
                         GL.BufferData(BufferTarget.ArrayBuffer, length, integerData, DrawType);
                         break;
+                    case System.Half[] float16Data:
+                        length *= sizeof(float);
+                        GL.BufferData(BufferTarget.ArrayBuffer, length, float16Data, DrawType);
+                        break;
                     case float[] floatData:
                         length *= sizeof(float);
                         GL.BufferData(BufferTarget.ArrayBuffer, length, floatData, DrawType);
