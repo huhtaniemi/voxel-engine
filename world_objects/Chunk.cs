@@ -14,26 +14,8 @@ public class Chunk : IDisposable
 
     internal ChunkMesh? mesh;// { get; private set; }
     internal bool IsEmpty;// { get; private set; }
-    /*
     public Vector3 Center { get; private set; }
     private Func<Chunk, bool> isOnFrustum;
-
-    /// <summary>
-    /// Initializes the Chunk class with a reference to the World instance, its position, and other properties.
-    /// </summary>
-    public Chunk(World world, Vector3i position)
-    {
-        this.app = world.app;
-        //this.world = world;
-        this.Position = position;
-        this.MModel = GetModelMatrix();
-        this.voxels = new byte[Settings.CHUNK_VOL];
-        this.IsEmpty = true;
-
-        this.Center = (position.ToVector3() + new Vector3(0.5f)) * Settings.CHUNK_SIZE;
-        this.isOnFrustum = this.app.player.Frustum.IsOnFrustum;
-    }
-    */
 
     public void Dispose()
     {
@@ -48,6 +30,9 @@ public class Chunk : IDisposable
         this.m_model = Matrix4.CreateTranslation(new Vector3(position) * Settings.CHUNK_SIZE);
         BuildVoxels(out this.voxels, position, out IsEmpty);
         //BuildMesh(out this.mesh);
+
+        this.Center = (position.ToVector3() + new Vector3(0.5f)) * Settings.CHUNK_SIZE;
+        this.isOnFrustum = this.app.player.Frustum.IsOnFrustum;
     }
 
     internal void BuildMesh(ref ChunkMesh mesh)
@@ -59,14 +44,8 @@ public class Chunk : IDisposable
     public void Render()
     {
         if (IsEmpty) return;
+        if (!isOnFrustum(this)) return;
 
-        /*
-        if (!IsEmpty && isOnFrustum(this))
-        {
-            SetUniform();
-            mesh.Render();
-        }
-        */
         world.app.shader_program.chunk["m_model"] = m_model;
         //this.mesh?.program["m_model"] = m_model;
         this.mesh?.Render();

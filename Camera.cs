@@ -7,15 +7,15 @@ public class Camera
     protected float Yaw { get; private set; }
     protected float Pitch { get; private set; }
 
-    protected Vector3 Up { get; private set; } = Vector3.UnitY;
-    protected Vector3 Right { get; private set; } = Vector3.UnitX;
+    public Vector3 Up { get; private set; } = Vector3.UnitY;
+    public Vector3 Right { get; private set; } = Vector3.UnitX;
     public Vector3 Forward { get; private set; } = -Vector3.UnitZ;
 
 
     public Matrix4 m_proj { get; set; }
     public Matrix4 m_view { get; private set; }
 
-    //public Frustum Frustum { get; private set; }
+    public Frustum Frustum { get; private set; }
 
     public Camera(Vector3 position, float yaw, float pitch)
     {
@@ -27,7 +27,7 @@ public class Camera
         m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, Settings.ASPECT_RATIO, Settings.NEAR, Settings.FAR);
         m_view = Matrix4.Identity;
 
-        //Frustum = new Frustum(this);
+        Frustum = new Frustum(this);
     }
 
     public virtual void Update()
