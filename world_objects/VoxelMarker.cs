@@ -39,7 +39,7 @@ public class VoxelMarker
         if (handler.voxel_id != 0)
         {
             //this.mesh.program["mode_id"] = 1;
-            app.shader_program.voxel_marker["mode_id"] = handler.interactionMode ? 1 : 0;
+            app.shader_program.voxel_marker["mode_id"] = (uint)(handler.interactionMode ? 1 : 0);
             app.shader_program.voxel_marker["m_model"] = GetModelMatrix();
             mesh.Render();
         }

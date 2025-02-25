@@ -230,6 +230,9 @@ namespace ModernGL
                         case int ival:
                             GL.Uniform1(info.location, ival);
                             break;
+                        case uint ival:
+                            GL.Uniform1(info.location, ival);
+                            break;
                         case float fval:
                             GL.Uniform1(info.location, fval);
                             break;
