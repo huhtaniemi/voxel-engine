@@ -11,9 +11,6 @@ public class Frustum
     private float factorX;
     private float tanX;
 
-    /// <summary>
-    /// Initializes the Frustum class with a reference to the Camera instance and calculates the factors and tangents for the frustum planes.
-    /// </summary>
     public Frustum(Camera camera)
     {
         this.cam = camera;
@@ -27,9 +24,6 @@ public class Frustum
         tanX = MathF.Tan(halfX);
     }
 
-    /// <summary>
-    /// Checks if a chunk is within the frustum by comparing its position relative to the camera's position and orientation.
-    /// </summary>
     public bool IsOnFrustum(Chunk chunk)
     {
         // Vector to sphere center
