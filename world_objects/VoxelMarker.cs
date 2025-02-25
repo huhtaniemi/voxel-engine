@@ -5,7 +5,7 @@ public class VoxelMarker
     private VoxelEngine app;
     private VoxelHandler handler;
     private Vector3 position;
-    private Matrix4 mModel;
+    private Matrix4 m_model;
     private CubeMesh mesh;
 
 
@@ -14,41 +14,33 @@ public class VoxelMarker
         this.app = voxelHandler.app;
         this.handler = voxelHandler;
         this.position = Vector3.Zero;
-        this.mModel = GetModelMatrix();
+        this.m_model = GetModelMatrix();
         this.mesh = new CubeMesh(this.app);
     }
 
     public void Update()
     {
-        if (handler.voxelId != 0)
+        if (handler.voxel_id != 0)
         {
             if (handler.interactionMode)
-            {
-                position = handler.voxelWorldPos + handler.voxelNormal;
-            }
+                position = handler.voxel_world_pos + handler.voxel_normal;
             else
-            {
-                position = handler.voxelWorldPos;
-            }
+                position = handler.voxel_world_pos;
         }
-    }
-
-    private void SetUniform()
-    {
-        app.shader_program.SetUniform(mesh.program, "mode_id", handler.interactionMode ? 1 : 0);
-        app.shader_program.SetUniform(mesh.program, "m_model", GetModelMatrix());
     }
 
     private Matrix4 GetModelMatrix()
     {
-        return Matrix4.CreateTranslation(position);
+        return (m_model = Matrix4.CreateTranslation(position));
     }
 
     public void Render()
     {
-        if (handler.voxelId != 0)
+        if (handler.voxel_id != 0)
         {
-            SetUniform();
+            //this.mesh.program["mode_id"] = 1;
+            app.shader_program.voxel_marker["mode_id"] = handler.interactionMode ? 1 : 0;
+            app.shader_program.voxel_marker["m_model"] = GetModelMatrix();
             mesh.Render();
         }
     }
