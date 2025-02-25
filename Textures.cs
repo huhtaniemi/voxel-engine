@@ -76,7 +76,8 @@ public class Textures
 
         texture.anisotropy = 32.0f;
         texture.build_mipmaps();
-        texture.filter = (glContext.Texture.fTypes.NEAREST, glContext.Texture.fTypes.NEAREST);
+        //texture.filter = (glContext.Texture.fTypes.NEAREST, glContext.Texture.fTypes.NEAREST);
+        texture.filter = (glContext.Texture.fTypes.LINEAR_MIPMAP_LINEAR, glContext.Texture.fTypes.NEAREST);
         return texture;
     }
 

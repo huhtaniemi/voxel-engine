@@ -41,8 +41,7 @@ public class VoxelEngine : GameWindow
         : base(gameWindowSettings, nativeWindowSettings)
     {
         this.ctx = moderngl.create_context();
-        //this.ctx.enable(EnableFlags.DEPTH_TEST | EnableFlags.CULL_FACE | EnableFlags.BLEND);
-        this.ctx.enable(EnableFlags.DEPTH_TEST);
+        this.ctx.enable(EnableFlags.DEPTH_TEST | EnableFlags.CULL_FACE | EnableFlags.BLEND);
         this.ctx.set_clearcolor(System.Drawing.Color.CornflowerBlue);
 
         textures = new Textures(this);

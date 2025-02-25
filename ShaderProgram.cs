@@ -9,7 +9,7 @@ public class ShaderProgram
     private glContext ctx;
 
     public glContext.Program chunk;
-    //public glContext.Program voxel_marker;
+    public glContext.Program voxel_marker;
     //public glContext.Program water;
     //public glContext.Program clouds;
 
@@ -22,8 +22,8 @@ public class ShaderProgram
 
         // Load shaders
         chunk = GetProgram("chunk");
-        /*
         voxel_marker = GetProgram("voxel_marker");
+        /*
         water = GetProgram("water");
         clouds = GetProgram("clouds");
         */
@@ -46,9 +46,7 @@ public class ShaderProgram
         */
 
         // Marker
-        /*
-
-        //this.voxel_marker["m_proj"] = app.player.MProj;
+        this.voxel_marker["m_proj"] = app.player.m_proj;
         this.voxel_marker["m_model"] = Matrix4.Identity;
         this.voxel_marker["u_texture_0"] = 0;
 
@@ -79,8 +77,8 @@ public class ShaderProgram
     public void Update()
     {
         this.chunk["m_view"] = app.player.m_view;
+        this.voxel_marker["m_view"] = app.player.m_view;
         /*
-        this.voxel_marker["m_view"] = app.player.MView;
         this.water["m_view"] = app.player.MView;
         this.clouds["m_view"] = app.player.MView;
         */
