@@ -6,9 +6,6 @@ public class CubeMesh : BaseMesh
 {
     private VoxelEngine app;
 
-    /// <summary>
-    /// Initializes the CubeMesh class with a reference to the VoxelEngine instance, sets the shader program, VBO format, and attribute names, and creates the VAO.
-    /// </summary>
     public CubeMesh(VoxelEngine app) : base()
     {
         this.app = app;
@@ -19,17 +16,11 @@ public class CubeMesh : BaseMesh
         this.vao = GetVAO();
     }
 
-    /// <summary>
-    ///  Converts vertex and index data into a flat array of floats.
-    /// </summary>
     private static float[] GetData((float, float, float)[] vertices, (int, int, int)[] indices)
     {
         return indices.SelectMany(triangle => triangle.Select(ind => vertices[ind])).SelectMany(v => new[] { v.Item1, v.Item2, v.Item3 }).ToArray();
     }
 
-    /// <summary>
-    /// Generates the vertex data for the cube mesh, including texture coordinates.
-    /// </summary>
     protected override float[] GetVertexData()
     {
         var vertices = new[]
@@ -61,34 +52,6 @@ public class CubeMesh : BaseMesh
         var texCoordData = GetData(texCoordVertices.Select(v => (v.Item1, v.Item2, 0f)).ToArray(), texCoordIndices);
         var combinedData = vertexData.Concat(texCoordData).ToArray();
         return combinedData;
-    }
-
-    /// <summary>
-    ///  Creates and initializes the VBO and VAO, sets up the vertex attributes, and returns the VAO.
-    /// </summary>
-    private int GetVAO()
-    {
-        float[] vertexData = GetVertexData();
-        int vbo = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, vertexData.Length * sizeof(float), vertexData, BufferUsageHint.StaticDraw);
-
-        int vao = GL.GenVertexArray();
-        GL.BindVertexArray(vao);
-
-        int stride = CalculateStride(vboFormat);
-        int offset = 0;
-
-        for (int i = 0; i < attrs.Length; i++)
-        {
-            int location = GL.GetAttribLocation(program, attrs[i]);
-            GL.EnableVertexAttribArray(location);
-            GL.VertexAttribPointer(location, GetAttributeSize(vboFormat, i), VertexAttribPointerType.Float, false, stride, offset);
-            offset += GetAttributeSize(vboFormat, i) * sizeof(float);
-        }
-
-        GL.BindVertexArray(0);
-        return vao;
     }
 }
 
