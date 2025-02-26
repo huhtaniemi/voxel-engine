@@ -6,18 +6,13 @@ using System.Linq;
 
 public class CloudMesh : BaseMesh
 {
-    private VoxelEngine app;
-
-    public CloudMesh(VoxelEngine app) : base()
+    public CloudMesh(VoxelEngine app)
+        : base(ref app.ctx, ref app.shader_program.clouds, "3u2", ["in_position"])
     {
-        this.app = app;
-        this.program = app.shader_program.cloudsProgram;
-        this.vboFormat = "3u2";
-        this.attrs = new[] { "in_position" };
-        this.vao = app.GetVAO();
+        Rebuild();
     }
 
-    protected override float[] GetVertexData()
+    protected override object GetVertexData()
     {
         byte[] cloud_data = new byte[Settings.WORLD_AREA * Settings.CHUNK_SIZE * Settings.CHUNK_SIZE];
         GenClouds(cloud_data);
@@ -40,9 +35,9 @@ public class CloudMesh : BaseMesh
         }
     }
 
-    private static float[] BuildMesh(byte[] cloud_data)
+    private static ushort[] BuildMesh(byte[] cloud_data)
     {
-        var mesh = new float[Settings.WORLD_AREA * Settings.CHUNK_AREA * 6 * 3];
+        var mesh = new ushort[Settings.WORLD_AREA * Settings.CHUNK_AREA * 6 * 3];
         var index = 0;
 
         int width = Settings.WORLD_W * Settings.CHUNK_SIZE;
@@ -99,15 +94,15 @@ public class CloudMesh : BaseMesh
 
                 foreach (var vertex in new[] { v0, v1, v2, v0, v3, v1 })
                 {
-                    mesh[index + 0] = vertex.Item1;
-                    mesh[index + 1] = vertex.Item2;
-                    mesh[index + 2] = vertex.Item3;
+                    mesh[index + 0] = (ushort)vertex.Item1;
+                    mesh[index + 1] = (ushort)vertex.Item2;
+                    mesh[index + 2] = (ushort)vertex.Item3;
                     index += 3;
                 }
             }
         }
 
-        return mesh.SkipLast(index+1).ToArray();
+        return mesh.Take(index).ToArray();
     }
 }
 

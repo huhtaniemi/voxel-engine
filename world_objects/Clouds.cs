@@ -13,7 +13,8 @@ public class Clouds
 
     public void Update()
     {
-        app.shader_program.SetUniform(mesh.program, "u_time", (float)app.time);
+        app.shader_program.clouds["u_time"] = (float)app.time;
+        //this.mesh?.program["u_time"] =  (float)app.time;
     }
 
     public void Render()

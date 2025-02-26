@@ -4,27 +4,31 @@ using ModernGL;
 public class QuadMesh : BaseMesh
 {
     public QuadMesh(VoxelEngine app)
-        //: base(ref app.ctx, ref app.shader_program.water, "2u1 3u1", ["in_tex_coord", "in_position"])
-        : base(ref app.ctx, ref app.shader_program.quad, "3f 3f", ["in_position", "in_color"])
+        : base(ref app.ctx, ref app.shader_program.water, "2u1 3u1", ["in_tex_coord", "in_position"])
+        //: base(ref app.ctx, ref app.shader_program.quad, "3f 3f", ["in_position", "in_color"])
     {
         Rebuild();
     }
 
     protected override object GetVertexData()
     {
-        /*
-        var vertices = new (byte,byte,byte)[]
-        {
+        (byte x, byte y, byte z)[] vertices =
+        [
             (0, 0, 0), (1, 0, 1), (1, 0, 0),
             (0, 0, 0), (0, 0, 1), (1, 0, 1)
-        };
-        var tex_coords = new (byte, byte)[]
-        {
+        ];
+        (byte x, byte y)[] tex_coords =
+        [
             (0, 0), (1, 1), (1, 0),
             (0, 0), (0, 1), (1, 1)
-        };
-        */
+        ];
 
+        return (byte[])[.. tex_coords
+            .Zip(vertices, (tcrd, vtx) => new[] { tcrd.x, tcrd.y, vtx.x, vtx.y, vtx.z})
+            .SelectMany(v => v)
+        ];
+
+        /*
         var vertices = new (double, double, double)[]
         {
             (0.5, 0.5, 0.0), (-0.5, 0.5, 0.0), (-0.5, -0.5, 0.0),
@@ -43,6 +47,7 @@ public class QuadMesh : BaseMesh
             .ToArray();
 
         return vertex_data;
+        */
     }
 }
 
