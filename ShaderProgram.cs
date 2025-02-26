@@ -10,10 +10,10 @@ public class ShaderProgram
 
     public glContext.Program chunk;
     public glContext.Program voxel_marker;
-    //public glContext.Program water;
-    //public glContext.Program clouds;
+    public glContext.Program water;
+    public glContext.Program clouds;
 
-    public glContext.Program? quad; // demo
+    //public glContext.Program? quad; // demo
 
     public ShaderProgram(VoxelEngine app, glContext ctx)
     {
@@ -23,10 +23,8 @@ public class ShaderProgram
         // Load shaders
         chunk = GetProgram("chunk");
         voxel_marker = GetProgram("voxel_marker");
-        /*
         water = GetProgram("water");
         clouds = GetProgram("clouds");
-        */
         //quad = GetProgram("quad"); // demo
 
         // Set uniforms on initialization
@@ -49,20 +47,16 @@ public class ShaderProgram
         this.voxel_marker["u_texture_0"] = 0;
 
         // Water
-        /*
-        //this.water["m_proj"] = app.player.MProj;
+        this.water["m_proj"] = app.player.m_proj;
         this.water["u_texture_0"] = 2;
         this.water["water_area"] = Settings.WATER_AREA;
         this.water["water_line"] = Settings.WATER_LINE;
-        */
 
         // Clouds
-        /*
-        //this.clouds["m_proj"] = app.player.MProj;
+        this.clouds["m_proj"] = app.player.m_proj;
         this.clouds["center"] = Settings.CENTER_XZ;
         this.clouds["bg_color"] = Settings.BG_COLOR;
         this.clouds["cloud_scale"] = Settings.CLOUD_SCALE;
-        */
 
         // demo
         //this.quad["m_proj"] = app.player.m_proj;
@@ -76,10 +70,8 @@ public class ShaderProgram
     {
         this.chunk["m_view"] = app.player.m_view;
         this.voxel_marker["m_view"] = app.player.m_view;
-        /*
-        this.water["m_view"] = app.player.MView;
-        this.clouds["m_view"] = app.player.MView;
-        */
+        this.water["m_view"] = app.player.m_view;
+        this.clouds["m_view"] = app.player.m_view;
         //this.quad["m_view"] = app.player.m_view;
     }
 

@@ -7,9 +7,7 @@ public class Textures
 {
     private VoxelEngine app;
     private glContext.Texture texture0;
-    /*
-    private int texture1;
-    */
+    private glContext.Texture texture1;
     private glContext.Texture textureArray0;
 
     public Textures(VoxelEngine app)
@@ -18,17 +16,13 @@ public class Textures
 
         // Load textures
         this.texture0 = Load("frame.png");
-        /*
-        texture1 = Load("water.png");
-        */
+        this.texture1 = Load("water.png");
         this.textureArray0 = Load("tex_array_0.png", isTexArray: true);
 
         // Assign texture unit
         this.texture0.use(location: 0);
         this.textureArray0.use(location: 1);
-        /*
-        Use(texture1, 2);
-        */
+        this.texture1.use(location: 2);
     }
 
     private void flip_horisontal(byte[] pixelbytes, int width, int height, int channels)

@@ -84,7 +84,7 @@ public class VoxelEngine : GameWindow
         // update vertex data
         scene.Update();
 
-        time = (DateTime.Now.Ticks - time_init) * 0.001;
+        time = DateTime.Now.TimeOfDay.TotalMilliseconds * 0.001;
         deltaTime = args.Time * 1000;
 
         Title = $"{1.0 / deltaTimeAvg.Add(args.Time):F0} FPS";

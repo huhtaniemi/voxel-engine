@@ -76,10 +76,10 @@ public static class Settings
 
     // Water
     public const float WATER_LINE = 5.6f;
-    public static readonly float WATER_AREA = 5 * CHUNK_SIZE * WORLD_W;
+    public static readonly int WATER_AREA = 5 * CHUNK_SIZE * WORLD_W;
 
     // Cloud
-    public const int CLOUD_SCALE = 25;
+    public const float CLOUD_SCALE = 25f;
     public static readonly int CLOUD_HEIGHT = WORLD_H * CHUNK_SIZE * 2;
 }
 
