@@ -58,10 +58,6 @@ public class Chunk : IDisposable
         /*
         GenerateTerrain(ref voxels, cx, cy, cz);
 
-        if (Array.Exists(voxels, v => v != 0))
-        {
-            IsEmpty = false;
-        }
         */
         for (byte x = 0; x < CHUNK_SIZE; x++)
         {
@@ -82,9 +78,6 @@ public class Chunk : IDisposable
         return voxels;
     }
     /*
-    /// <summary>
-    ///  Generates the terrain for the chunk.
-    /// </summary>
     private static void GenerateTerrain(ref byte[] voxels, int cx, int cy, int cz)
     {
         for (int x = 0; x < Settings.CHUNK_SIZE; x++)

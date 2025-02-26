@@ -89,8 +89,4 @@ public class Textures
         texture.filter = (glContext.Texture.fTypes.LINEAR_MIPMAP_LINEAR, glContext.Texture.fTypes.NEAREST);
         return texture;
     }
-
-    private void Use(int textureId, int location)
-    {
-    }
 }

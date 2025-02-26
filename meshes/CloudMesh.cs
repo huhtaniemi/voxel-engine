@@ -8,9 +8,6 @@ public class CloudMesh : BaseMesh
 {
     private VoxelEngine app;
 
-    /// <summary>
-    /// Initializes the CloudMesh class with a reference to the VoxelEngine instance, sets the shader program, VBO format, and attribute names, and creates the VAO.
-    /// </summary>
     public CloudMesh(VoxelEngine app) : base()
     {
         this.app = app;
@@ -20,9 +17,6 @@ public class CloudMesh : BaseMesh
         this.vao = app.GetVAO();
     }
 
-    /// <summary>
-    /// Generates the cloud data and builds the mesh.
-    /// </summary>
     protected override float[] GetVertexData()
     {
         byte[] cloud_data = new byte[Settings.WORLD_AREA * Settings.CHUNK_SIZE * Settings.CHUNK_SIZE];
@@ -31,9 +25,6 @@ public class CloudMesh : BaseMesh
         return BuildMesh(cloud_data);
     }
 
-    /// <summary>
-    /// Generates the cloud data based on noise values.
-    /// </summary>
     private static void GenClouds(byte[] cloud_data)
     {
         for (int x = 0; x < Settings.WORLD_W * Settings.CHUNK_SIZE; x++)
@@ -49,9 +40,6 @@ public class CloudMesh : BaseMesh
         }
     }
 
-    /// <summary>
-    ///  Builds the mesh from the cloud data, creating quads and marking visited positions.
-    /// </summary>
     private static float[] BuildMesh(byte[] cloud_data)
     {
         var mesh = new float[Settings.WORLD_AREA * Settings.CHUNK_AREA * 6 * 3];
