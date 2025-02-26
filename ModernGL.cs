@@ -688,16 +688,22 @@ namespace ModernGL
 
         public class Texture : IDisposable
         {
-            private readonly (int Width, int Height, int layers) size;
-            private readonly int components;
-            private readonly int samples;
             private readonly int id;
+
+            private readonly (int width, int height, int layers, bool is_array) size;
+            // number of components 1, 2, 3 or 4
+            private readonly int components;
+            // samples is a power of two (1), 2, 4, 8, 16, 32, etc.
+            private readonly int samples;
 
             private const int max_texture_units = 32;
             private readonly int default_texture_unit = max_texture_units - 1;
 
             private TextureTarget texture_target =>
-                this.samples > 0 ? TextureTarget.Texture2DMultisample: TextureTarget.Texture2D;
+                this.samples > 0 ?
+                    (this.size.layers > 0 ? TextureTarget.Texture2DMultisampleArray : TextureTarget.Texture2DMultisample) :
+                    (this.size.layers > 0 ?
+                        (this.size.is_array ?TextureTarget.Texture2DArray: TextureTarget.Texture3D) : TextureTarget.Texture2D);
 
             private PixelType pixel_type = PixelType.UnsignedByte; // data_type->gl_type;
             private PixelFormat base_format = PixelFormat.Rgba; // data_type->base_format[components];
@@ -709,27 +715,55 @@ namespace ModernGL
             public Texture() =>
                 this.id = GL.GenTexture();
 
-            public Texture((int Width, int Height, int layers) size, int components, int samples) : this() =>
-                (this.size, this.components, this.samples) = (size, components, samples);
+            public Texture(int width, int height, int layers, bool is_array, int components, int samples) : this() =>
+                (this.size, this.components, this.samples) = ((width, height, layers, is_array), components, samples);
 
-            public Texture((int Width, int Height, int layers) size, int components, byte[] data,
-                int samples = 0, int alignment = 1, bool is_array=false) : this(size, components, 0)
+            public Texture(int width, int height, int layers, int components, byte[] data,
+                int samples = 0, int alignment = 1, bool is_array=false)
+                : this(width, height, layers, is_array, components, 0)
             {
                 GL.ActiveTexture(TextureUnit.Texture0 + default_texture_unit);
                 GL.BindTexture(this.texture_target, this.id);
 
-                //texture->data_type = data_type;
-                if (this.samples > 0)
-                {
-                    GL.TexImage2DMultisample((TextureTargetMultisample)this.texture_target,
-                        this.samples, internal_format, size.Width, size.Height, true);
-                }
-                else
+                if (this.samples == 0)
                 {
                     GL.PixelStore(PixelStoreParameter.PackAlignment, alignment);
                     GL.PixelStore(PixelStoreParameter.UnpackAlignment, alignment);
+                }
 
-                    GL.TexImage2D(this.texture_target, 0, internal_format, size.Width, size.Height,0, base_format, pixel_type, data);
+                switch (this.texture_target)
+                {
+                    case TextureTarget.Texture2D: // 0x0DE1
+                        // 2d: samples=0, depth=0
+                        GL.TexImage2D(this.texture_target,
+                            0, internal_format, size.width, size.height,
+                            0, base_format, pixel_type, data);
+                        break;
+                    case TextureTarget.Texture3D: // 0x806F
+                    case TextureTarget.Texture2DArray: // 0x8C1A
+                        // 3d: samples=0, depth>0
+                        // 2d-array: samples=0, depth>0, is_array
+                        GL.TexImage3D(this.texture_target,
+                            0, internal_format, size.width, size.height, size.layers,
+                            0, base_format, pixel_type, data);
+                        break;
+
+                    case TextureTarget.Texture2DMultisample: // 0x9100
+                        // - samples>0, depth=0
+                        GL.TexImage2DMultisample((TextureTargetMultisample)this.texture_target,
+                            this.samples, internal_format, size.width, size.height, true);
+                        break;
+                    case TextureTarget.Texture2DMultisampleArray: // 0x9102
+                        //  - samples>0, depth>1
+                        GL.TexImage3DMultisample((TextureTargetMultisample)this.texture_target,
+                            this.samples, internal_format, size.width, size.height, size.layers, true);
+                        break;
+                    default:
+                        throw new NotSupportedException($"glTexImage .. '{texture_target}' not supported.");
+                }
+
+                if (this.samples == 0)
+                {
                     // !float_type
                     filter = (fTypes.NEAREST, fTypes.NEAREST);
                 }
@@ -837,13 +871,13 @@ namespace ModernGL
         public Texture texture((int Width, int Height) size, int components, byte[] data,
             int samples = 0, int alignment = 1, string dtype = "f1")
         {
-            return new Texture((size.Width, size.Height, 0), components, data, samples, alignment);
+            return new Texture(size.Width, size.Height, 0, components, data, samples, alignment);
         }
 
         public Texture texture_array((int Width, int Height, int layers) size, int components, byte[] data,
             int samples = 0, int alignment = 1, string dtype = "f1")
         {
-            return new Texture(size, components, data, samples, alignment, is_array: true);
+            return new Texture(size.Width, size.Height, size.layers, components, data, samples, alignment, is_array: true);
         }
 
 
