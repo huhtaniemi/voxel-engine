@@ -74,7 +74,7 @@ public class Chunk : IDisposable
                 for (byte y = 0; y < localHeight; y++)
                 {
                     var wy = y + cy;
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = (byte)(wy + 1);
+                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = 2;// (byte)(wy + 1);
                 }
             }
         }

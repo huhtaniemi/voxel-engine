@@ -9,8 +9,8 @@ public class Textures
     private glContext.Texture texture0;
     /*
     private int texture1;
-    private int textureArray0;
     */
+    private glContext.Texture textureArray0;
 
     public Textures(VoxelEngine app)
     {
@@ -20,13 +20,13 @@ public class Textures
         this.texture0 = Load("frame.png");
         /*
         texture1 = Load("water.png");
-        textureArray0 = Load("tex_array_0.png", isTexArray: true);
         */
+        this.textureArray0 = Load("tex_array_0.png", isTexArray: true);
 
         // Assign texture unit
         this.texture0.use(location: 0);
+        this.textureArray0.use(location: 1);
         /*
-        Use(textureArray0, 1);
         Use(texture1, 2);
         */
     }
@@ -68,7 +68,16 @@ public class Textures
         //    components = 4,
         //    data = pg.image.tostring(texture, 'RGBA', False)
         //);
-        var texture = app.ctx.texture(
+        glContext.Texture texture;
+        if (isTexArray) {
+            var num_layers = 3 * textureimg.Height / textureimg.Width;  // 3 textures per layer
+            texture = app.ctx.texture_array(
+                size: (textureimg.Width, textureimg.Height / num_layers, num_layers),
+                components: 4,
+                data: textureimg.Data
+            );
+        } else
+        texture = app.ctx.texture(
             size: (textureimg.Width, textureimg.Height),
             components: 4,
             data: textureimg.Data

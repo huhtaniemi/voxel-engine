@@ -3,8 +3,6 @@
 layout (location = 0) in uint packed_data;
 
 int x, y, z;
-int voxel_id;
-int face_id;
 int ao_id;
 int flip_id;
 
@@ -12,7 +10,10 @@ uniform mat4 m_proj;
 uniform mat4 m_view;
 uniform mat4 m_model;
 
-out vec3 voxel_color;
+flat out int voxel_id;
+flat out int face_id;
+
+//out vec3 voxel_color;
 out vec2 uv;
 out float shading;
 
@@ -73,7 +74,7 @@ void main() {
     int uv_index = gl_VertexID % 6  + ((face_id & 1) + flip_id * 2) * 6;
 
     uv = uv_coords[uv_indices[uv_index]];
-    voxel_color = hash31(voxel_id);
+//    voxel_color = hash31(voxel_id);
     shading = face_shading[face_id] * ao_values[ao_id];
 
     gl_Position = m_proj * m_view * m_model * vec4(in_position, 1.0);
