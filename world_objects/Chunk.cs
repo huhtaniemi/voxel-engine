@@ -54,48 +54,30 @@ public class Chunk : IDisposable
     static internal byte[] BuildVoxels(out byte[] voxels, Vector3i position, out bool IsEmpty)
     {
         voxels = new byte[CHUNK_VOL];
+
         var (cx, cy, cz) = position * Settings.CHUNK_SIZE;
-        /*
         GenerateTerrain(ref voxels, cx, cy, cz);
 
-        */
+        IsEmpty = !voxels.Any(v => v != 0);
+        return voxels;
+    }
+
+    private static void GenerateTerrain(ref byte[] voxels, int cx, int cy, int cz)
+    {
         for (byte x = 0; x < CHUNK_SIZE; x++)
         {
             var wx = x + cx;
             for (byte z = 0; z < CHUNK_SIZE; z++)
             {
                 var wz = z + cz;
-                var world_height = (int)(VoxelEngine._noise.Evaluate(wx * 0.02, wz * 0.02) * 32 + 32);
+                var world_height = TerrainGen.GetHeight(wx, wz);
                 var localHeight = Math.Min(world_height - cy, CHUNK_SIZE);
                 for (byte y = 0; y < localHeight; y++)
                 {
                     var wy = y + cy;
-                    voxels[x + CHUNK_SIZE * z + CHUNK_AREA * y] = 2;// (byte)(wy + 1);
-                }
-            }
-        }
-        IsEmpty = !voxels.Any(v => v != 0);
-        return voxels;
-    }
-    /*
-    private static void GenerateTerrain(ref byte[] voxels, int cx, int cy, int cz)
-    {
-        for (int x = 0; x < Settings.CHUNK_SIZE; x++)
-        {
-            int wx = x + cx;
-            for (int z = 0; z < Settings.CHUNK_SIZE; z++)
-            {
-                int wz = z + cz;
-                int worldHeight = TerrainGen.GetHeight(wx, wz);
-                int localHeight = Math.Min(worldHeight - cy, Settings.CHUNK_SIZE);
-
-                for (int y = 0; y < localHeight; y++)
-                {
-                    int wy = y + cy;
-                    TerrainGen.SetVoxelId(ref voxels, x, y, z, wx, wy, wz, worldHeight);
+                    TerrainGen.SetVoxelId(ref voxels, x, y, z, wx, wy, wz, world_height);
                 }
             }
         }
     }
-    */
 }

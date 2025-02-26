@@ -40,10 +40,8 @@ public class ShaderProgram
         this.chunk["m_model"] = Matrix4.Identity;
         //this.chunk["u_texture_0"] = 0;
         this.chunk["u_texture_array_0"] = 1;
-        /*
         this.chunk["bg_color"] = Settings.BG_COLOR;
         this.chunk["water_line"] = Settings.WATER_LINE;
-        */
 
         // Marker
         this.voxel_marker["m_proj"] = app.player.m_proj;
