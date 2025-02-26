@@ -69,7 +69,7 @@ public class Chunk : IDisposable
             for (byte z = 0; z < CHUNK_SIZE; z++)
             {
                 var wz = z + cz;
-                var world_height = (int)(_noise.Evaluate(wx * 0.02, wz * 0.02) * 32 + 32);
+                var world_height = (int)(VoxelEngine._noise.Evaluate(wx * 0.02, wz * 0.02) * 32 + 32);
                 var localHeight = Math.Min(world_height - cy, CHUNK_SIZE);
                 for (byte y = 0; y < localHeight; y++)
                 {
@@ -81,11 +81,6 @@ public class Chunk : IDisposable
         IsEmpty = !voxels.Any(v => v != 0);
         return voxels;
     }
-
-    static private Noise _noise;
-    static Chunk() =>
-        _noise = new OpenSimplex.Noise(Settings.SEED);
-
     /*
     /// <summary>
     ///  Generates the terrain for the chunk.

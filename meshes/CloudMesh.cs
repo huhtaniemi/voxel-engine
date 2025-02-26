@@ -40,7 +40,7 @@ public class CloudMesh : BaseMesh
         {
             for (int z = 0; z < Settings.WORLD_D * Settings.CHUNK_SIZE; z++)
             {
-                if (Noise.Noise2(0.13 * x, 0.13 * z) < 0.2)
+                if (VoxelEngine._noise.Evaluate(0.13 * x, 0.13 * z) < 0.2)
                 {
                     continue;
                 }

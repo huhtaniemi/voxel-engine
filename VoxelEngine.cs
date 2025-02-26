@@ -50,6 +50,11 @@ public class VoxelEngine : GameWindow
         scene = new Scene(this);
     }
 
+    public static OpenSimplex.Noise _noise;
+    static VoxelEngine() =>
+        //SimplexNoise.Noise.Seed = Settings.SEED;
+        _noise = new OpenSimplex.Noise(Settings.SEED);
+
     protected override void OnLoad()
     {
         base.OnLoad();

@@ -22,18 +22,18 @@ public static class TerrainGen
         float f1 = 0.005f;
         float f2 = f1 * 2, f4 = f1 * 4, f8 = f1 * 8;
 
-        if (Noise.Noise2(0.1f * x, 0.1f * z) < 0)
+        if (VoxelEngine._noise.Evaluate(0.1f * x, 0.1f * z) < 0)
         {
             a1 /= 1.07f;
         }
 
         float height = 0;
-        height += Noise.Noise2(x * f1, z * f1) * a1 + a1;
-        height += Noise.Noise2(x * f2, z * f2) * a2 - a2;
-        height += Noise.Noise2(x * f4, z * f4) * a4 + a4;
-        height += Noise.Noise2(x * f8, z * f8) * a8 - a8;
+        height += (float)VoxelEngine._noise.Evaluate(x * f1, z * f1) * a1 + a1;
+        height += (float)VoxelEngine._noise.Evaluate(x * f2, z * f2) * a2 - a2;
+        height += (float)VoxelEngine._noise.Evaluate(x * f4, z * f4) * a4 + a4;
+        height += (float)VoxelEngine._noise.Evaluate(x * f8, z * f8) * a8 - a8;
 
-        height = MathF.Max(height, Noise.Noise2(x * f8, z * f8) + 2);
+        height = MathF.Max(height, (float)VoxelEngine._noise.Evaluate(x * f8, z * f8) + 2);
         height *= island;
 
         return (int)height;
@@ -57,8 +57,8 @@ public static class TerrainGen
         if (wy < worldHeight - 1)
         {
             // create caves
-            if (Noise.Noise3(wx * 0.09f, wy * 0.09f, wz * 0.09f) > 0 &&
-                Noise.Noise2(wx * 0.1f, wz * 0.1f) * 3 + 3 < wy && wy < worldHeight - 10)
+            if ((float)VoxelEngine._noise.Evaluate(wx * 0.09f, wy * 0.09f, wz * 0.09f) > 0 &&
+                (float)VoxelEngine._noise.Evaluate(wx * 0.1f, wz * 0.1f) * 3 + 3 < wy && wy < worldHeight - 10)
             {
                 voxelId = 0;
             }
