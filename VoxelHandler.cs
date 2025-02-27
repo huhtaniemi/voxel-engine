@@ -125,9 +125,11 @@ public class VoxelHandler
             var (lx, ly, lz) = (voxel_local_pos = (voxel_world_pos - chunk_pos * Settings.CHUNK_SIZE));
 
             var voxel_index = lx + Settings.CHUNK_SIZE * lz + Settings.CHUNK_AREA * ly;
-            var voxel_id = chunk.voxels[voxel_index];
-
-            return (voxel_id, voxel_index, new(lx, ly, lz), chunk);
+            if (voxel_index is >= 0 and < Settings.CHUNK_VOL)
+            {
+                var voxel_id = chunk.voxels[voxel_index];
+                return (voxel_id, voxel_index, new(lx, ly, lz), chunk);
+            }
         }
         return (0, 0, new(0), null);
     }
