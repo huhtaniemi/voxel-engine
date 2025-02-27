@@ -1,10 +1,12 @@
-using OpenTK.Mathematics;
 using System;
-using System.Collections.Generic;
+using OpenTK.Mathematics;
+using ModernGL;
 
 public class World
 {
     public VoxelEngine app;
+    public readonly glContext.Program program;
+
     public Chunk[] chunks { get; private set; }
     public byte[,] voxels { get; private set; }
     public VoxelHandler voxelHandler { get; private set; }
@@ -12,6 +14,16 @@ public class World
     public World(VoxelEngine app)
     {
         this.app = app;
+
+        this.program = app.GetProgram("chunk");
+        this.program["m_proj"] = app.player.m_proj;
+        this.program["m_model"] = Matrix4.Identity;
+        //this.program["u_texture_0"] = 0;
+        this.program["u_texture_array_0"] = 1;
+        this.program["bg_color"] = Settings.BG_COLOR;
+        this.program["water_line"] = Settings.WATER_LINE;
+
+        //
         chunks = new Chunk[Settings.WORLD_VOL];
         voxels = new byte[Settings.WORLD_VOL, Settings.CHUNK_VOL];
         BuildChunks();
@@ -61,6 +73,7 @@ public class World
 
     public void Update()
     {
+        this.program["m_view"] = app.player.m_view;
         voxelHandler.Update();
     }
 
@@ -68,6 +81,10 @@ public class World
     {
         foreach (var chunk in chunks)
         {
+            // update each frame for each chunk
+            // ... but the app is the same, do we need to? should world obj update thies ?
+            // ahh.. this is to position individual chunk to relative position! render specific...?
+            this.program["m_model"] = chunk.m_model;
             chunk.Render();
         }
     }

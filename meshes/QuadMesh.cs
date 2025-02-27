@@ -3,9 +3,9 @@ using ModernGL;
 
 public class QuadMesh : BaseMesh
 {
-    public QuadMesh(VoxelEngine app)
-        : base(ref app.ctx, ref app.shader_program.water, "2u1 3u1", ["in_tex_coord", "in_position"])
-        //: base(ref app.ctx, ref app.shader_program.quad, "3f 3f", ["in_position", "in_color"])
+    public QuadMesh(Water water)
+        : base(water.app.ctx, water.program, "2u1 3u1", ["in_tex_coord", "in_position"])
+        //: base(quad.ctx, quad.program, "3f 3f", ["in_position", "in_color"])
     {
         Rebuild();
     }

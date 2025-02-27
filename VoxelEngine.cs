@@ -34,7 +34,6 @@ public class VoxelEngine : GameWindow
 
     public Textures textures;
     public Player player;
-    public ShaderProgram shader_program;
     public Scene scene;
 
     public VoxelEngine(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -46,7 +45,6 @@ public class VoxelEngine : GameWindow
 
         textures = new Textures(this);
         player = new Player(this, Settings.PLAYER_POS);
-        shader_program = new ShaderProgram(this, ctx);
         scene = new Scene(this);
     }
 
@@ -54,6 +52,14 @@ public class VoxelEngine : GameWindow
     static VoxelEngine() =>
         //SimplexNoise.Noise.Seed = Settings.SEED;
         _noise = new OpenSimplex.Noise(Settings.SEED);
+
+    public glContext.Program GetProgram(string shader_name)
+    {
+        return ctx.program(
+            File.ReadAllText($"shaders/{shader_name}.vert"),
+            File.ReadAllText($"shaders/{shader_name}.frag")
+        );
+    }
 
     protected override void OnLoad()
     {
@@ -77,9 +83,6 @@ public class VoxelEngine : GameWindow
 
         // player kayboard and mouse events
         HandleEvents();
-
-        // update shader uniforms
-        shader_program.Update();
 
         // update vertex data
         scene.Update();
@@ -105,7 +108,7 @@ public class VoxelEngine : GameWindow
         base.OnFramebufferResize(e);
 
         player.m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, (float)e.Width / e.Height, Settings.NEAR, Settings.FAR);
-        shader_program.chunk["m_proj"] = player.m_proj;
+        scene.world.program["m_proj"] = player.m_proj;
         GL.Viewport(0, 0, e.Width, e.Height);
     }
 

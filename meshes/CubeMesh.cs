@@ -1,16 +1,11 @@
-using OpenTK.Graphics.OpenGL4;
 using System;
-using System.Linq;
-
+using ModernGL;
 
 public class CubeMesh : BaseMesh
 {
-    private VoxelEngine app;
-
-    public CubeMesh(VoxelEngine app)
-        : base(ref app.ctx, ref app.shader_program.voxel_marker, "2f2 3f2", ["in_tex_coord_0", "in_position"])
+    public CubeMesh(VoxelMarker voxel_marker)
+        : base(voxel_marker.app.ctx, voxel_marker.program, "2f2 3f2", ["in_tex_coord_0", "in_position"])
     {
-        this.app = app;
         Rebuild();
     }
 

@@ -26,6 +26,7 @@ public class Scene
     {
         this.world.Update();
         this.voxel_marker.Update();
+        this.water.Update();
         this.clouds.Update();
     }
 

@@ -1,12 +1,13 @@
 using System;
-using OpenSimplex;
 using OpenTK.Mathematics;
+using ModernGL;
 using static Settings;
 
 
 public class Chunk : IDisposable
 {
-    public VoxelEngine app;
+    public readonly VoxelEngine app;
+
     public World world;
     public Vector3i position { get; private set; }
     public Matrix4 m_model { get; private set; }
@@ -46,12 +47,10 @@ public class Chunk : IDisposable
         if (IsEmpty) return;
         if (!isOnFrustum(this)) return;
 
-        world.app.shader_program.chunk["m_model"] = m_model;
-        //this.mesh?.program["m_model"] = m_model;
         this.mesh?.Render();
     }
 
-    static internal byte[] BuildVoxels(out byte[] voxels, Vector3i position, out bool IsEmpty)
+    internal static byte[] BuildVoxels(out byte[] voxels, Vector3i position, out bool IsEmpty)
     {
         voxels = new byte[CHUNK_VOL];
 
@@ -80,4 +79,5 @@ public class Chunk : IDisposable
             }
         }
     }
+
 }

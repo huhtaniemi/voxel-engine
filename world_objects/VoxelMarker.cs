@@ -1,8 +1,11 @@
+using ModernGL;
 using OpenTK.Mathematics;
 
 public class VoxelMarker
 {
-    private VoxelEngine app;
+    public readonly VoxelEngine app;
+    public readonly glContext.Program program;
+
     private VoxelHandler handler;
     private Vector3 position;
     private Matrix4 m_model;
@@ -12,14 +15,22 @@ public class VoxelMarker
     public VoxelMarker(VoxelHandler voxelHandler)
     {
         this.app = voxelHandler.app;
+
+        this.program = app.GetProgram("voxel_marker");
+        this.program["m_proj"] = app.player.m_proj;
+        this.program["m_model"] = Matrix4.Identity;
+        this.program["u_texture_0"] = 0;
+
         this.handler = voxelHandler;
         this.position = Vector3.Zero;
         this.m_model = GetModelMatrix();
-        this.mesh = new CubeMesh(this.app);
+
+        this.mesh = new CubeMesh(this);
     }
 
     public void Update()
     {
+        this.program["m_view"] = app.player.m_view;
         if (handler.voxel_id != 0)
         {
             if (handler.interactionMode)
@@ -39,8 +50,8 @@ public class VoxelMarker
         if (handler.voxel_id != 0)
         {
             //this.mesh.program["mode_id"] = 1;
-            app.shader_program.voxel_marker["mode_id"] = (uint)(handler.interactionMode ? 1 : 0);
-            app.shader_program.voxel_marker["m_model"] = GetModelMatrix();
+            program["mode_id"] = (uint)(handler.interactionMode ? 1 : 0);
+            program["m_model"] = GetModelMatrix();
             mesh.Render();
         }
     }

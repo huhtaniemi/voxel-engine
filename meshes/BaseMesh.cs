@@ -20,7 +20,7 @@ public abstract class BaseMesh : IDisposable
         vao?.Dispose();
     }
 
-    public BaseMesh(ref glContext ctx, ref glContext.Program program, string vbo_format, string[] attrs)
+    public BaseMesh(glContext ctx, glContext.Program program, string vbo_format, string[] attrs)
     {
         this.ctx = ctx;
         this.program = program;

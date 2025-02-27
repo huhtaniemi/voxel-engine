@@ -1,13 +1,10 @@
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using ModernGL;
 
 public class CloudMesh : BaseMesh
 {
-    public CloudMesh(VoxelEngine app)
-        : base(ref app.ctx, ref app.shader_program.clouds, "3u2", ["in_position"])
+    public CloudMesh(Clouds cloud)
+        : base(cloud.app.ctx, cloud.program, "3u2", ["in_position"])
     {
         Rebuild();
     }
