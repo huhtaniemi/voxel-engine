@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 public class Scene
 {
     public World world;
-    private VoxelMarker voxelMarker;
+    private VoxelMarker voxel_marker;
     private Water water;
     private Clouds clouds;
 
@@ -14,7 +14,7 @@ public class Scene
     public Scene(VoxelEngine app)
     {
         this.world = new World(app);
-        this.voxelMarker = new VoxelMarker(this.world.voxelHandler);
+        this.voxel_marker = new VoxelMarker(this.world.voxelHandler);
         this.water = new Water(app);
         this.clouds = new Clouds(app);
 
@@ -25,7 +25,7 @@ public class Scene
     public void Update()
     {
         this.world.Update();
-        this.voxelMarker.Update();
+        this.voxel_marker.Update();
         this.clouds.Update();
     }
 
@@ -43,7 +43,7 @@ public class Scene
         GL.Enable(EnableCap.CullFace);
 
         // Voxel selection
-        this.voxelMarker.Render();
+        this.voxel_marker.Render();
 
         //this.quad.Render(); // demo
         //this.chunk.Render(); // demo2
