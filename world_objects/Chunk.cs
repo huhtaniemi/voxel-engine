@@ -16,7 +16,6 @@ public class Chunk : IDisposable
     internal ChunkMesh? mesh;// { get; private set; }
     internal bool IsEmpty;// { get; private set; }
     public Vector3 Center { get; private set; }
-    private Func<Chunk, bool> isOnFrustum;
 
     public void Dispose()
     {
@@ -33,7 +32,6 @@ public class Chunk : IDisposable
         //BuildMesh(out this.mesh);
 
         this.Center = (position.ToVector3() + new Vector3(0.5f)) * Settings.CHUNK_SIZE;
-        this.isOnFrustum = this.app.player.Frustum.IsOnFrustum;
     }
 
     internal void BuildMesh(ref ChunkMesh mesh)
@@ -45,8 +43,6 @@ public class Chunk : IDisposable
     public void Render()
     {
         if (IsEmpty) return;
-        if (!isOnFrustum(this)) return;
-
         this.mesh?.Render();
     }
 

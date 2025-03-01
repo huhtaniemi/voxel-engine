@@ -15,7 +15,15 @@ public class Camera
     public Matrix4 m_proj { get; set; }
     public Matrix4 m_view { get; private set; }
 
-    public Frustum Frustum { get; private set; }
+    protected struct Frustum(float hFOV, float vFOV)
+    {
+        public readonly float factorX = 1.0f / MathF.Cos(hFOV * 0.5f);
+        public readonly float tanX = MathF.Tan(hFOV * 0.5f);
+        public readonly float factorY = 1.0f / MathF.Cos(vFOV * 0.5f);
+        public readonly float tanY = MathF.Tan(vFOV * 0.5f);
+    };
+    protected Frustum viewFrustum { get; private set; }
+
 
     public Camera(Vector3 position, float yaw, float pitch)
     {
@@ -27,7 +35,38 @@ public class Camera
         m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, Settings.ASPECT_RATIO, Settings.NEAR, Settings.FAR);
         m_view = Matrix4.Identity;
 
-        Frustum = new Frustum(this);
+        viewFrustum = new(Settings.H_FOV, Settings.V_FOV);
+    }
+
+    public bool isInView(Vector3 center)
+    {
+        Vector3 sphereVec = center - Position;
+
+        // Outside the NEAR and FAR planes?
+        float sz = Vector3.Dot(sphereVec, Forward);
+        if (!(Settings.NEAR - Settings.CHUNK_SPHERE_RADIUS <= sz && sz <= Settings.FAR + Settings.CHUNK_SPHERE_RADIUS))
+        {
+            return false;
+        }
+
+        // Outside the LEFT and RIGHT planes?
+        double sx = Vector3.Dot(sphereVec, Right);
+        double distX = viewFrustum.factorX * Settings.CHUNK_SPHERE_RADIUS + sz * viewFrustum.tanX;
+        if (!(-distX <= sx && sx <= distX))
+        {
+            return false;
+        }
+
+        // Outside the TOP and BOTTOM planes?
+        double sy = Vector3.Dot(sphereVec, Up);
+        double distY = viewFrustum.factorY * Settings.CHUNK_SPHERE_RADIUS + sz * viewFrustum.tanY;
+        if (!(-distY <= sy && sy <= distY))
+        {
+            return false;
+        }
+
+        return true;
+    }
     }
 
     public virtual void Update()

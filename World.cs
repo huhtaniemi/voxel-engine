@@ -81,6 +81,8 @@ public class World
     {
         foreach (var chunk in chunks)
         {
+            if (!app.player.isInView(chunk.Center))
+                continue;
             // update each frame for each chunk
             // ... but the app is the same, do we need to? should world obj update thies ?
             // ahh.. this is to position individual chunk to relative position! render specific...?
