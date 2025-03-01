@@ -106,10 +106,7 @@ public class VoxelEngine : GameWindow
     protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
     {
         base.OnFramebufferResize(e);
-
-        player.m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, (float)e.Width / e.Height, Settings.NEAR, Settings.FAR);
-        scene.world.program["m_proj"] = player.m_proj;
-        GL.Viewport(0, 0, e.Width, e.Height);
+        player.UpdateViewport(e.Size);
     }
 
     protected override void OnUnload()

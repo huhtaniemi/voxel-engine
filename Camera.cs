@@ -1,4 +1,6 @@
 using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL;
+
 
 public class Camera
 {
@@ -67,6 +69,12 @@ public class Camera
 
         return true;
     }
+
+    public void UpdateViewport(Vector2i Size)
+    {
+        m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, (float)Size.X / Size.Y, Settings.NEAR, Settings.FAR);
+        //scene.world.program["m_proj"] = m_proj;
+        GL.Viewport(0, 0, Size.X, Size.Y);
     }
 
     public virtual void Update()
