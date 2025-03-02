@@ -28,7 +28,7 @@ public class Clouds
     public void Update()
     {
         this.program["m_view"] = this.camera.m_view;
-        this.program["u_time"] = (float)(this.scene.time * 0.001);
+        this.program["u_time"] = (float)(this.app.scene.time * 0.001);
     }
 
     public void Render()

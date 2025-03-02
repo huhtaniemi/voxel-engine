@@ -44,7 +44,7 @@ public class Player
         }
         if (mouseState.IsAnyButtonDown)
         {
-            var voxelHandler = scene.world.voxelHandler;
+            var voxelHandler = scene.voxel_handler;
 
             if (mouseState.IsButtonDown(MouseButton.Left))
                 voxelHandler.SetVoxel();

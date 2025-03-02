@@ -3,10 +3,11 @@ using OpenTK.Graphics.OpenGL4;
 
 public class Scene
 {
-    public World world;
-    private VoxelMarker voxel_marker;
-    private Water water;
-    private Clouds clouds;
+    private World world { get; set; }
+    public VoxelHandler voxel_handler { get; private set; }
+    private VoxelMarker voxel_marker { get; set; }
+    private Water water { get; set; }
+    private Clouds clouds { get; set; }
 
     public double time;
     public double deltaTime;
@@ -17,7 +18,8 @@ public class Scene
     public Scene(VoxelEngine app)
     {
         this.world = new World(app);
-        this.voxel_marker = new VoxelMarker(this.world.voxelHandler);
+        this.voxel_handler = new VoxelHandler(this.world);
+        this.voxel_marker = new VoxelMarker(this.world);
         this.water = new Water(app);
         this.clouds = new Clouds(app);
 
@@ -36,7 +38,8 @@ public class Scene
         this.time = time;
 
         this.world.Update();
-        this.voxel_marker.Update();
+        this.voxel_handler.Update();
+        this.voxel_marker.Update(this.voxel_handler);
         this.water.Update();
         this.clouds.Update();
     }
@@ -55,7 +58,7 @@ public class Scene
         GL.Enable(EnableCap.CullFace);
 
         // Voxel selection
-        this.voxel_marker.Render();
+        this.voxel_marker.Render(this.voxel_handler.voxel_id);
 
         //this.quad.Render(); // demo
         //this.chunk.Render(); // demo2

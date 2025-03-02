@@ -8,15 +8,17 @@ public class VoxelHandler
     private Chunk[] chunks;
 
     // Ray casting result
-    private Chunk? chunk;
-    public byte voxel_id;
-    private int voxel_index;
-    private Vector3i voxel_local_pos;
-    public Vector3i voxel_world_pos;
-    public Vector3i voxel_normal;
+    private Chunk? chunk { get; set; }
+    public byte voxel_id { get; set; }
+    private int voxel_index { get; set; }
+    private Vector3i voxel_local_pos { get; set; }
+    private Vector3i voxel_world_pos { get; set; }
+    private Vector3i voxel_normal;// { get; set; }
 
     public bool interactionMode = false;  // false: remove voxel, true: add voxel
     private const byte new_voxel_id = Settings.DIRT;
+
+    public Vector3i position { get => interactionMode ? voxel_world_pos + voxel_normal : voxel_world_pos; }
 
     public VoxelHandler(World world)
     //public VoxelHandler(VoxelEngine app, Chunk[] chunks)

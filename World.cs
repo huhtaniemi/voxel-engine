@@ -9,7 +9,6 @@ public class World
 
     public Chunk[] chunks { get; private set; }
     public byte[,] voxels { get; private set; }
-    public VoxelHandler voxelHandler { get; private set; }
 
     public World(VoxelEngine app)
     {
@@ -28,7 +27,6 @@ public class World
         voxels = new byte[Settings.WORLD_VOL, Settings.CHUNK_VOL];
         BuildChunks();
         BuildChunkMesh();
-        voxelHandler = new VoxelHandler(this);
     }
 
     private void BuildChunks()
@@ -78,7 +76,6 @@ public class World
     public void Update()
     {
         this.program["m_view"] = this.app.camera.m_view;
-        voxelHandler.Update();
     }
 
     public void Render()

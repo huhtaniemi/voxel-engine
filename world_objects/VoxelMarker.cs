@@ -8,15 +8,12 @@ public class VoxelMarker
     public readonly VoxelEngine app;
     public readonly glContext.Program program;
 
-    private VoxelHandler handler;
-    private Vector3 position;
-    private Matrix4 m_model;
     private CubeMesh mesh;
 
 
-    public VoxelMarker(VoxelHandler voxelHandler)
+    public VoxelMarker(World world)
     {
-        this.app = voxelHandler.app;
+        this.app = world.app;
         this.camera = app.camera;
 
         this.program = this.app.ctx.GetProgram("voxel_marker");
@@ -24,37 +21,20 @@ public class VoxelMarker
         this.program["m_model"] = Matrix4.Identity;
         this.program["u_texture_0"] = 0;
 
-        this.handler = voxelHandler;
-        this.position = Vector3.Zero;
-        this.m_model = GetModelMatrix();
-
         this.mesh = new CubeMesh(this, program);
     }
 
-    public void Update()
+    public void Update(VoxelHandler voxelHandler)
     {
         this.program["m_view"] = this.camera.m_view;
-        if (handler.voxel_id != 0)
-        {
-            if (handler.interactionMode)
-                position = handler.voxel_world_pos + handler.voxel_normal;
-            else
-                position = handler.voxel_world_pos;
-        }
+        this.program["m_model"] = Matrix4.CreateTranslation(voxelHandler.position);
+        this.program["mode_id"] = (uint) (voxelHandler.interactionMode ? 1 : 0);
     }
 
-    private Matrix4 GetModelMatrix()
+    public void Render(byte voxel_id)
     {
-        return (m_model = Matrix4.CreateTranslation(position));
-    }
-
-    public void Render()
-    {
-        if (handler.voxel_id != 0)
+        if (voxel_id != 0)
         {
-            //this.mesh.program["mode_id"] = 1;
-            program["mode_id"] = (uint)(handler.interactionMode ? 1 : 0);
-            program["m_model"] = GetModelMatrix();
             mesh.Render();
         }
     }
