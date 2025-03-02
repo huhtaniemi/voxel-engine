@@ -71,6 +71,10 @@ public class World
             chunk.BuildMesh();
     }
 
+    public void UpdateProjection()
+    {
+        this.program["m_proj"] = camera.m_proj;
+    }
     public void Update()
     {
         this.program["m_view"] = app.player.m_view;

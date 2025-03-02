@@ -22,6 +22,11 @@ public class Scene
         //this.chunk = new Chunk(app); // demo2
     }
 
+    public void UpdateProjection()
+    {
+        this.world.UpdateProjection();
+    }
+
     public void Update()
     {
         this.world.Update();

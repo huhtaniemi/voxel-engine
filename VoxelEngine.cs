@@ -109,7 +109,9 @@ public class VoxelEngine : GameWindow
     protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
     {
         base.OnFramebufferResize(e);
-        player.UpdateViewport(e.Size);
+        player.UpdatePerspective((float)e.Width / e.Height);
+        scene.UpdateProjection();
+        GL.Viewport(0, 0, e.Width, e.Height);
     }
 
     protected override void OnUnload()

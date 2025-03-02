@@ -70,17 +70,15 @@ public class Camera
         return true;
     }
 
-    public void UpdateViewport(Vector2i Size)
-    {
-        m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, (float)Size.X / Size.Y, Settings.NEAR, Settings.FAR);
-        //scene.world.program["m_proj"] = m_proj;
-        GL.Viewport(0, 0, Size.X, Size.Y);
-    }
-
     public virtual void UpdateView()
     {
         UpdateVectors();
         UpdateViewMatrix();
+    }
+
+    public void UpdatePerspective(float aspect)
+    {
+        m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, aspect, Settings.NEAR, Settings.FAR);
     }
 
     private void UpdateViewMatrix()
