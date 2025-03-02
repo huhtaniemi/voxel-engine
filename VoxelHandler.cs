@@ -54,7 +54,7 @@ public class VoxelHandler
             {
                 result.chunk.voxels[result.voxel_index] = new_voxel_id;
                 //result.chunk.BuildMesh();
-                result.chunk.BuildMesh(ref result.chunk.mesh);
+                result.chunk.BuildMesh();
 
                 if (result.chunk.IsEmpty)
                     result.chunk.IsEmpty = false;
@@ -75,7 +75,7 @@ public class VoxelHandler
                 chunk.world.voxels, chunk_index * this.chunk.world.voxels.GetLength(1),
                 chunk.voxels.Length);
 
-            chunk.BuildMesh(ref chunk.mesh);
+            chunk.BuildMesh();
             RebuildAdjacentChunks();
         }
     }
@@ -107,7 +107,7 @@ public class VoxelHandler
         if (index != -1)
         {
             //chunks[index].BuildMesh();
-            chunks[index].BuildMesh(ref chunks[index].mesh);
+            chunks[index].BuildMesh();
         }
     }
 

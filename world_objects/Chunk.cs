@@ -34,7 +34,7 @@ public class Chunk : IDisposable
         this.Center = (position.ToVector3() + new Vector3(0.5f)) * Settings.CHUNK_SIZE;
     }
 
-    internal void BuildMesh(ref ChunkMesh mesh)
+    internal void BuildMesh()
     {
         mesh?.Dispose();
         mesh = new ChunkMesh(this);
