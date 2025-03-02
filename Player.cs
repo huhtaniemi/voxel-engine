@@ -18,7 +18,7 @@ public class Player : Camera
     {
         MouseControl(mouseState);
         KeyboardControl(keyState);
-        Update();
+        UpdateView();
     }
 
     // hack: for RDP connection mouse-delta fix

@@ -77,7 +77,7 @@ public class Camera
         GL.Viewport(0, 0, Size.X, Size.Y);
     }
 
-    public virtual void Update()
+    public virtual void UpdateView()
     {
         UpdateVectors();
         UpdateViewMatrix();
