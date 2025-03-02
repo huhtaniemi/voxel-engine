@@ -3,8 +3,8 @@ using ModernGL;
 
 public class QuadMesh : BaseMesh
 {
-    public QuadMesh(Water water)
-        : base(water.app.ctx, water.program, "2u1 3u1", ["in_tex_coord", "in_position"])
+    public QuadMesh(Water water, glContext.Program program)
+        : base(program.ctx, program, "2u1 3u1", ["in_tex_coord", "in_position"])
         //: base(quad.ctx, quad.program, "3f 3f", ["in_position", "in_color"])
     {
         Rebuild();

@@ -7,8 +7,8 @@ using static Settings;
 public class Chunk : IDisposable
 {
     public readonly VoxelEngine app;
+    public World world { get; private set; }
 
-    public World world;
     public Vector3i position { get; private set; }
     public Matrix4 m_model { get; private set; }
     public byte[] voxels;// { get; private set; }
@@ -37,7 +37,7 @@ public class Chunk : IDisposable
     internal void BuildMesh()
     {
         mesh?.Dispose();
-        mesh = new ChunkMesh(this);
+        mesh = new ChunkMesh(this, world.program);
     }
 
     public void Render()

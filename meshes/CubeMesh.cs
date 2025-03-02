@@ -3,8 +3,8 @@ using ModernGL;
 
 public class CubeMesh : BaseMesh
 {
-    public CubeMesh(VoxelMarker voxel_marker)
-        : base(voxel_marker.app.ctx, voxel_marker.program, "2f2 3f2", ["in_tex_coord_0", "in_position"])
+    public CubeMesh(VoxelMarker voxel_marker, glContext.Program program)
+        : base(program.ctx, program, "2f2 3f2", ["in_tex_coord_0", "in_position"])
     {
         Rebuild();
     }

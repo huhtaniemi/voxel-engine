@@ -3,8 +3,8 @@ using ModernGL;
 
 public class CloudMesh : BaseMesh
 {
-    public CloudMesh(Clouds cloud)
-        : base(cloud.app.ctx, cloud.program, "3u2", ["in_position"])
+    public CloudMesh(Clouds cloud, glContext.Program program)
+        : base(program.ctx, program, "3u2", ["in_position"])
     {
         Rebuild();
     }

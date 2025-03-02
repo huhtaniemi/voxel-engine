@@ -11,14 +11,14 @@ public class Water
     {
         this.app = app;
 
-        this.program = app.GetProgram("water");
+        this.program = this.app.ctx.GetProgram("water");
         this.program["m_proj"] = app.player.m_proj;
         //this.program["m_model"] = Matrix4.Identity; // quad
         this.program["u_texture_0"] = 2;
         this.program["water_area"] = Settings.WATER_AREA;
         this.program["water_line"] = Settings.WATER_LINE;
 
-        this.mesh = new QuadMesh(this);
+        this.mesh = new QuadMesh(this, program);
     }
 
     public void Update()

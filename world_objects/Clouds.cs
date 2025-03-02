@@ -12,13 +12,13 @@ public class Clouds
     {
         this.app = app;
 
-        this.program = app.GetProgram("clouds");
+        this.program = this.app.ctx.GetProgram("clouds");
         this.program["m_proj"] = app.player.m_proj;
         this.program["center"] = Settings.CENTER_XZ;
         this.program["bg_color"] = Settings.BG_COLOR;
         this.program["cloud_scale"] = Settings.CLOUD_SCALE;
 
-        this.mesh = new CloudMesh(this);
+        this.mesh = new CloudMesh(this, program);
     }
 
     public void Update()

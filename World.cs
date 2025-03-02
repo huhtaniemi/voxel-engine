@@ -15,7 +15,7 @@ public class World
     {
         this.app = app;
 
-        this.program = app.GetProgram("chunk");
+        this.program = this.app.ctx.GetProgram("chunk");
         this.program["m_proj"] = app.player.m_proj;
         this.program["m_model"] = Matrix4.Identity;
         //this.program["u_texture_0"] = 0;

@@ -16,7 +16,7 @@ public class VoxelMarker
     {
         this.app = voxelHandler.app;
 
-        this.program = app.GetProgram("voxel_marker");
+        this.program = this.app.ctx.GetProgram("voxel_marker");
         this.program["m_proj"] = app.player.m_proj;
         this.program["m_model"] = Matrix4.Identity;
         this.program["u_texture_0"] = 0;
@@ -25,7 +25,7 @@ public class VoxelMarker
         this.position = Vector3.Zero;
         this.m_model = GetModelMatrix();
 
-        this.mesh = new CubeMesh(this);
+        this.mesh = new CubeMesh(this, program);
     }
 
     public void Update()

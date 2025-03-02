@@ -6,6 +6,17 @@ using ModernGL;
 using OpenTK.Mathematics;
 using static ModernGL.glContext;
 
+static class glContextHelper
+{
+    public static glContext.Program GetProgram(this glContext ctx, string shader_name)
+    {
+        return ctx.program(
+            File.ReadAllText($"shaders/{shader_name}.vert"),
+            File.ReadAllText($"shaders/{shader_name}.frag")
+        );
+    }
+}
+
 public class MovingAverage
 {
     private Queue<double> _values;
@@ -52,14 +63,6 @@ public class VoxelEngine : GameWindow
     static VoxelEngine() =>
         //SimplexNoise.Noise.Seed = Settings.SEED;
         _noise = new OpenSimplex.Noise(Settings.SEED);
-
-    public glContext.Program GetProgram(string shader_name)
-    {
-        return ctx.program(
-            File.ReadAllText($"shaders/{shader_name}.vert"),
-            File.ReadAllText($"shaders/{shader_name}.frag")
-        );
-    }
 
     protected override void OnLoad()
     {
