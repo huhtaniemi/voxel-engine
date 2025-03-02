@@ -3,6 +3,8 @@ using OpenTK.Mathematics;
 
 public class VoxelMarker
 {
+    public Camera camera { get; private set; }
+
     public readonly VoxelEngine app;
     public readonly glContext.Program program;
 
@@ -15,9 +17,10 @@ public class VoxelMarker
     public VoxelMarker(VoxelHandler voxelHandler)
     {
         this.app = voxelHandler.app;
+        this.camera = app.camera;
 
         this.program = this.app.ctx.GetProgram("voxel_marker");
-        this.program["m_proj"] = app.player.m_proj;
+        this.program["m_proj"] = this.camera.m_proj;
         this.program["m_model"] = Matrix4.Identity;
         this.program["u_texture_0"] = 0;
 
@@ -30,7 +33,7 @@ public class VoxelMarker
 
     public void Update()
     {
-        this.program["m_view"] = app.player.m_view;
+        this.program["m_view"] = this.camera.m_view;
         if (handler.voxel_id != 0)
         {
             if (handler.interactionMode)

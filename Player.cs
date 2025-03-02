@@ -4,21 +4,22 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
 
 
-public class Player : Camera
+public class Player
 {
-    private VoxelEngine app;
+    private Camera camera { get; set; }
+    private Scene scene { get; set; }
 
-    public Player(VoxelEngine app, Vector3 position, float yaw = -90, float pitch = 0)
-        : base(position, yaw, pitch)
+    public Player(Camera camera, Scene scene)
     {
-        this.app = app;
+        this.camera = camera;
+        this.scene = scene;
     }
 
     public void HandleEvent(MouseState mouseState, KeyboardState keyState)
     {
         MouseControl(mouseState);
         KeyboardControl(keyState);
-        UpdateView();
+        camera.UpdateView();
     }
 
     // hack: for RDP connection mouse-delta fix
@@ -30,9 +31,9 @@ public class Player : Camera
         {
             var (mouse_dx, mouse_dy) = mouseState.Delta - _lastpos;
             if (mouse_dx != 0)
-                RotateYaw(mouse_dx * Settings.MOUSE_SENSITIVITY);
+                camera.RotateYaw(mouse_dx * Settings.MOUSE_SENSITIVITY);
             if (mouse_dy != 0)
-                RotatePitch(mouse_dy * Settings.MOUSE_SENSITIVITY);
+                camera.RotatePitch(mouse_dy * Settings.MOUSE_SENSITIVITY);
             if (mouse_dx != 0 || mouse_dy != 0)
             {
                 Console.WriteLine("Mouse dx {0} dy {1}", mouse_dx, mouse_dy);
@@ -43,7 +44,7 @@ public class Player : Camera
         }
         if (mouseState.IsAnyButtonDown)
         {
-            var voxelHandler = app.scene.world.voxelHandler;
+            var voxelHandler = scene.world.voxelHandler;
 
             if (mouseState.IsButtonDown(MouseButton.Left))
                 voxelHandler.SetVoxel();
@@ -56,21 +57,21 @@ public class Player : Camera
     {
         if (keyState.IsAnyKeyDown)
         {
-            var velocity = Settings.PLAYER_SPEED * (float)app.deltaTime;
+            var velocity = Settings.PLAYER_SPEED * (float)scene.deltaTime;
             if (keyState.IsKeyDown(Keys.W))
-                MoveForward(velocity);
+                camera.MoveForward(velocity);
             if (keyState.IsKeyDown(Keys.S))
-                MoveBack(velocity);
+                camera.MoveBack(velocity);
             if (keyState.IsKeyDown(Keys.D))
-                MoveRight(velocity);
+                camera.MoveRight(velocity);
             if (keyState.IsKeyDown(Keys.A))
-                MoveLeft(velocity);
+                camera.MoveLeft(velocity);
             if (keyState.IsKeyDown(Keys.Q))
-                MoveUp(velocity);
+                camera.MoveUp(velocity);
             if (keyState.IsKeyDown(Keys.E))
-                MoveDown(velocity);
+                camera.MoveDown(velocity);
 
-            Console.WriteLine("position {0} yaw {1} pitch {2}", Position, Yaw, Pitch);
+            //Console.WriteLine("position {0} yaw {1} pitch {2}", camera.Position, camera.Yaw, camera.Pitch);
 
             if (keyState.IsKeyDown(Keys.Z))
             {

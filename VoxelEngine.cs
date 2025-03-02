@@ -39,13 +39,11 @@ public class VoxelEngine : GameWindow
     public glContext ctx;
 
     MovingAverage deltaTimeAvg = new();
-    public double deltaTime;
-    public double time_init;
-    public double time;
 
-    public Textures textures;
-    public Player player;
-    public Scene scene;
+    public Textures textures { get; private set; }
+    public Camera camera { get; private set; }
+    public Scene scene { get; private set; }
+    public Player player { get; private set; }
 
     public VoxelEngine(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
@@ -55,8 +53,9 @@ public class VoxelEngine : GameWindow
         this.ctx.set_clearcolor(System.Drawing.Color.CornflowerBlue);
 
         textures = new Textures(this);
-        player = new Player(this, Settings.PLAYER_POS);
+        camera = new(Settings.PLAYER_POS, -90, 0);
         scene = new Scene(this);
+        player = new Player(camera, scene);
     }
 
     public static OpenSimplex.Noise _noise;
@@ -68,8 +67,6 @@ public class VoxelEngine : GameWindow
     {
         base.OnLoad();
         CursorState = CursorState.Grabbed;
-
-        time_init = DateTime.Now.Ticks;
     }
 
 
@@ -88,10 +85,7 @@ public class VoxelEngine : GameWindow
         HandleEvents();
 
         // update vertex data
-        scene.Update();
-
-        time = DateTime.Now.TimeOfDay.TotalMilliseconds * 0.001;
-        deltaTime = args.Time * 1000;
+        scene.Update(DateTime.Now.TimeOfDay.TotalMilliseconds);
 
         Title = $"{1.0 / deltaTimeAvg.Add(args.Time):F0} FPS";
     }
@@ -109,7 +103,7 @@ public class VoxelEngine : GameWindow
     protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
     {
         base.OnFramebufferResize(e);
-        player.UpdatePerspective((float)e.Width / e.Height);
+        camera.UpdatePerspective((float)e.Width / e.Height);
         scene.UpdateProjection();
         GL.Viewport(0, 0, e.Width, e.Height);
     }

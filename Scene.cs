@@ -8,6 +8,9 @@ public class Scene
     private Water water;
     private Clouds clouds;
 
+    public double time;
+    public double deltaTime;
+
     //private QuadMesh quad; // demo
     //private Chunk chunk; // demo2
 
@@ -27,8 +30,11 @@ public class Scene
         this.world.UpdateProjection();
     }
 
-    public void Update()
+    public void Update(double time)
     {
+        this.deltaTime = time - this.time;
+        this.time = time;
+
         this.world.Update();
         this.voxel_marker.Update();
         this.water.Update();

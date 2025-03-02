@@ -2,6 +2,8 @@ using ModernGL;
 
 public class Water
 {
+    public Camera camera { get; private set; }
+
     public readonly VoxelEngine app;
     public readonly glContext.Program program;
 
@@ -10,9 +12,10 @@ public class Water
     public Water(VoxelEngine app)
     {
         this.app = app;
+        this.camera = app.camera;
 
         this.program = this.app.ctx.GetProgram("water");
-        this.program["m_proj"] = app.player.m_proj;
+        this.program["m_proj"] = this.camera.m_proj;
         //this.program["m_model"] = Matrix4.Identity; // quad
         this.program["u_texture_0"] = 2;
         this.program["water_area"] = Settings.WATER_AREA;
@@ -23,7 +26,7 @@ public class Water
 
     public void Update()
     {
-        this.program["m_view"] = app.player.m_view;
+        this.program["m_view"] = this.camera.m_view;
     }
 
     public void Render()
