@@ -6,7 +6,6 @@ using static Settings;
 
 public class Chunk : IDisposable
 {
-    public readonly VoxelEngine app;
     public World world { get; private set; }
 
     public Vector3i position { get; private set; }
@@ -24,12 +23,12 @@ public class Chunk : IDisposable
 
     public Chunk(World world, Vector3i position)
     {
-        this.app = world.app;
         this.world = world;
         this.position = position;
         this.m_model = Matrix4.CreateTranslation(new Vector3(position) * Settings.CHUNK_SIZE);
         BuildVoxels(out this.voxels, position, out IsEmpty);
         //BuildMesh(out this.mesh);
+        mesh = null;
 
         this.Center = (position.ToVector3() + new Vector3(0.5f)) * Settings.CHUNK_SIZE;
     }

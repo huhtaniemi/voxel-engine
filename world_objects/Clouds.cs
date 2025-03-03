@@ -5,18 +5,20 @@ public class Clouds
 {
     private Scene scene { get; set; }
     private Camera camera { get; set; }
-    public readonly VoxelEngine app;
-    public readonly glContext.Program program;
 
-    private CloudMesh mesh;
+    private readonly glContext ctx;
+    private readonly glContext.Program program;
 
-    public Clouds(VoxelEngine app)
+    private readonly CloudMesh mesh;
+
+    public Clouds(Scene scene, Camera camera)
     {
-        this.app = app;
-        this.scene = app.scene;
-        this.camera = app.camera;
+        this.scene = scene;
+        this.camera = camera;
 
-        this.program = this.app.ctx.GetProgram("clouds");
+        this.ctx = this.scene.ctx;
+
+        this.program = this.ctx.GetProgram("clouds");
         this.program["m_proj"] = this.camera.m_proj;
         this.program["center"] = Settings.CENTER_XZ;
         this.program["bg_color"] = Settings.BG_COLOR;
@@ -28,7 +30,7 @@ public class Clouds
     public void Update()
     {
         this.program["m_view"] = this.camera.m_view;
-        this.program["u_time"] = (float)(this.app.scene.time * 0.001);
+        this.program["u_time"] = (float)(this.scene.time * 0.001);
     }
 
     public void Render()

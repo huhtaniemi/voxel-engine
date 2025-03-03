@@ -3,20 +3,21 @@ using OpenTK.Mathematics;
 
 public class VoxelMarker
 {
-    public Camera camera { get; private set; }
+    private Camera camera { get; set; }
 
-    public readonly VoxelEngine app;
-    public readonly glContext.Program program;
+    private readonly glContext ctx;
+    private readonly glContext.Program program;
 
-    private CubeMesh mesh;
+    private readonly CubeMesh mesh;
 
 
     public VoxelMarker(World world)
     {
-        this.app = world.app;
-        this.camera = app.camera;
+        this.camera = world.camera;
 
-        this.program = this.app.ctx.GetProgram("voxel_marker");
+        this.ctx = world.ctx;
+
+        this.program = this.ctx.GetProgram("voxel_marker");
         this.program["m_proj"] = this.camera.m_proj;
         this.program["m_model"] = Matrix4.Identity;
         this.program["u_texture_0"] = 0;

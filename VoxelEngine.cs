@@ -40,10 +40,10 @@ public class VoxelEngine : GameWindow
 
     MovingAverage deltaTimeAvg = new();
 
-    public Textures textures { get; private set; }
-    public Camera camera { get; private set; }
-    public Scene scene { get; private set; }
-    public Player player { get; private set; }
+    private Textures textures { get; set; }
+    private Camera camera { get; set; }
+    private Scene scene { get; set; }
+    private Player player { get; set; }
 
     public VoxelEngine(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
@@ -54,7 +54,7 @@ public class VoxelEngine : GameWindow
 
         textures = new Textures(this);
         camera = new(Settings.PLAYER_POS, -90, 0);
-        scene = new Scene(this);
+        scene = new Scene(ctx, camera);
         player = new Player(camera, scene);
     }
 

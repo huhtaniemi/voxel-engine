@@ -4,8 +4,8 @@ using OpenTK.Mathematics;
 
 public class VoxelHandler
 {
-    public VoxelEngine app;
-    private Chunk[] chunks;
+    private World world { get; set; }
+    private readonly Chunk[] chunks;
 
     // Ray casting result
     private Chunk? chunk { get; set; }
@@ -21,9 +21,8 @@ public class VoxelHandler
     public Vector3i position { get => interactionMode ? voxel_world_pos + voxel_normal : voxel_world_pos; }
 
     public VoxelHandler(World world)
-    //public VoxelHandler(VoxelEngine app, Chunk[] chunks)
     {
-        this.app = world.app;
+        this.world = world;
         this.chunks = world.chunks;
     }
 
@@ -154,10 +153,10 @@ public class VoxelHandler
 
     private bool RayCast()
     {
-        var (x1, y1, z1) = this.app.camera.Position;
-        var (x2, y2, z2) = this.app.camera.Position + this.app.camera.Forward * Settings.MAX_RAY_DIST;
+        var (x1, y1, z1) = this.world.camera.Position;
+        var (x2, y2, z2) = this.world.camera.Position + this.world.camera.Forward * Settings.MAX_RAY_DIST;
 
-        var current_voxel_pos = ((Vector3i)this.app.camera.Position);
+        var current_voxel_pos = ((Vector3i)this.world.camera.Position);
 
         var dx = MathF.Sign(x2 - x1);
         float deltaX = dx != 0 ? Math.Min(dx / (x2 - x1), 10000000.0f) : 10000000.0f;

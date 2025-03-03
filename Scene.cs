@@ -1,8 +1,12 @@
 using System;
+using ModernGL;
 using OpenTK.Graphics.OpenGL4;
 
 public class Scene
 {
+    public glContext ctx { get; private set; }
+    private Camera camera { get; set; }
+
     private World world { get; set; }
     public VoxelHandler voxel_handler { get; private set; }
     private VoxelMarker voxel_marker { get; set; }
@@ -15,13 +19,17 @@ public class Scene
     //private QuadMesh quad; // demo
     //private Chunk chunk; // demo2
 
-    public Scene(VoxelEngine app)
+    public Scene(glContext ctx, Camera camera)
     {
-        this.world = new World(app);
+        this.ctx = ctx;
+
+        this.camera = camera;
+
+        this.world = new World(this, this.camera);
         this.voxel_handler = new VoxelHandler(this.world);
         this.voxel_marker = new VoxelMarker(this.world);
-        this.water = new Water(app);
-        this.clouds = new Clouds(app);
+        this.water = new Water(this, this.camera);
+        this.clouds = new Clouds(this, this.camera);
 
         //this.quad = new QuadMesh(app); // demo
         //this.chunk = new Chunk(app); // demo2

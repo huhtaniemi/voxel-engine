@@ -2,19 +2,22 @@ using ModernGL;
 
 public class Water
 {
-    public Camera camera { get; private set; }
+    private Scene scene { get; set; }
+    private Camera camera { get; set; }
 
-    public readonly VoxelEngine app;
-    public readonly glContext.Program program;
+    private readonly glContext ctx;
+    private readonly glContext.Program program;
 
     private readonly QuadMesh mesh;
 
-    public Water(VoxelEngine app)
+    public Water(Scene scene, Camera camera)
     {
-        this.app = app;
-        this.camera = app.camera;
+        this.scene = scene;
+        this.camera = camera;
 
-        this.program = this.app.ctx.GetProgram("water");
+        this.ctx = this.scene.ctx;
+
+        this.program = this.ctx.GetProgram("water");
         this.program["m_proj"] = this.camera.m_proj;
         //this.program["m_model"] = Matrix4.Identity; // quad
         this.program["u_texture_0"] = 2;
