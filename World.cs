@@ -5,7 +5,7 @@ using ModernGL;
 public class World
 {
     private Scene scene { get; set; }
-    public Camera camera { get; private set; }
+    private Camera camera { get; set; }
 
     public glContext ctx { get; private set; }
     public glContext.Program program { get; private set; }

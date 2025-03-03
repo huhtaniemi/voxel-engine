@@ -27,7 +27,7 @@ public class Scene
 
         this.world = new World(this, this.camera);
         this.voxel_handler = new VoxelHandler(this.world);
-        this.voxel_marker = new VoxelMarker(this.world);
+        this.voxel_marker = new VoxelMarker(this, this.camera);
         this.water = new Water(this, this.camera);
         this.clouds = new Clouds(this, this.camera);
 
@@ -46,7 +46,7 @@ public class Scene
         this.time = time;
 
         this.world.Update();
-        this.voxel_handler.Update();
+        this.voxel_handler.Update(this.camera);
         this.voxel_marker.Update(this.voxel_handler);
         this.water.Update();
         this.clouds.Update();

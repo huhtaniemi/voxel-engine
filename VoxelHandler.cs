@@ -4,7 +4,6 @@ using OpenTK.Mathematics;
 
 public class VoxelHandler
 {
-    private World world { get; set; }
     private readonly Chunk[] chunks;
 
     // Ray casting result
@@ -22,13 +21,12 @@ public class VoxelHandler
 
     public VoxelHandler(World world)
     {
-        this.world = world;
         this.chunks = world.chunks;
     }
 
-    public void Update()
+    public void Update(Camera camera)
     {
-        RayCast();
+        RayCast(camera);
     }
 
 
@@ -151,12 +149,12 @@ public class VoxelHandler
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float FastFract(float x) => (x % 1 + 1) % 1;
 
-    private bool RayCast()
+    private bool RayCast(Camera camera)
     {
-        var (x1, y1, z1) = this.world.camera.Position;
-        var (x2, y2, z2) = this.world.camera.Position + this.world.camera.Forward * Settings.MAX_RAY_DIST;
+        var (x1, y1, z1) = camera.Position;
+        var (x2, y2, z2) = camera.Position + camera.Forward * Settings.MAX_RAY_DIST;
 
-        var current_voxel_pos = ((Vector3i)this.world.camera.Position);
+        var current_voxel_pos = ((Vector3i)camera.Position);
 
         var dx = MathF.Sign(x2 - x1);
         float deltaX = dx != 0 ? Math.Min(dx / (x2 - x1), 10000000.0f) : 10000000.0f;

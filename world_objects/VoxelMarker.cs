@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 
 public class VoxelMarker
 {
+    private Scene scene { get; set; }
     private Camera camera { get; set; }
 
     private readonly glContext ctx;
@@ -11,11 +12,12 @@ public class VoxelMarker
     private readonly CubeMesh mesh;
 
 
-    public VoxelMarker(World world)
+    public VoxelMarker(Scene scene, Camera camera)
     {
-        this.camera = world.camera;
+        this.scene = scene;
+        this.camera = camera;
 
-        this.ctx = world.ctx;
+        this.ctx = scene.ctx;
 
         this.program = this.ctx.GetProgram("voxel_marker");
         this.program["m_proj"] = this.camera.m_proj;
