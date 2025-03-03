@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 
 public class VoxelHandler
 {
-    private readonly Chunk[] chunks;
+    private Chunk[] world_chunks { get; set; }
 
     // Ray casting result
     private Chunk? chunk { get; set; }
@@ -21,7 +21,7 @@ public class VoxelHandler
 
     public VoxelHandler(World world)
     {
-        this.chunks = world.chunks;
+        this.world_chunks = world.chunks;
     }
 
     public void Update(Camera camera)
@@ -45,18 +45,15 @@ public class VoxelHandler
 
     private void AddVoxel()
     {
+        // adds new-voxel only to adjacent-voxel
         if (voxel_id != 0)
         {
             var result = GetVoxelId(voxel_world_pos + voxel_normal);
-
             if (result.voxel_id == 0 && result.chunk != null)
             {
                 result.chunk.voxels[result.voxel_index] = new_voxel_id;
-                //result.chunk.BuildMesh();
+                result.chunk.IsEmpty = false;
                 result.chunk.BuildMesh();
-
-                if (result.chunk.IsEmpty)
-                    result.chunk.IsEmpty = false;
             }
         }
     }
@@ -66,14 +63,7 @@ public class VoxelHandler
         if (voxel_id != 0 && chunk != null)
         {
             chunk.voxels[voxel_index] = 0;
-            //chunk.BuildMesh();
-
-            var chunk_index = VoxelMeshBuilder.GetChunkIndex(voxel_world_pos);
-            Buffer.BlockCopy(
-                chunk.voxels, 0,
-                chunk.world.voxels, chunk_index * this.chunk.world.voxels.GetLength(1),
-                chunk.voxels.Length);
-
+            chunk.IsEmpty = !chunk.voxels.Any(v => v != 0);
             chunk.BuildMesh();
             RebuildAdjacentChunks();
         }
@@ -105,8 +95,7 @@ public class VoxelHandler
         int index = VoxelMeshBuilder.GetChunkIndex(adjVoxelPos);
         if (index != -1)
         {
-            //chunks[index].BuildMesh();
-            chunks[index].BuildMesh();
+            world_chunks[index].BuildMesh();
         }
     }
 
@@ -119,7 +108,7 @@ public class VoxelHandler
         if (cx >= 0 && cx < Settings.WORLD_W && cy >= 0 && cy < Settings.WORLD_H && cz >= 0 && cz < Settings.WORLD_D)
         {
             var chunk_index = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
-            var chunk = chunks[chunk_index];
+            var chunk = world_chunks[chunk_index];
 
             var (lx, ly, lz) = (voxel_local_pos = (voxel_world_pos - chunk_pos * Settings.CHUNK_SIZE));
 

@@ -11,7 +11,7 @@ public class World
     public glContext.Program program { get; private set; }
 
     public Chunk[] chunks { get; private set; }
-    public byte[,] voxels { get; private set; }
+    public byte[][] voxels { get; private set; }
 
     public World(Scene scene, Camera camera)
     {
@@ -30,7 +30,11 @@ public class World
 
         //
         chunks = new Chunk[Settings.WORLD_VOL];
-        voxels = new byte[Settings.WORLD_VOL, Settings.CHUNK_VOL];
+        // voxels are actually list of refs to byte[]-arrays,
+        // therefore this array will point to same (original) byte-array.
+        voxels = new byte[Settings.WORLD_VOL][];
+        //for (int i = 0; i < Settings.WORLD_VOL; i++)
+        //    voxels[i] = new byte[Settings.CHUNK_VOL];
         BuildChunks();
         BuildChunkMesh();
     }
@@ -52,12 +56,8 @@ public class World
                     // build besh (of each chunk) uses world voxels to test for adjecent spaces?
 
                     chunks[chunk_index] = chunk;
-
                     //chunk.BuildVoxels(out this.voxels[chunk_index]);
-                    Buffer.BlockCopy(
-                        chunk.voxels, 0,
-                        this.voxels, chunk_index * this.voxels.GetLength(1),
-                        chunk.voxels.Length);
+                    this.voxels[chunk_index] = chunk.voxels;
 
                     // Put the chunk voxels in a separate array
                     //voxels[chunkIndex,:] = chunk.BuildVoxels();

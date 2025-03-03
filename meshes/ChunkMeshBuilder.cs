@@ -7,7 +7,7 @@ using static Settings;
 
 public static class VoxelMeshBuilder
 {
-    public static byte[] GetAO(Vector3i localPos, Vector3i worldPos, byte[,] worldVoxels, char plane)
+    public static byte[] GetAO(Vector3i localPos, Vector3i worldPos, byte[][] worldVoxels, char plane)
     {
         int x = localPos.X, y = localPos.Y, z = localPos.Z;
         int wx = worldPos.X, wy = worldPos.Y, wz = worldPos.Z;
@@ -83,7 +83,7 @@ public static class VoxelMeshBuilder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool isVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[,] worldVoxels)
+    public static bool isVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[][] worldVoxels)
     {
         int chunkIndex = GetChunkIndex(worldVoxelPos);
         if (chunkIndex == -1)
@@ -95,7 +95,7 @@ public static class VoxelMeshBuilder
             MathMod(z, Settings.CHUNK_SIZE) * Settings.CHUNK_SIZE +
             MathMod(y, Settings.CHUNK_SIZE) * Settings.CHUNK_AREA;
 
-        return worldVoxels[chunkIndex, voxelIndex] == 0;
+        return worldVoxels[chunkIndex][voxelIndex] == 0;
     }
 
     /*
@@ -309,7 +309,7 @@ public static class VoxelMeshBuilder
     */
 
 
-    public static object BuildChunkMesh(byte[] chunkVoxels, int formatSize,Vector3i chunkPos, byte[,] worldVoxels)
+    public static object BuildChunkMesh(byte[] chunkVoxels, int formatSize,Vector3i chunkPos, byte[][] worldVoxels)
     {
         uint[] vertexData = new uint[CHUNK_VOL * 18 * formatSize * sizeof(uint)]; // asuming bytesize for vbo_data
         int index = 0;
