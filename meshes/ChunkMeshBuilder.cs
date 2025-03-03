@@ -52,19 +52,12 @@ public static class VoxelMeshBuilder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetChunkIndex(Vector3i worldVoxelPos)
+    public static int GetChunkIndex(Vector3i voxel_world_pos)
     {
-        int wx = worldVoxelPos.X,
-            wy = worldVoxelPos.Y,
-            wz = worldVoxelPos.Z;
-        int cx = wx / Settings.CHUNK_SIZE;
-        int cy = wy / Settings.CHUNK_SIZE;
-        int cz = wz / Settings.CHUNK_SIZE;
-        if (!(0 <= cx && cx < Settings.WORLD_W && 0 <= cy && cy < Settings.WORLD_H && 0 <= cz && cz < Settings.WORLD_D))
-            return -1;
-
-        int index = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
-        return index;
+        var (x, y, z) = voxel_world_pos / CHUNK_SIZE;
+        if ((x is >= 0 and < WORLD_W) && (y is >= 0 and < WORLD_H) && (z is >= 0 and < WORLD_D))
+            return x + WORLD_W * z + WORLD_AREA * y;
+        return -1;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -85,11 +78,17 @@ public static class VoxelMeshBuilder
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool isVoid(Vector3i localVoxelPos, Vector3i worldVoxelPos, byte[][] worldVoxels)
     {
+        // note: actually could be directly chunk-pos
         int chunkIndex = GetChunkIndex(worldVoxelPos);
         if (chunkIndex == -1)
             return false;
 
+        // coord of voxel relative to chunk coords.
         var (x, y, z) = localVoxelPos;
+        // note: this wraps voxel id around inside of chunk,
+        // todo: instead should assume empty on edges! (aka <0 or >max_vol)
+        // todo: or.. negative shoul test adjecent chunk, so should test this befor getting chunk!
+        // note: is it accounded already in worldVoxelPos?
         int voxelIndex =
             MathMod(x, Settings.CHUNK_SIZE) +
             MathMod(z, Settings.CHUNK_SIZE) * Settings.CHUNK_SIZE +

@@ -39,6 +39,14 @@ public class World
         BuildChunkMesh();
     }
 
+    public Chunk? getChunk(Vector3i voxelPos)
+    {
+        var chunkIndex = VoxelMeshBuilder.GetChunkIndex(voxelPos);
+        if (chunkIndex == -1)
+            return null;
+        return chunks[chunkIndex];
+    }
+
     private void BuildChunks()
     {
         for (int x = 0; x < Settings.WORLD_W; x++)

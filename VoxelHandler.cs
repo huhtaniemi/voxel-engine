@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 
 public class VoxelHandler
 {
-    private Chunk[] world_chunks { get; set; }
+    private World world { get; }
 
     // Ray casting result
     private Chunk? chunk { get; set; }
@@ -21,7 +21,7 @@ public class VoxelHandler
 
     public VoxelHandler(World world)
     {
-        this.world_chunks = world.chunks;
+        this.world = world;
     }
 
     public void Update(Camera camera)
@@ -92,25 +92,16 @@ public class VoxelHandler
 
     private void RebuildAdjChunk(Vector3i adjVoxelPos)
     {
-        int index = VoxelMeshBuilder.GetChunkIndex(adjVoxelPos);
-        if (index != -1)
-        {
-            world_chunks[index].BuildMesh();
-        }
+        world.getChunk(adjVoxelPos)?.BuildMesh();
     }
-
 
     private (byte voxel_id, int voxel_index, Vector3i voxel_pos, Chunk? chunk) GetVoxelId(Vector3i voxel_world_pos)
     {
-        var chunk_pos = voxel_world_pos / Settings.CHUNK_SIZE;
-        var (cx, cy, cz) = chunk_pos;
-
-        if (cx >= 0 && cx < Settings.WORLD_W && cy >= 0 && cy < Settings.WORLD_H && cz >= 0 && cz < Settings.WORLD_D)
+        var chunk = world.getChunk(voxel_world_pos);
+        if (chunk != null)
         {
-            var chunk_index = cx + Settings.WORLD_W * cz + Settings.WORLD_AREA * cy;
-            var chunk = world_chunks[chunk_index];
-
-            var (lx, ly, lz) = (voxel_local_pos = (voxel_world_pos - chunk_pos * Settings.CHUNK_SIZE));
+            var chunk_origin = (voxel_world_pos / Settings.CHUNK_SIZE) * Settings.CHUNK_SIZE;
+            var (lx, ly, lz) = (voxel_local_pos = (voxel_world_pos - chunk_origin));
 
             var voxel_index = lx + Settings.CHUNK_SIZE * lz + Settings.CHUNK_AREA * ly;
             if (voxel_index is >= 0 and < Settings.CHUNK_VOL)
