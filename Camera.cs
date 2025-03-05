@@ -14,7 +14,7 @@ public class Camera
     public Vector3 Forward { get; private set; } = -Vector3.UnitZ;
 
 
-    public Matrix4 m_proj { get; set; }
+    public Matrix4 m_proj { get; private set; }
     public Matrix4 m_view { get; private set; }
 
     protected struct Frustum(float hFOV, float vFOV)
@@ -70,23 +70,11 @@ public class Camera
         return true;
     }
 
-    public virtual void UpdateView()
-    {
-        UpdateVectors();
-        UpdateViewMatrix();
-    }
-
     public void UpdatePerspective(float aspect)
     {
         m_proj = Matrix4.CreatePerspectiveFieldOfView(Settings.V_FOV, aspect, Settings.NEAR, Settings.FAR);
     }
-
-    private void UpdateViewMatrix()
-    {
-        m_view = Matrix4.LookAt(Position, Position + Forward, Up);
-    }
-
-    private void UpdateVectors()
+    public void UpdateView()
     {
         // the front matrix is calculated
         Forward = (MathF.Cos(Yaw) * MathF.Cos(Pitch), MathF.Sin(Pitch), MathF.Sin(Yaw) * MathF.Cos(Pitch));
@@ -99,6 +87,11 @@ public class Camera
         // not be what you need for all cameras so keep this in mind if you do not want a FPS camera.
         Right = Vector3.Normalize(Vector3.Cross(Forward, Vector3.UnitY));
         Up = Vector3.Normalize(Vector3.Cross(Right, Forward));
+
+        // "eye"    - position of camera in world space.
+        // "target" - position of target in world space (thast camera looks at).
+        // "up"     - normalized 'Up' vector  of camera orientation in world space (should not be parallel to the camera direction, that is target - eye).
+        m_view = Matrix4.LookAt(Position, Position + Forward, Up);
     }
 
     public void RotatePitch(float deltaY)
